@@ -69,49 +69,79 @@ export default function App() {
   
   const [resetEmail, setResetEmail] = useState<string>('');
   const [resetToken, setResetToken] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+
+  // معالج الأخطاء العام
+  const handleError = (error: any, context: string) => {
+    console.error(`❌ Error in ${context}:`, error);
+    setError(`حدث خطأ في ${context}. يرجى المحاولة مرة أخرى.`);
+    
+    // إخفاء رسالة الخطأ بعد 5 ثوان
+    setTimeout(() => setError(null), 5000);
+  };
 
   // الاشتراك في تغييرات حالة المصادقة
   useEffect(() => {
+    let isMounted = true; // تجنب تحديث الحالة إذا تم إلغاء المكون
+    
     const unsubscribe = authService.subscribe((newAuthState) => {
-      setAuthState(newAuthState);
-      setCurrentUser(newAuthState.user);
+      if (!isMounted) return;
       
-      if (newAuthState.user) {
-        // تعيين المستخدم الحالي في خدمات أخرى
-        subscriptionService.setCurrentUser(newAuthState.user.id);
+      try {
+        setAuthState(newAuthState);
+        setCurrentUser(newAuthState.user);
         
-        // تحديث اللغة
-        const userLanguage = newAuthState.user.preferences?.language || 'ar';
-        setIsRTL(userLanguage === 'ar');
-        
-        console.log(`👤 User authenticated: ${newAuthState.user.email} (${newAuthState.user.id})`);
-      } else {
-        // تنظيف البيانات عند عدم وجود مستخدم
-        subscriptionService.setCurrentUser(null);
-        setCurrentPlayer(null);
-        console.log('👤 User logged out');
+        if (newAuthState.user) {
+          // تعيين المستخدم الحالي في خدمات أخرى
+          subscriptionService.setCurrentUser(newAuthState.user.id);
+          
+          // ملاحظة: لا نغير اللغة تلقائياً - فقط عند الضغط على زر تبديل اللغة
+          
+          console.log(`👤 User authenticated: ${newAuthState.user.email} (${newAuthState.user.id})`);
+        } else {
+          // تنظيف البيانات عند عدم وجود مستخدم
+          subscriptionService.setCurrentUser(null);
+          setCurrentPlayer(null);
+          console.log('👤 User logged out');
+        }
+      } catch (error) {
+        handleError(error, 'تحديث حالة المصادقة');
       }
     });
 
-    return unsubscribe;
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   // الاشتراك في تغييرات حالة الاشتراك
   useEffect(() => {
+    let isMounted = true;
+    
     const unsubscribe = subscriptionService.subscribe((newSubscriptionState) => {
-      setSubscriptionState(newSubscriptionState);
-      console.log('💳 Subscription state updated:', {
-        plan: newSubscriptionState.activePlan?.name,
-        gamesLeft: newSubscriptionState.activePlan?.limits?.maxGamesPerDay === -1 
-          ? 'unlimited' 
-          : (newSubscriptionState.activePlan?.limits?.maxGamesPerDay || 0) - newSubscriptionState.usage.gamesPlayedToday,
-        storiesLeft: newSubscriptionState.activePlan?.limits?.maxStoriesPerWeek === -1 
-          ? 'unlimited' 
-          : (newSubscriptionState.activePlan?.limits?.maxStoriesPerWeek || 0) - newSubscriptionState.usage.storiesReadThisWeek
-      });
+      if (!isMounted) return;
+      
+      try {
+        setSubscriptionState(newSubscriptionState);
+        console.log('💳 Subscription state updated:', {
+          plan: newSubscriptionState.activePlan?.name,
+          gamesLeft: newSubscriptionState.activePlan?.limits?.maxGamesPerDay === -1 
+            ? 'unlimited' 
+            : (newSubscriptionState.activePlan?.limits?.maxGamesPerDay || 0) - newSubscriptionState.usage.gamesPlayedToday,
+          storiesLeft: newSubscriptionState.activePlan?.limits?.maxStoriesPerWeek === -1 
+            ? 'unlimited' 
+            : (newSubscriptionState.activePlan?.limits?.maxStoriesPerWeek || 0) - newSubscriptionState.usage.storiesReadThisWeek
+        });
+      } catch (error) {
+        handleError(error, 'تحديث حالة الاشتراك');
+      }
     });
 
-    return unsubscribe;
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   // تحميل البيانات المحفوظة عند بدء التطبيق
@@ -131,9 +161,7 @@ export default function App() {
           name: savedUser.name
         });
         
-        // تحديث اللغة
-        const userLanguage = savedUser.preferences?.language || 'ar';
-        setIsRTL(userLanguage === 'ar');
+        // ملاحظة: لا نغير اللغة تلقائياً عند تحميل المستخدم المحفوظ
         
         // التأكد من وجود اشتراك صالح
         const isSubscribed = subscriptionService.isSubscriptionValid(savedUser.id);
@@ -313,45 +341,58 @@ export default function App() {
 
   // معالجات اللاعب
   const handlePlayerSelect = async (player: Player) => {
-    if (!currentUser) return;
-    
-    // التأكد من أن اللاعب ينتمي للمستخدم الحالي
-    if (player.userId !== currentUser.id) {
-      console.error('❌ Player does not belong to current user');
-      return;
+    try {
+      if (!currentUser) {
+        handleError(new Error('لا يوجد مستخدم مسجل'), 'اختيار اللاعب');
+        return;
+      }
+      
+      // التأكد من أن اللاعب ينتمي للمستخدم الحالي
+      if (player.userId !== currentUser.id) {
+        console.error('❌ Player does not belong to current user');
+        handleError(new Error('هذا اللاعب لا ينتمي لحسابك'), 'اختيار اللاعب');
+        return;
+      }
+      
+      // تعيين اللاعب الحالي
+      await PlayerService.savePlayer(player);
+      setCurrentPlayer(player);
+      
+      // ملاحظة: لا نغير اللغة تلقائياً عند اختيار لاعب
+      
+      setCurrentScreen("mainMenu");
+      console.log(`🎮 Player selected: ${player.name} (${player.id})`);
+    } catch (error) {
+      handleError(error, 'اختيار اللاعب');
     }
-    
-    // تعيين اللاعب الحالي
-    await PlayerService.savePlayer(player);
-    setCurrentPlayer(player);
-    
-    // تحديث اللغة حسب تفضيلات اللاعب
-    const playerLanguage = player.preferences?.language || 'ar';
-    setIsRTL(playerLanguage === 'ar');
-    
-    setCurrentScreen("mainMenu");
-    console.log(`🎮 Player selected: ${player.name} (${player.id})`);
   };
 
   const handleAddPlayer = async () => {
-    if (!currentUser) return;
-    
-    // فحص إمكانية إضافة لاعب جديد
-    const userPlayers = await PlayerService.getPlayers();
-    const subscription = subscriptionService.getUserSubscriptionState(currentUser.id);
-    const maxPlayers = subscription.activePlan?.limits?.maxPlayers || 1;
-    
-    if (maxPlayers !== -1 && userPlayers.length >= maxPlayers) {
-      setUpgradePrompt({
-        isOpen: true,
-        trigger: 'general'
-      });
-      console.log(`❌ Player limit reached: ${userPlayers.length}/${maxPlayers}`);
-      return;
+    try {
+      if (!currentUser) {
+        handleError(new Error('لا يوجد مستخدم مسجل'), 'إضافة لاعب');
+        return;
+      }
+      
+      // فحص إمكانية إضافة لاعب جديد
+      const userPlayers = await PlayerService.getPlayers(currentUser.id);
+      const subscription = subscriptionService.getUserSubscriptionState(currentUser.id);
+      const maxPlayers = subscription.activePlan?.limits?.maxPlayers || 2; // الباقة المجانية تسمح بطفلين
+      
+      if (maxPlayers !== -1 && userPlayers.length >= maxPlayers) {
+        setUpgradePrompt({
+          isOpen: true,
+          trigger: 'general'
+        });
+        console.log(`❌ Player limit reached: ${userPlayers.length}/${maxPlayers}`);
+        return;
+      }
+      
+      setCurrentScreen("playerSetup");
+      console.log(`➕ Adding new player (${userPlayers.length + 1}/${maxPlayers === -1 ? '∞' : maxPlayers})`);
+    } catch (error) {
+      handleError(error, 'إضافة لاعب');
     }
-    
-    setCurrentScreen("playerSetup");
-    console.log(`➕ Adding new player (${userPlayers.length + 1}/${maxPlayers === -1 ? '∞' : maxPlayers})`);
   };
 
   const handlePlayerSetupComplete = async (name: string, avatar: string) => {
@@ -603,6 +644,17 @@ export default function App() {
                 setCurrentScreen("login");
               }
             }}
+            onLogout={async () => {
+              try {
+                await authService.logout();
+                setCurrentUser(null);
+                setCurrentPlayer(null);
+                setCurrentScreen("welcome");
+                console.log('✅ User logged out successfully');
+              } catch (error) {
+                console.error('❌ Logout error:', error);
+              }
+            }}
             isRTL={isRTL}
             userId={currentUser.id}
           />
@@ -715,6 +767,23 @@ export default function App() {
         {renderCurrentScreen()}
       </div>
       
+      {/* عرض رسائل الأخطاء */}
+      {error && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 max-w-md w-full mx-4">
+          <div className="bg-red-500 text-white p-4 rounded-lg shadow-lg border border-red-600">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">{error}</span>
+              <button 
+                onClick={() => setError(null)}
+                className="ml-3 text-white hover:text-gray-200 transition-colors"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* نافذة الترقية */}
       <UpgradePrompt
         isOpen={upgradePrompt.isOpen}

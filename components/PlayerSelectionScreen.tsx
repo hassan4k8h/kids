@@ -11,7 +11,8 @@ import {
   Users, 
   Sparkles,
   Heart,
-  Lock
+  Lock,
+  LogOut
 } from "lucide-react";
 import { Player } from "../types/Player";
 import PlayerService from "../services/PlayerService";
@@ -22,6 +23,7 @@ interface PlayerSelectionScreenProps {
   onPlayerSelect: (player: Player) => void;
   onAddPlayer: () => void;
   onBack: () => void;
+  onLogout: () => void;
   isRTL: boolean;
   userId: string;
 }
@@ -30,6 +32,7 @@ export function PlayerSelectionScreen({
   onPlayerSelect, 
   onAddPlayer, 
   onBack, 
+  onLogout,
   isRTL, 
   userId 
 }: PlayerSelectionScreenProps) {
@@ -197,8 +200,15 @@ export function PlayerSelectionScreen({
                      : `${players.length} of ${subscriptionState.activePlan?.limits?.maxPlayers === -1 ? '∞' : subscriptionState.activePlan?.limits?.maxPlayers} players`}
             </p>
           </div>
-          
-          <div className="w-12" />
+
+          <Button
+            variant="ghost"
+            onClick={onLogout}
+            className="text-white hover:bg-white/20 p-3 rounded-xl font-bold"
+            title={isRTL ? "تسجيل الخروج" : "Logout"}
+          >
+            <LogOut className="w-6 h-6" />
+          </Button>
         </motion.div>
 
         {/* محتوى الشاشة */}

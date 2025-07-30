@@ -558,7 +558,28 @@ class AuthService {
     try {
       console.log('🔐 Requesting password reset for:', email);
       
-      // محاكاة تأخير API
+      if (this.useSupabase) {
+        // استخدام Supabase لإعادة تعيين كلمة المرور
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/#/reset-password`
+        });
+        
+        if (error) {
+          console.error('❌ Supabase password reset error:', error);
+          return {
+            success: false,
+            error: 'حدث خطأ أثناء إرسال رابط إعادة التعيين'
+          };
+        }
+        
+        console.log('✅ Supabase password reset email sent to:', email);
+        return {
+          success: true,
+          message: 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني. يرجى التحقق من صندوق الوارد.'
+        };
+      }
+      
+      // النظام المحلي (LocalStorage)
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // البحث عن المستخدم
@@ -697,7 +718,28 @@ class AuthService {
     try {
       console.log('🔐 Resetting password with token:', token);
       
-      // محاكاة تأخير API
+      if (this.useSupabase) {
+        // استخدام Supabase لإعادة تعيين كلمة المرور
+        const { error } = await supabase.auth.updateUser({
+          password: newPassword
+        });
+        
+        if (error) {
+          console.error('❌ Supabase password update error:', error);
+          return {
+            success: false,
+            error: 'حدث خطأ أثناء تحديث كلمة المرور'
+          };
+        }
+        
+        console.log('✅ Supabase password updated successfully');
+        return {
+          success: true,
+          message: 'تم إعادة تعيين كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.'
+        };
+      }
+      
+      // النظام المحلي (LocalStorage)
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // التحقق من صحة الرمز المميز
