@@ -326,7 +326,7 @@ export default function App() {
   };
 
   const handleResetPassword = (token?: string, email?: string) => {
-    if (token) setResetToken(token);
+    if (token) setVerificationCode(token);
     if (email) setResetEmail(email);
     setCurrentScreen("resetPassword");
   };
