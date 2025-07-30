@@ -38,6 +38,7 @@ class AuthService {
   private listeners: Array<(authState: AuthState) => void> = [];
   private resetTokens: Map<string, { userId: string; email: string; expiresAt: number }> = new Map();
   private useSupabase: boolean = true; // التحكم في استخدام Supabase
+  private supabaseHealthy: boolean = true; // حالة صحة Supabase
 
   constructor() {
     this.loadSavedUser();
@@ -72,22 +73,28 @@ class AuthService {
 
   private async handleSupabaseAuth(supabaseUser: any): Promise<void> {
     try {
-      // البحث عن المستخدم في قاعدة البيانات
-      let { data: userData, error } = await supabase
+      // البحث عن المستخدم في قاعدة البيانات مع timeout
+      const searchPromise = supabase
         .from('users')
         .select('*')
         .eq('id', supabaseUser.id)
         .single();
 
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Database timeout')), 8000); // 8 ثوان
+      });
+
+      let { data: userData, error } = await Promise.race([searchPromise, timeoutPromise]);
+
       let user: User;
       
       if (error && error.code === 'PGRST116') {
-        // المستخدم غير موجود، إنشاء سجل جديد
+        // المستخدم غير موجود، إنشاء سجل جديد بأقل البيانات الضرورية
         const newUser = {
           id: supabaseUser.id,
           email: supabaseUser.email,
           name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'مستخدم',
-          avatar: supabaseUser.user_metadata?.avatar_url,
+          avatar: supabaseUser.user_metadata?.avatar_url || null,
           provider: 'email',
           is_email_verified: supabaseUser.email_confirmed_at !== null,
           preferences: {
@@ -104,15 +111,26 @@ class AuthService {
           last_login: new Date().toISOString()
         };
 
-        const { data: insertedUser, error: insertError } = await supabase
+        // إنشاء المستخدم مع timeout
+        const insertPromise = supabase
           .from('users')
           .insert([newUser])
           .select()
           .single();
 
-        if (insertError) throw insertError;
+        const insertTimeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('Insert timeout')), 10000); // 10 ثوان للإدراج
+        });
+
+        const { data: insertedUser, error: insertError } = await Promise.race([insertPromise, insertTimeoutPromise]);
+
+        if (insertError) {
+          console.error('❌ Error creating user in database:', insertError);
+          throw insertError;
+        }
         userData = insertedUser;
       } else if (error) {
+        console.error('❌ Error fetching user from database:', error);
         throw error;
       }
 
@@ -209,51 +227,86 @@ class AuthService {
     try {
       console.log('🔐 Attempting login for:', email);
       
-      if (this.useSupabase) {
-        // استخدام Supabase Auth
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
+      // تعيين timeout للعملية
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Login timeout')), 10000); // 10 ثوان
+      });
+      
+      if (this.useSupabase && this.supabaseHealthy) {
+        try {
+          // استخدام Supabase Auth مع timeout
+          const loginPromise = supabase.auth.signInWithPassword({
+            email: email.trim().toLowerCase(),
+            password
+          });
 
-        if (error) {
-          console.log('❌ Supabase login error:', error.message);
-          return {
-            success: false,
-            error: this.translateAuthError(error.message)
-          };
-        }
+          const { data, error } = await Promise.race([loginPromise, timeoutPromise]);
 
-        if (data.user) {
-          // سيتم التعامل مع المستخدم تلقائياً في handleSupabaseAuth
-          console.log('✅ Login successful for:', email);
-          return {
-            success: true,
-            user: this.currentUser
-          };
+          if (error) {
+            console.log('❌ Supabase login error:', error.message);
+            
+            // إذا كان خطأ في الشبكة أو الخادم، تحول للنظام المحلي
+            if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('timeout')) {
+              console.warn('⚠️ Supabase appears unhealthy, falling back to localStorage');
+              this.supabaseHealthy = false;
+              return await this.loginWithLocalStorage(email, password);
+            }
+            
+            return {
+              success: false,
+              error: this.translateAuthError(error.message)
+            };
+          }
+
+          if (data.user) {
+            // انتظار تحديث المستخدم مع timeout
+            let waitCount = 0;
+            while (!this.currentUser && waitCount < 50) { // انتظار 5 ثوان كحد أقصى
+              await new Promise(resolve => setTimeout(resolve, 100));
+              waitCount++;
+            }
+            
+            console.log('✅ Login successful for:', email);
+            return {
+              success: true,
+              user: this.currentUser
+            };
+          }
+        } catch (networkError) {
+          console.warn('⚠️ Network error with Supabase, falling back to localStorage:', networkError);
+          this.supabaseHealthy = false;
+          return await this.loginWithLocalStorage(email, password);
         }
       } else {
-        // استخدام localStorage (النظام القديم)
-        return this.loginWithLocalStorage(email, password);
+        // استخدام localStorage (محسن للسرعة)
+        return await Promise.race([this.loginWithLocalStorage(email, password), timeoutPromise]);
       }
       
       return {
         success: false,
-        error: 'Login failed'
+        error: 'تسجيل الدخول فشل. يرجى المحاولة مرة أخرى.'
       };
       
     } catch (error) {
       console.error('❌ Login error:', error);
+      
+      if (error.message === 'Login timeout') {
+        return {
+          success: false,
+          error: 'انتهت مهلة تسجيل الدخول. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.'
+        };
+      }
+      
       return {
         success: false,
-        error: 'Login failed'
+        error: 'حدث خطأ في تسجيل الدخول. يرجى المحاولة مرة أخرى.'
       };
     }
   }
 
   private async loginWithLocalStorage(email: string, password: string): Promise<LoginResult> {
-    // النظام القديم للتوافق مع الإصدار السابق
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // النظام المحلي المحسن (بدون تأخير غير ضروري)
+    await new Promise(resolve => setTimeout(resolve, 200)); // تأخير قصير فقط لتحسين UX
     
     // Get all users from localStorage
     const usersData = localStorage.getItem('skilloo_users');
@@ -306,73 +359,115 @@ class AuthService {
     try {
       console.log('👤 Attempting signup for:', email);
       
-      if (this.useSupabase) {
-        // استخدام Supabase Auth
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              name: name
+      // تعيين timeout للعملية
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('Signup timeout')), 15000); // 15 ثانية للتسجيل
+      });
+      
+      if (this.useSupabase && this.supabaseHealthy) {
+        try {
+          // استخدام Supabase Auth مع timeout
+          const signupPromise = supabase.auth.signUp({
+            email: email.trim().toLowerCase(),
+            password,
+            options: {
+              data: {
+                name: name.trim()
+              }
             }
-          }
-        });
+          });
 
-        if (error) {
-          console.log('❌ Supabase signup error:', error.message);
-          return {
-            success: false,
-            error: this.translateAuthError(error.message)
-          };
-        }
+          const { data, error } = await Promise.race([signupPromise, timeoutPromise]);
 
-        if (data.user) {
-          console.log('✅ Signup successful for:', email);
-          
-          // إرسال بريد الترحيب
-          try {
-            console.log('📧 Sending welcome email to:', email);
-            const emailSent = await emailService.sendWelcomeEmail({
-              userName: name,
-              userEmail: email
-            });
+          if (error) {
+            console.log('❌ Supabase signup error:', error.message);
             
-            if (emailSent) {
-              console.log('✅ Welcome email sent successfully to:', email);
-            } else {
-              console.warn('⚠️ Failed to send welcome email to:', email);
+            // إذا كان خطأ في الشبكة أو الخادم، تحول للنظام المحلي
+            if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('timeout')) {
+              console.warn('⚠️ Supabase appears unhealthy, falling back to localStorage');
+              this.supabaseHealthy = false;
+              return await this.signupWithLocalStorage(email, password, name);
             }
-          } catch (emailError) {
-            console.error('❌ Error sending welcome email:', emailError);
+            
+            return {
+              success: false,
+              error: this.translateAuthError(error.message)
+            };
           }
 
-          return {
-            success: true,
-            user: this.currentUser
-          };
+          if (data.user) {
+            console.log('✅ Signup successful for:', email);
+            
+            // إرسال بريد الترحيب في الخلفية (بدون انتظار)
+            this.sendWelcomeEmailAsync(name, email);
+
+            // انتظار تحديث المستخدم مع timeout
+            let waitCount = 0;
+            while (!this.currentUser && waitCount < 50) { // انتظار 5 ثوان كحد أقصى
+              await new Promise(resolve => setTimeout(resolve, 100));
+              waitCount++;
+            }
+
+            return {
+              success: true,
+              user: this.currentUser
+            };
+          }
+        } catch (networkError) {
+          console.warn('⚠️ Network error with Supabase, falling back to localStorage:', networkError);
+          this.supabaseHealthy = false;
+          return await this.signupWithLocalStorage(email, password, name);
         }
       } else {
-        // استخدام localStorage (النظام القديم)
-        return this.signupWithLocalStorage(email, password, name);
+        // استخدام localStorage (محسن للسرعة)
+        return await Promise.race([this.signupWithLocalStorage(email, password, name), timeoutPromise]);
       }
       
       return {
         success: false,
-        error: 'Signup failed'
+        error: 'فشل في إنشاء الحساب. يرجى المحاولة مرة أخرى.'
       };
       
     } catch (error) {
       console.error('❌ Signup error:', error);
+      
+      if (error.message === 'Signup timeout') {
+        return {
+          success: false,
+          error: 'انتهت مهلة إنشاء الحساب. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.'
+        };
+      }
+      
       return {
         success: false,
-        error: 'Signup failed'
+        error: 'حدث خطأ في إنشاء الحساب. يرجى المحاولة مرة أخرى.'
       };
     }
   }
 
+  // إرسال بريد الترحيب في الخلفية لتسريع التجربة
+  private async sendWelcomeEmailAsync(name: string, email: string): Promise<void> {
+    try {
+      console.log('📧 Sending welcome email to:', email);
+      const emailSent = await emailService.sendWelcomeEmail({
+        userName: name,
+        userEmail: email
+      });
+      
+      if (emailSent) {
+        console.log('✅ Welcome email sent successfully to:', email);
+      } else {
+        console.warn('⚠️ Failed to send welcome email to:', email);
+      }
+    } catch (emailError) {
+      console.error('❌ Error sending welcome email:', emailError);
+      // لا نفشل العملية إذا فشل إرسال البريد
+    }
+  }
+
   private async signupWithLocalStorage(email: string, password: string, name: string): Promise<SignupResult> {
-    // النظام القديم للتوافق مع الإصدار السابق
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // النظام المحلي المحسن (بدون تأخير غير ضروري)
+    await new Promise(resolve => setTimeout(resolve, 200)); // تأخير قصير فقط لتحسين UX
     
     // Get all users from localStorage
     const usersData = localStorage.getItem('skilloo_users');
@@ -479,17 +574,43 @@ class AuthService {
 
   private translateAuthError(errorMessage: string): string {
     const errorMap: Record<string, string> = {
-      'Invalid login credentials': 'بيانات تسجيل الدخول غير صحيحة',
-      'Email not confirmed': 'يرجى تأكيد بريدك الإلكتروني أولاً',
-      'User already registered': 'المستخدم مسجل مسبقاً',
-      'Invalid email': 'البريد الإلكتروني غير صالح',
-      'Password should be at least 6 characters': 'كلمة المرور يجب أن تكون 6 أحرف على الأقل',
-      'Unable to validate email address: invalid format': 'تنسيق البريد الإلكتروني غير صحيح',
-      'Email rate limit exceeded': 'تم تجاوز الحد المسموح لإرسال الإيميلات، يرجى المحاولة لاحقاً',
-      'Too many requests': 'عدد كبير من المحاولات، يرجى المحاولة لاحقاً'
+      'Invalid login credentials': 'بيانات تسجيل الدخول غير صحيحة. تحقق من الإيميل وكلمة المرور.',
+      'Email not confirmed': 'يرجى تأكيد بريدك الإلكتروني أولاً من خلال الرسالة المرسلة إليك.',
+      'User already registered': 'هذا البريد الإلكتروني مسجل مسبقاً. يمكنك تسجيل الدخول مباشرة.',
+      'Invalid email': 'البريد الإلكتروني غير صالح. يرجى التحقق من التنسيق.',
+      'Password should be at least 6 characters': 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.',
+      'Unable to validate email address: invalid format': 'تنسيق البريد الإلكتروني غير صحيح. مثال: user@example.com',
+      'Email rate limit exceeded': 'تم تجاوز الحد المسموح لإرسال الإيميلات. يرجى المحاولة بعد دقائق.',
+      'Too many requests': 'عدد كبير من المحاولات. يرجى الانتظار قليلاً ثم المحاولة مرة أخرى.',
+      'Signup requires a valid password': 'يرجى إدخال كلمة مرور صالحة.',
+      'Database error': 'خطأ في الخادم. يرجى المحاولة لاحقاً.',
+      'Network error': 'خطأ في الاتصال. تحقق من اتصال الإنترنت.',
+      'Weak password': 'كلمة المرور ضعيفة. استخدم أحرف وأرقام ورموز.',
+      'Email already exists': 'هذا الإيميل مستخدم بالفعل. جرب إيميل آخر أو سجل الدخول.',
+      'Login timeout': 'انتهت مهلة تسجيل الدخول. تحقق من اتصال الإنترنت.',
+      'Signup timeout': 'انتهت مهلة إنشاء الحساب. تحقق من اتصال الإنترنت.',
+      'Database timeout': 'انتهت مهلة الاتصال بالخادم. يرجى المحاولة مرة أخرى.'
     };
 
-    return errorMap[errorMessage] || errorMessage;
+    // البحث عن أخطاء جزئية
+    for (const [key, value] of Object.entries(errorMap)) {
+      if (errorMessage.toLowerCase().includes(key.toLowerCase())) {
+        return value;
+      }
+    }
+
+    // إذا لم نجد ترجمة محددة، نعطي رسالة عامة مفيدة
+    if (errorMessage.toLowerCase().includes('password')) {
+      return 'مشكلة في كلمة المرور. تأكد من أنها صحيحة وقوية.';
+    }
+    if (errorMessage.toLowerCase().includes('email')) {
+      return 'مشكلة في البريد الإلكتروني. تأكد من صحة التنسيق.';
+    }
+    if (errorMessage.toLowerCase().includes('network') || errorMessage.toLowerCase().includes('timeout')) {
+      return 'مشكلة في الاتصال. تحقق من الإنترنت وحاول مرة أخرى.';
+    }
+
+    return errorMessage || 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.';
   }
 
   public getCurrentUser(): User | null {

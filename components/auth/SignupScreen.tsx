@@ -54,6 +54,7 @@ export function SignupScreen({
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [success, setSuccess] = useState<string | null>(null);
+  const [loadingStep, setLoadingStep] = useState<string>('');
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -109,6 +110,7 @@ export function SignupScreen({
 
     setIsLoading(true);
     setErrors({});
+    setLoadingStep(isRTL ? 'جاري التحقق من البيانات...' : 'Validating data...');
 
     try {
       console.log('👤 Attempting signup with:', {
@@ -117,6 +119,7 @@ export function SignupScreen({
         password: '***'
       });
 
+      setLoadingStep(isRTL ? 'جاري إنشاء الحساب...' : 'Creating account...');
       const result = await authService.signup(
         formData.email.trim(),
         formData.password,
@@ -124,12 +127,17 @@ export function SignupScreen({
       );
 
       if (result.success) {
+        setLoadingStep(isRTL ? 'جاري الإعداد النهائي...' : 'Finalizing setup...');
+      }
+
+      if (result.success) {
         console.log('✅ Signup successful:', result.user);
         setSuccess(isRTL ? 'تم إنشاء الحساب بنجاح! مرحباً بك في سكيلو!' : 'Account created successfully! Welcome to Skilloo!');
         
+        // تقليل التأخير لتحسين تجربة المستخدم
         setTimeout(() => {
           onSignupSuccess();
-        }, 1500);
+        }, 800);
       } else {
         console.log('❌ Signup failed:', result.error);
         setErrors({
@@ -435,10 +443,10 @@ export function SignupScreen({
                 }}
               >
                 {isLoading ? (
-                  <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse">
+                  <div className="flex flex-col items-center justify-center space-y-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span style={{ color: '#ffffff !important' }}>
-                      {isRTL ? "جاري إنشاء الحساب..." : "Creating account..."}
+                    <span style={{ color: '#ffffff !important' }} className="text-sm">
+                      {loadingStep || (isRTL ? "جاري الإعداد..." : "Setting up...")}
                     </span>
                   </div>
                 ) : (

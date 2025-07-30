@@ -30,6 +30,7 @@ export function LoginScreen({
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState<string>('');
 
   const validateForm = useCallback(() => {
     const newErrors: { email?: string; password?: string } = {};
@@ -60,11 +61,13 @@ export function LoginScreen({
 
     setIsLoading(true);
     setErrors({});
+    setLoadingStep(isRTL ? 'جاري التحقق من البيانات...' : 'Validating credentials...');
 
     try {
       console.log('🔐 Attempting login with:', { email, password: '***' });
       
-      const result = await authService.login(email, password);
+      setLoadingStep(isRTL ? 'جاري تسجيل الدخول...' : 'Signing in...');
+      const result = await authService.login(email.trim(), password);
       
       if (result.success) {
         console.log('✅ Login successful:', result.user);
@@ -264,10 +267,10 @@ export function LoginScreen({
                 }}
               >
                 {isLoading ? (
-                  <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse">
+                  <div className="flex flex-col items-center justify-center space-y-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span style={{ color: '#ffffff !important' }}>
-                      {isRTL ? "جاري تسجيل الدخول..." : "Signing in..."}
+                    <span style={{ color: '#ffffff !important' }} className="text-sm">
+                      {loadingStep || (isRTL ? "جاري تسجيل الدخول..." : "Signing in...")}
                     </span>
                   </div>
                 ) : (

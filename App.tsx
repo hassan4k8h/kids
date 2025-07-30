@@ -70,6 +70,8 @@ export default function App() {
   const [resetEmail, setResetEmail] = useState<string>('');
   const [resetToken, setResetToken] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null);
+  const [isAppLoading, setIsAppLoading] = useState(true);
 
   // معالج الأخطاء العام
   const handleError = (error: any, context: string) => {
@@ -78,6 +80,12 @@ export default function App() {
     
     // إخفاء رسالة الخطأ بعد 5 ثوان
     setTimeout(() => setError(null), 5000);
+  };
+
+  // معالج الإشعارات العام
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 4000);
   };
 
   // الاشتراك في تغييرات حالة المصادقة
@@ -201,7 +209,10 @@ export default function App() {
       }
     };
     
-    loadUserData();
+    loadUserData().finally(() => {
+      // إخفاء loading screen بعد تحميل البيانات
+      setTimeout(() => setIsAppLoading(false), 800);
+    });
     
     return () => {
       mounted = false;
@@ -758,6 +769,28 @@ export default function App() {
     }
   };
 
+  // عرض loading screen
+  if (isAppLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-20 h-20 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <h1 className="text-white text-3xl font-bold mb-2">
+            {isRTL ? 'سكيلو' : 'Skilloo'}
+          </h1>
+          <p className="text-white/90 text-lg font-medium">
+            {isRTL ? 'جاري التحميل...' : 'Loading...'}
+          </p>
+          <div className="mt-4 flex items-center justify-center space-x-2">
+            <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
+            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+            <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div 
       className="min-h-screen bg-background font-semi-bold antialiased" 
@@ -775,6 +808,32 @@ export default function App() {
               <span className="text-sm font-medium">{error}</span>
               <button 
                 onClick={() => setError(null)}
+                className="ml-3 text-white hover:text-gray-200 transition-colors"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notifications */}
+      {toast && (
+        <div className="fixed top-4 right-4 z-50 max-w-sm w-full mx-4">
+          <div className={`p-4 rounded-lg shadow-lg border transform transition-all duration-300 ${
+            toast.type === 'success' ? 'bg-green-500 border-green-600 text-white' :
+            toast.type === 'error' ? 'bg-red-500 border-red-600 text-white' :
+            'bg-blue-500 border-blue-600 text-white'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                {toast.type === 'success' && <span>✅</span>}
+                {toast.type === 'error' && <span>❌</span>}
+                {toast.type === 'info' && <span>ℹ️</span>}
+                <span className="text-sm font-medium">{toast.message}</span>
+              </div>
+              <button 
+                onClick={() => setToast(null)}
                 className="ml-3 text-white hover:text-gray-200 transition-colors"
               >
                 ×
