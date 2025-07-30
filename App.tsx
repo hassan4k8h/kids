@@ -179,8 +179,8 @@ export default function App() {
           plan: subscriptionService.getUserSubscriptionState(savedUser.id).activePlan?.name
         });
         
-        // تحميل اللاعب الحالي
-        const savedPlayer = await PlayerService.getPlayer(savedUser.id);
+        // تحميل اللاعب الحالي المحفوظ
+        const savedPlayer = await PlayerService.getCurrentPlayer(savedUser.id);
         if (!mounted) return;
         
         if (savedPlayer) {
@@ -188,17 +188,17 @@ export default function App() {
           setCurrentScreen("mainMenu");
           console.log(`🎮 Current player loaded: ${savedPlayer.name}`);
         } else {
-                  // التحقق من وجود لاعبين للمستخدم
-        const userPlayers = await PlayerService.getPlayers(savedUser.id);
-        if (!mounted) return;
-        
-        if (userPlayers.length > 0) {
-          setCurrentScreen("playerSelection");
-          console.log(`🎮 Found ${userPlayers.length} players for user`);
-        } else {
-          setCurrentScreen("playerSetup");
-          console.log('🎮 No players found, redirecting to setup');
-        }
+          // التحقق من وجود لاعبين للمستخدم
+          const userPlayers = await PlayerService.getPlayers(savedUser.id);
+          if (!mounted) return;
+          
+          if (userPlayers.length > 0) {
+            setCurrentScreen("playerSelection");
+            console.log(`🎮 Found ${userPlayers.length} players for user`);
+          } else {
+            setCurrentScreen("playerSetup");
+            console.log('🎮 No players found, redirecting to setup');
+          }
         }
       } else {
         // فقط قم بتعيين الشاشة إذا لم تكن welcome بالفعل
@@ -367,6 +367,7 @@ export default function App() {
       
       // تعيين اللاعب الحالي
       await PlayerService.savePlayer(player);
+      PlayerService.setCurrentPlayer(currentUser.id, player.id); // حفظ اللاعب الحالي
       setCurrentPlayer(player);
       
       // ملاحظة: لا نغير اللغة تلقائياً عند اختيار لاعب
@@ -410,6 +411,7 @@ export default function App() {
     if (!currentUser) return;
     
     const newPlayer = await PlayerService.createPlayer(currentUser.id, name, avatar, isRTL ? 'ar' : 'en');
+    PlayerService.setCurrentPlayer(currentUser.id, newPlayer.id); // حفظ اللاعب الجديد كـ current
     setCurrentPlayer(newPlayer);
     
     // تحديث إحصائيات الاستخدام
@@ -657,6 +659,9 @@ export default function App() {
             }}
             onLogout={async () => {
               try {
+                if (currentUser) {
+                  PlayerService.clearCurrentPlayer(currentUser.id); // مسح اللاعب الحالي المحفوظ
+                }
                 await authService.logout();
                 setCurrentUser(null);
                 setCurrentPlayer(null);

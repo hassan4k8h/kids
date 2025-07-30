@@ -325,6 +325,59 @@ class PlayerService {
       await this.savePlayer(player);
     }
   }
+
+  // حفظ معرف اللاعب الحالي للمستخدم
+  static setCurrentPlayer(userId: string, playerId: string): void {
+    try {
+      localStorage.setItem(`current_player_${userId}`, playerId);
+      console.log(`💾 Current player saved: ${playerId} for user ${userId}`);
+    } catch (error) {
+      console.error('Error saving current player:', error);
+    }
+  }
+
+  // استرداد معرف اللاعب الحالي للمستخدم
+  static getCurrentPlayerId(userId: string): string | null {
+    try {
+      const playerId = localStorage.getItem(`current_player_${userId}`);
+      console.log(`🔍 Current player retrieved: ${playerId} for user ${userId}`);
+      return playerId;
+    } catch (error) {
+      console.error('Error getting current player:', error);
+      return null;
+    }
+  }
+
+  // استرداد اللاعب الحالي للمستخدم
+  static async getCurrentPlayer(userId: string): Promise<Player | null> {
+    try {
+      const playerId = this.getCurrentPlayerId(userId);
+      if (!playerId) return null;
+      
+      const player = await this.getPlayer(playerId);
+      if (player && player.userId === userId) {
+        console.log(`🎮 Current player loaded: ${player.name}`);
+        return player;
+      }
+      
+      // إذا لم يعد اللاعب موجود أو لا ينتمي للمستخدم، امحُ الحفظ
+      this.clearCurrentPlayer(userId);
+      return null;
+    } catch (error) {
+      console.error('Error getting current player:', error);
+      return null;
+    }
+  }
+
+  // مسح اللاعب الحالي المحفوظ
+  static clearCurrentPlayer(userId: string): void {
+    try {
+      localStorage.removeItem(`current_player_${userId}`);
+      console.log(`🧹 Current player cleared for user ${userId}`);
+    } catch (error) {
+      console.error('Error clearing current player:', error);
+    }
+  }
 }
 
 export default PlayerService;
