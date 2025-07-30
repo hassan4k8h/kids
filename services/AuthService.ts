@@ -73,7 +73,7 @@ class AuthService {
   private async handleSupabaseAuth(supabaseUser: any): Promise<void> {
     try {
       // البحث عن المستخدم في قاعدة البيانات
-      const { data: userData, error } = await supabase
+      let { data: userData, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', supabaseUser.id)
@@ -96,7 +96,7 @@ class AuthService {
             soundEnabled: true,
             parentalControls: {
               maxPlayTime: 120,
-              allowedGames: [],
+              allowedGames: [],  
               reportingEnabled: true
             }
           },
