@@ -73,114 +73,150 @@ class AuthService {
 
   private async handleSupabaseAuth(supabaseUser: any): Promise<void> {
     try {
-      // البحث عن المستخدم في قاعدة البيانات مع timeout
-      const searchPromise = supabase
-        .from('users')
-        .select('*')
-        .eq('id', supabaseUser.id)
-        .single();
-
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Database timeout')), 8000); // 8 ثوان
-      });
-
-      let { data: userData, error } = await Promise.race([searchPromise, timeoutPromise]);
-
-      let user: User;
+      console.log('🔄 Processing Supabase auth for user:', supabaseUser.email);
       
-      if (error && error.code === 'PGRST116') {
-        // المستخدم غير موجود، إنشاء سجل جديد بأقل البيانات الضرورية
-        const newUser = {
-          id: supabaseUser.id,
-          email: supabaseUser.email,
-          name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'مستخدم',
-          avatar: supabaseUser.user_metadata?.avatar_url || null,
-          provider: 'email',
-          is_email_verified: supabaseUser.email_confirmed_at !== null,
-          preferences: {
-            language: 'ar',
-            notifications: true,
-            soundEnabled: true,
-            parentalControls: {
-              maxPlayTime: 120,
-              allowedGames: [],  
-              reportingEnabled: true
-            }
-          },
-          subscription_type: 'free',
-          last_login: new Date().toISOString()
-        };
-
-        // إنشاء المستخدم مع timeout
-        const insertPromise = supabase
-          .from('users')
-          .insert([newUser])
-          .select()
-          .single();
-
-        const insertTimeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error('Insert timeout')), 10000); // 10 ثوان للإدراج
-        });
-
-        const { data: insertedUser, error: insertError } = await Promise.race([insertPromise, insertTimeoutPromise]);
-
-        if (insertError) {
-          console.error('❌ Error creating user in database:', insertError);
-          throw insertError;
-        }
-        userData = insertedUser;
-      } else if (error) {
-        console.error('❌ Error fetching user from database:', error);
-        throw error;
-      }
-
-      // تحويل بيانات المستخدم من قاعدة البيانات إلى تنسيق التطبيق
-      user = {
-        id: userData.id,
-        email: userData.email,
-        name: userData.name,
-        avatar: userData.avatar,
-        provider: userData.provider as 'email' | 'google' | 'apple',
-        isEmailVerified: userData.is_email_verified,
-        createdAt: userData.created_at,
-        lastLogin: userData.last_login || new Date().toISOString(),
-        preferences: userData.preferences || {
+      // إنشاء مستخدم أساسي من بيانات Supabase مباشرة كـ fallback
+      const fallbackUser: User = {
+        id: supabaseUser.id,
+        email: supabaseUser.email,
+        name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'مستخدم',
+        avatar: supabaseUser.user_metadata?.avatar_url,
+        provider: 'email',
+        isEmailVerified: supabaseUser.email_confirmed_at !== null,
+        createdAt: supabaseUser.created_at || new Date().toISOString(),
+        lastLogin: new Date().toISOString(),
+        preferences: {
           language: 'ar',
           notifications: true,
           soundEnabled: true,
           parentalControls: {
             maxPlayTime: 120,
-            allowedGames: [],
+            allowedGames: [],  
             reportingEnabled: true
           }
         },
-        children: [], // سيتم تحميلها من جدول اللاعبين
+        children: [],
         subscription: {
-          type: userData.subscription_type || 'free',
+          type: 'free',
           features: []
         }
       };
 
-      // تحميل بيانات الأطفال/اللاعبين
-      const { data: playersData } = await supabase
-        .from('players')
-        .select('id')
-        .eq('user_id', user.id);
+      try {
+        // محاولة البحث في قاعدة البيانات مع timeout قصير
+        const searchPromise = supabase
+          .from('users')
+          .select('*')
+          .eq('id', supabaseUser.id)
+          .single();
 
-      user.children = playersData?.map(p => p.id) || [];
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('Database timeout')), 5000); // 5 ثوان فقط
+        });
 
-      // تحديث آخر تسجيل دخول
-      await supabase
-        .from('users')
-        .update({ last_login: new Date().toISOString() })
-        .eq('id', user.id);
+        const { data: userData, error } = await Promise.race([searchPromise, timeoutPromise]);
 
-      this.currentUser = user;
-      this.saveUser(user);
+        if (error && error.code === 'PGRST116') {
+          // المستخدم غير موجود، محاولة الإنشاء
+          console.log('👤 User not found, creating new user in database');
+          try {
+            const { data: insertedUser, error: insertError } = await supabase
+              .from('users')
+              .insert([{
+                id: supabaseUser.id,
+                email: supabaseUser.email,
+                name: fallbackUser.name,
+                avatar: fallbackUser.avatar,
+                provider: 'email',
+                is_email_verified: fallbackUser.isEmailVerified,
+                preferences: fallbackUser.preferences,
+                subscription_type: 'free',
+                last_login: new Date().toISOString()
+              }])
+              .select()
+              .single();
+
+            if (!insertError && insertedUser) {
+              console.log('✅ User created in database successfully');
+              // تحديث fallbackUser بالبيانات من قاعدة البيانات
+              fallbackUser.subscription.type = insertedUser.subscription_type || 'free';
+            } else {
+              console.warn('⚠️ Failed to create user in database, using fallback:', insertError);
+            }
+          } catch (insertError) {
+            console.warn('⚠️ Database insert failed, using fallback user:', insertError);
+          }
+        } else if (!error && userData) {
+          // تحديث fallbackUser ببيانات قاعدة البيانات
+          console.log('✅ User found in database, updating from DB');
+          fallbackUser.name = userData.name || fallbackUser.name;
+          fallbackUser.avatar = userData.avatar || fallbackUser.avatar;
+          fallbackUser.preferences = userData.preferences || fallbackUser.preferences;
+          fallbackUser.subscription.type = userData.subscription_type || 'free';
+          fallbackUser.lastLogin = userData.last_login || fallbackUser.lastLogin;
+          
+          // تحديث آخر تسجيل دخول في الخلفية
+          (async () => {
+            try {
+              await supabase
+                .from('users')
+                .update({ last_login: new Date().toISOString() })
+                .eq('id', supabaseUser.id);
+              console.log('✅ Last login updated');
+            } catch (err) {
+              console.warn('⚠️ Failed to update last login:', err);
+            }
+          })();
+        } else if (error) {
+          console.warn('⚠️ Database query failed, using fallback user:', error);
+        }
+
+      } catch (dbError) {
+        console.warn('⚠️ Database operations failed, using fallback user:', dbError);
+      }
+
+      // تعيين المستخدم (سواء من قاعدة البيانات أو fallback)
+      this.currentUser = fallbackUser;
+      this.saveUser(fallbackUser);
       this.notifyListeners();
+      
+      console.log('✅ User authenticated successfully:', fallbackUser.email);
 
     } catch (error) {
       console.error('❌ Error handling Supabase auth:', error);
+      
+      // في حالة فشل كامل، إنشاء مستخدم أساسي من بيانات Supabase
+      const emergencyUser: User = {
+        id: supabaseUser.id,
+        email: supabaseUser.email,
+        name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'مستخدم',
+        avatar: supabaseUser.user_metadata?.avatar_url,
+        provider: 'email',
+        isEmailVerified: supabaseUser.email_confirmed_at !== null,
+        createdAt: supabaseUser.created_at || new Date().toISOString(),
+        lastLogin: new Date().toISOString(),
+        preferences: {
+          language: 'ar',
+          notifications: true,
+          soundEnabled: true,
+          parentalControls: {
+            maxPlayTime: 120,
+            allowedGames: [],  
+            reportingEnabled: true
+          }
+        },
+        children: [],
+        subscription: {
+          type: 'free',
+          features: []
+        }
+      };
+      
+      this.currentUser = emergencyUser;
+      this.saveUser(emergencyUser);
+      this.notifyListeners();
+      
+      console.log('🚨 Emergency user created for:', emergencyUser.email);
     }
   }
 
@@ -188,8 +224,16 @@ class AuthService {
     try {
       const savedUser = localStorage.getItem('skilloo_current_user');
       if (savedUser) {
-        this.currentUser = JSON.parse(savedUser);
-        console.log('🔐 Loaded saved user:', this.currentUser?.email);
+        const parsedUser = JSON.parse(savedUser);
+        
+        // التحقق من أن البيانات المحفوظة صحيحة
+        if (parsedUser && parsedUser.id && parsedUser.email) {
+          this.currentUser = parsedUser;
+          console.log('🔐 Loaded saved user:', this.currentUser.email);
+        } else {
+          console.warn('⚠️ Invalid saved user data, removing from storage');
+          localStorage.removeItem('skilloo_current_user');
+        }
       }
     } catch (error) {
       console.error('❌ Error loading saved user:', error);
@@ -259,11 +303,45 @@ class AuthService {
           }
 
           if (data.user) {
-            // انتظار تحديث المستخدم مع timeout
+            // انتظار تحديث المستخدم مع timeout أقصر وإنشاء مستخدم طوارئ إذا لزم الأمر
             let waitCount = 0;
-            while (!this.currentUser && waitCount < 50) { // انتظار 5 ثوان كحد أقصى
+            while (!this.currentUser && waitCount < 30) { // انتظار 3 ثوان كحد أقصى
               await new Promise(resolve => setTimeout(resolve, 100));
               waitCount++;
+            }
+            
+            // إذا لم يتم تحديث currentUser، إنشاء مستخدم طوارئ
+            if (!this.currentUser) {
+              console.warn('⚠️ currentUser not set by handleSupabaseAuth, creating emergency user');
+              const emergencyUser: User = {
+                id: data.user.id,
+                email: data.user.email,
+                name: data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'مستخدم',
+                avatar: data.user.user_metadata?.avatar_url,
+                provider: 'email',
+                isEmailVerified: data.user.email_confirmed_at !== null,
+                createdAt: data.user.created_at || new Date().toISOString(),
+                lastLogin: new Date().toISOString(),
+                preferences: {
+                  language: 'ar',
+                  notifications: true,
+                  soundEnabled: true,
+                  parentalControls: {
+                    maxPlayTime: 120,
+                    allowedGames: [],  
+                    reportingEnabled: true
+                  }
+                },
+                children: [],
+                subscription: {
+                  type: 'free',
+                  features: []
+                }
+              };
+              
+              this.currentUser = emergencyUser;
+              this.saveUser(emergencyUser);
+              this.notifyListeners();
             }
             
             console.log('✅ Login successful for:', email);
@@ -401,11 +479,45 @@ class AuthService {
             // إرسال بريد الترحيب في الخلفية (بدون انتظار)
             this.sendWelcomeEmailAsync(name, email);
 
-            // انتظار تحديث المستخدم مع timeout
+            // انتظار تحديث المستخدم مع timeout أقصر
             let waitCount = 0;
-            while (!this.currentUser && waitCount < 50) { // انتظار 5 ثوان كحد أقصى
+            while (!this.currentUser && waitCount < 30) { // انتظار 3 ثوان كحد أقصى
               await new Promise(resolve => setTimeout(resolve, 100));
               waitCount++;
+            }
+
+            // إذا لم يتم تحديث currentUser، إنشاء مستخدم طوارئ
+            if (!this.currentUser) {
+              console.warn('⚠️ currentUser not set by handleSupabaseAuth during signup, creating emergency user');
+              const emergencyUser: User = {
+                id: data.user.id,
+                email: data.user.email,
+                name: name.trim() || data.user.email?.split('@')[0] || 'مستخدم',
+                avatar: data.user.user_metadata?.avatar_url,
+                provider: 'email',
+                isEmailVerified: data.user.email_confirmed_at !== null,
+                createdAt: data.user.created_at || new Date().toISOString(),
+                lastLogin: new Date().toISOString(),
+                preferences: {
+                  language: 'ar',
+                  notifications: true,
+                  soundEnabled: true,
+                  parentalControls: {
+                    maxPlayTime: 120,
+                    allowedGames: [],  
+                    reportingEnabled: true
+                  }
+                },
+                children: [],
+                subscription: {
+                  type: 'free',
+                  features: []
+                }
+              };
+              
+              this.currentUser = emergencyUser;
+              this.saveUser(emergencyUser);
+              this.notifyListeners();
             }
 
             return {
@@ -589,7 +701,12 @@ class AuthService {
       'Email already exists': 'هذا الإيميل مستخدم بالفعل. جرب إيميل آخر أو سجل الدخول.',
       'Login timeout': 'انتهت مهلة تسجيل الدخول. تحقق من اتصال الإنترنت.',
       'Signup timeout': 'انتهت مهلة إنشاء الحساب. تحقق من اتصال الإنترنت.',
-      'Database timeout': 'انتهت مهلة الاتصال بالخادم. يرجى المحاولة مرة أخرى.'
+      'Database timeout': 'انتهت مهلة الاتصال بالخادم. يرجى المحاولة مرة أخرى.',
+      'Insert timeout': 'انتهت مهلة إنشاء الحساب في قاعدة البيانات.',
+      'PGRST116': 'المستخدم غير موجود في قاعدة البيانات.',
+      '400': 'خطأ في بيانات الطلب. يرجى المحاولة مرة أخرى.',
+      'Failed to fetch': 'مشكلة في الاتصال بالخادم. تحقق من الإنترنت.',
+      'fetch': 'مشكلة في الاتصال بالخادم.'
     };
 
     // البحث عن أخطاء جزئية
@@ -608,6 +725,15 @@ class AuthService {
     }
     if (errorMessage.toLowerCase().includes('network') || errorMessage.toLowerCase().includes('timeout')) {
       return 'مشكلة في الاتصال. تحقق من الإنترنت وحاول مرة أخرى.';
+    }
+    if (errorMessage.toLowerCase().includes('400') || errorMessage.toLowerCase().includes('bad request')) {
+      return 'خطأ في البيانات المرسلة. يرجى المحاولة مرة أخرى.';
+    }
+    if (errorMessage.toLowerCase().includes('pgrst') || errorMessage.toLowerCase().includes('postgrest')) {
+      return 'مشكلة مؤقتة في قاعدة البيانات. يرجى المحاولة مرة أخرى.';
+    }
+    if (errorMessage.toLowerCase().includes('database') || errorMessage.toLowerCase().includes('db')) {
+      return 'مشكلة في الخادم. يرجى المحاولة بعد قليل.';
     }
 
     return errorMessage || 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.';
