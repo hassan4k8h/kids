@@ -40,9 +40,9 @@ export function PlayerSelectionScreen({
 
   // تحميل قائمة اللاعبين للمستخدم
   useEffect(() => {
-    const loadPlayers = async () => {
+    const loadPlayers = async () => {  
       try {
-        const userPlayers = await PlayerService.getPlayers();
+        const userPlayers = await PlayerService.getPlayers(userId);
         setPlayers(userPlayers);
         
         // تعيين اللاعب المحدد حالياً إذا كان هناك لاعب واحد فقط
@@ -105,11 +105,12 @@ export function PlayerSelectionScreen({
 
   const handleAddPlayer = () => {
     // فحص حدود الاشتراك
-    const maxPlayers = subscriptionState.activePlan?.limits?.maxPlayers || 1;
+    const maxPlayers = subscriptionState.activePlan?.limits?.maxPlayers || 2; // الباقة المجانية تسمح بطفلين
     
     if (maxPlayers !== -1 && players.length >= maxPlayers) {
       console.log(`❌ Player limit reached: ${players.length}/${maxPlayers}`);
-      // سيتم التعامل مع هذا في App.tsx
+      // عدم السماح بالانتقال - المستخدم سيرى رسالة في PlayerSetupScreen
+      return;
     }
     
     try {

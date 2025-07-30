@@ -614,7 +614,7 @@ export default function App() {
             onComplete={handlePlayerSetupComplete}
             onBack={async () => {
               if (authState.isAuthenticated) {
-                const allPlayers = await PlayerService.getPlayers();
+                const allPlayers = await PlayerService.getPlayers(currentUser.id);
                 if (allPlayers.length > 0) {
                   setCurrentScreen("playerSelection");
                 } else {
@@ -624,6 +624,7 @@ export default function App() {
                 setCurrentScreen("login");
               }
             }}
+            onUpgradeRequired={() => setCurrentScreen("subscription")}
             isRTL={isRTL}
           />
         ) : null;

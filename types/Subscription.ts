@@ -159,7 +159,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     features: [
       '3 Games per Day',
       '1 Story per Week',
-      '1 Child Profile',
+      'Up to 2 Children Profiles',
       'Basic Level Access (1-5)',
       'Limited Heroes',
       'With Ads'
@@ -167,7 +167,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     featuresAr: [
       '3 ألعاب يومياً',
       'قصة واحدة أسبوعياً',
-      'ملف طفل واحد',
+      'حتى ملفين للأطفال',
       'وصول محدود للمستويات (1-5)',
       'أبطال محدودون',
       'مع إعلانات'
@@ -176,7 +176,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       maxGamesPerDay: 3,
       maxStoriesPerWeek: 1,
       maxLevel: 5,
-      maxPlayers: 1,
+      maxPlayers: 2,
       features: {
         unlimitedStories: false,
         premiumHeroes: false,

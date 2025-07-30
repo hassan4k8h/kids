@@ -198,20 +198,20 @@ class SubscriptionService {
       features: [
         'access_to_basic_games',
         'limited_stories_per_week',
-        'one_player_profile',
+        'up_to_two_player_profiles',
         'basic_progress_tracking'
       ],
       featuresAr: [
         'الوصول للألعاب الأساسية',
         'قصص محدودة أسبوعياً',
-        'ملف شخصي واحد',
+        'حتى ملفين للأطفال',
         'تتبع التقدم الأساسي'
       ],
       limits: {
         maxGamesPerDay: 3,
         maxStoriesPerWeek: 1,
         maxLevel: 5,
-        maxPlayers: 1,
+        maxPlayers: 2,
         features: {
           unlimitedStories: false,
           premiumHeroes: false,

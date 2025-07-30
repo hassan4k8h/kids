@@ -1,13 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { ImageUpload } from "./ui/image-upload";
-import { ArrowRight, ArrowLeft, Sparkles, User, Camera, Palette } from "lucide-react";
+import { ArrowRight, ArrowLeft, Sparkles, User, Camera, Palette, Crown, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { authService } from "../services/AuthService";
+import PlayerService from "../services/PlayerService";
+import { subscriptionService } from "../services/SubscriptionService";
+import { checkUsageLimits } from "../types/Subscription";
 
 interface PlayerSetupScreenProps {
   onComplete: (name: string, avatar: string) => void;
   onBack: () => void;
+  onUpgradeRequired: () => void;
   isRTL: boolean;
 }
 
@@ -26,18 +31,66 @@ const avatarEmojis = [
   { emoji: "🦋", name: "Butterfly", nameAr: "فراشة" }
 ];
 
-export function PlayerSetupScreen({ onComplete, onBack, isRTL }: PlayerSetupScreenProps) {
+export function PlayerSetupScreen({ onComplete, onBack, onUpgradeRequired, isRTL }: PlayerSetupScreenProps) {
   const [name, setName] = useState("");
   const [selectedAvatar, setSelectedAvatar] = useState(avatarEmojis[0]);
   const [profileImage, setProfileImage] = useState<string>("");
   const [avatarType, setAvatarType] = useState<'emoji' | 'photo'>('emoji');
   const [step, setStep] = useState(1);
+  const [canCreatePlayer, setCanCreatePlayer] = useState(true);
+  const [currentPlayerCount, setCurrentPlayerCount] = useState(0);
+  const [maxPlayersAllowed, setMaxPlayersAllowed] = useState(2);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    checkPlayerLimits();
+  }, []);
+
+  const checkPlayerLimits = async () => {
+    try {
+      setIsLoading(true);
+      const currentUser = authService.getCurrentUser();
+      if (!currentUser) {
+        setCanCreatePlayer(false);
+        return;
+      }
+
+      // الحصول على عدد الأطفال الحاليين
+      const players = await PlayerService.getPlayers(currentUser.id);
+      const playerCount = players.length;
+      setCurrentPlayerCount(playerCount);
+
+      // الحصول على حالة الاشتراك
+      const subscriptionState = subscriptionService.getUserSubscriptionState(currentUser.id);
+      const activePlan = subscriptionState.activePlan;
+      
+      if (activePlan?.limits) {
+        setMaxPlayersAllowed(activePlan.limits.maxPlayers);
+        const limits = checkUsageLimits(activePlan, subscriptionState.usage);
+        setCanCreatePlayer(limits.canCreatePlayer);
+      } else {
+        // الباقة المجانية - اسمح بطفلين
+        setMaxPlayersAllowed(2);
+        setCanCreatePlayer(playerCount < 2);
+      }
+    } catch (error) {
+      console.error('Error checking player limits:', error);
+      setCanCreatePlayer(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = () => {
+    if (!canCreatePlayer) {
+      onUpgradeRequired();
+      return;
+    }
+
     if (name.trim()) {
       const finalAvatar = avatarType === 'photo' && profileImage ? profileImage : selectedAvatar.emoji;
       onComplete(name.trim(), finalAvatar);
-    }
+    }  
   };
 
   const nextStep = () => {
@@ -94,8 +147,89 @@ export function PlayerSetupScreen({ onComplete, onBack, isRTL }: PlayerSetupScre
 
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center space-y-8 max-w-md mx-auto w-full">
+        {/* Loading State */}
+        {isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center space-y-4"
+          >
+            <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+            <p className="text-white text-lg">
+              {isRTL ? "جاري التحقق من الحساب..." : "Checking account limits..."}
+            </p>
+          </motion.div>
+        )}
+
+        {/* Upgrade Required Screen */}
+        {!isLoading && !canCreatePlayer && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 text-center space-y-6"
+          >
+            <div className="flex justify-center">
+              <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center">
+                <Crown className="w-10 h-10 text-white" />
+              </div>
+            </div>
+            
+            <div>
+              <h3 className="text-white text-2xl font-bold mb-4">
+                {isRTL ? "الحد الأقصى للأطفال!" : "Maximum Children Reached!"}
+              </h3>
+              <p className="text-white/90 text-lg">
+                {isRTL 
+                  ? `لديك ${currentPlayerCount} من ${maxPlayersAllowed} أطفال مسموح بهم في الباقة المجانية`
+                  : `You have ${currentPlayerCount} of ${maxPlayersAllowed} children allowed in the free plan`
+                }
+              </p>
+            </div>
+
+            <div className="bg-white/10 rounded-2xl p-6 space-y-4">
+              <div className="flex items-center justify-center space-x-3 rtl:space-x-reverse">
+                <Sparkles className="w-6 h-6 text-yellow-400" />
+                <span className="text-white font-semibold text-lg">
+                  {isRTL ? "احصل على الباقة المميزة!" : "Get Premium Plan!"}
+                </span>
+              </div>
+              <ul className="text-white/90 text-sm space-y-2">
+                <li className="flex items-center space-x-2 rtl:space-x-reverse">
+                  <div className="w-2 h-2 bg-green-400 rounded-full" />
+                  <span>{isRTL ? "أطفال غير محدودين" : "Unlimited Children"}</span>
+                </li>
+                <li className="flex items-center space-x-2 rtl:space-x-reverse">
+                  <div className="w-2 h-2 bg-green-400 rounded-full" />
+                  <span>{isRTL ? "جميع الألعاب والقصص" : "All Games & Stories"}</span>
+                </li>
+                <li className="flex items-center space-x-2 rtl:space-x-reverse">
+                  <div className="w-2 h-2 bg-green-400 rounded-full" />
+                  <span>{isRTL ? "بدون إعلانات" : "Ad-Free Experience"}</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="flex flex-col space-y-3">
+              <Button
+                onClick={onUpgradeRequired}
+                className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold py-4 rounded-2xl shadow-xl"
+              >
+                <Crown className="w-5 h-5 mr-2 rtl:ml-2 rtl:mr-0" />
+                {isRTL ? "اشتراك مميز - $3/شهر" : "Get Premium - $3/month"}
+              </Button>
+              <Button
+                onClick={onBack}
+                variant="ghost"
+                className="text-white hover:bg-white/20 py-3 rounded-2xl"
+              >
+                {isRTL ? "العودة" : "Go Back"}
+              </Button>
+            </div>
+          </motion.div>
+        )}
+
         <AnimatePresence mode="wait">
-          {step === 1 && (
+          {!isLoading && canCreatePlayer && step === 1 && (
             <motion.div
               key="step1"
               initial={{ opacity: 0, x: -20 }}
@@ -150,7 +284,7 @@ export function PlayerSetupScreen({ onComplete, onBack, isRTL }: PlayerSetupScre
             </motion.div>
           )}
 
-          {step === 2 && (
+          {!isLoading && canCreatePlayer && step === 2 && (
             <motion.div
               key="step2"
               initial={{ opacity: 0, x: 20 }}
@@ -222,7 +356,7 @@ export function PlayerSetupScreen({ onComplete, onBack, isRTL }: PlayerSetupScre
             </motion.div>
           )}
 
-          {step === 3 && (
+          {!isLoading && canCreatePlayer && step === 3 && (
             <motion.div
               key="step3"
               initial={{ opacity: 0, x: 20 }}
@@ -320,30 +454,32 @@ export function PlayerSetupScreen({ onComplete, onBack, isRTL }: PlayerSetupScre
         </AnimatePresence>
 
         {/* Continue Button */}
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="w-full max-w-xs"
-        >
-          <Button
-            onClick={nextStep}
-            disabled={
-              (step === 1 && !name.trim()) || 
-              (step === 3 && avatarType === 'photo' && !profileImage)
-            }
-            className="btn-fun bg-white text-teal-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed w-full font-bold text-lg py-4 rounded-2xl border-0 shadow-xl"
+        {!isLoading && canCreatePlayer && (
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full max-w-xs"
           >
-            <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse">
-              <span>
-                {step === 3 
-                  ? (isRTL ? "ابدأ اللعب!" : "Start Playing!") 
-                  : (isRTL ? "التالي" : "Next")
-                }
-              </span>
-              {isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
-            </div>
-          </Button>
-        </motion.div>
+            <Button
+              onClick={nextStep}
+              disabled={
+                (step === 1 && !name.trim()) || 
+                (step === 3 && avatarType === 'photo' && !profileImage)
+              }
+              className="btn-fun bg-white text-teal-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed w-full font-bold text-lg py-4 rounded-2xl border-0 shadow-xl"
+            >
+              <div className="flex items-center justify-center space-x-2 rtl:space-x-reverse">
+                <span>
+                  {step === 3 
+                    ? (isRTL ? "ابدأ اللعب!" : "Start Playing!") 
+                    : (isRTL ? "التالي" : "Next")
+                  }
+                </span>
+                {isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+              </div>
+            </Button>
+          </motion.div>
+        )}
       </div>
     </div>
   );
