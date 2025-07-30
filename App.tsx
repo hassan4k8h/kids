@@ -68,7 +68,7 @@ export default function App() {
   });
   
   const [resetEmail, setResetEmail] = useState<string>('');
-  const [resetToken, setResetToken] = useState<string>('');
+  const [verificationCode, setVerificationCode] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null);
   const [isAppLoading, setIsAppLoading] = useState(true);
@@ -87,6 +87,8 @@ export default function App() {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
   };
+
+
 
   // الاشتراك في تغييرات حالة المصادقة
   useEffect(() => {
@@ -229,6 +231,8 @@ export default function App() {
     document.body.classList.add('font-semi-bold');
   }, [isRTL]);
 
+  // ملاحظة: تم إزالة معالجة URL parameters لأن النظام الجديد يستخدم كود التوثيق بدلاً من الروابط
+
   // معالج بدء التطبيق من الشاشة الترحيبية
   const handleStart = async () => {
     // منع التشغيل المتعدد
@@ -318,7 +322,7 @@ export default function App() {
 
   const handleResetSent = (email: string) => {
     setResetEmail(email);
-    setCurrentScreen("login"); // العودة لصفحة تسجيل الدخول مع رسالة نجاح
+    setCurrentScreen("resetPassword"); // الانتقال إلى صفحة إدخال كود التوثيق
   };
 
   const handleResetPassword = (token?: string, email?: string) => {
@@ -328,7 +332,7 @@ export default function App() {
   };
 
   const handleResetComplete = () => {
-    setResetToken('');
+    setVerificationCode('');
     setResetEmail('');
     setCurrentScreen("login");
   };
@@ -628,7 +632,7 @@ export default function App() {
           <ResetPasswordScreen
             onBack={handleSwitchToLogin}
             onResetComplete={handleResetComplete}
-            resetToken={resetToken}
+            verificationCode={verificationCode}
             userEmail={resetEmail}
             isRTL={isRTL}
             onLanguageChange={handleLanguageChange}

@@ -9,22 +9,22 @@ import { authService } from '../../services/AuthService';
 interface ResetPasswordScreenProps {
   onBack: () => void;
   onResetComplete: () => void;
-  resetToken?: string;
+  verificationCode?: string;
   userEmail?: string;
-  isRTL?: boolean;
-  onLanguageChange?: (isRTL: boolean) => void;
+  isRTL: boolean;
+  onLanguageChange: (isRTL: boolean) => void;
 }
 
-export function ResetPasswordScreen({ 
-  onBack, 
-  onResetComplete, 
-  resetToken, 
+export function ResetPasswordScreen({
+  onBack,
+  onResetComplete,
+  verificationCode,
   userEmail,
-  isRTL = true, 
-  onLanguageChange 
+  isRTL,
+  onLanguageChange
 }: ResetPasswordScreenProps) {
   const [formData, setFormData] = useState({
-    token: resetToken || '',
+    verificationCode: verificationCode || '',
     newPassword: '',
     confirmPassword: ''
   });
@@ -35,38 +35,38 @@ export function ResetPasswordScreen({
   const [success, setSuccess] = useState('');
   const [tokenValid, setTokenValid] = useState<boolean | null>(null);
 
-  // التحقق من صحة الرمز المميز عند تحميل الصفحة
+  // التحقق من صحة كود التوثيق عند تحميل الصفحة
   useEffect(() => {
-    if (formData.token) {
-      validateToken(formData.token);
+    if (formData.verificationCode) {
+      validateVerificationCode(formData.verificationCode);
     }
-  }, [formData.token]);
+  }, [formData.verificationCode]);
 
-  const validateToken = async (token: string) => {
+  const validateVerificationCode = async (code: string) => {
     try {
-      console.log('🔍 Validating reset token:', token);
+      console.log('🔍 Validating verification code:', code);
       
-      // استدعاء AuthService للتحقق من صحة الرمز
-      const result = await authService.validateResetToken(token);
+      // استدعاء AuthService للتحقق من صحة كود التوثيق
+      const result = await authService.validateVerificationCode(code, userEmail || '');
       
       if (result.valid && !result.expired) {
         setTokenValid(true);
-        console.log('✅ Reset token is valid');
+        console.log('✅ Verification code is valid');
       } else {
         setTokenValid(false);
         setErrors({
-          token: isRTL 
-            ? 'الرمز المميز غير صالح أو منتهي الصلاحية'
-            : 'Invalid or expired reset token'
+          verificationCode: isRTL 
+            ? 'كود التوثيق غير صالح أو منتهي الصلاحية'
+            : 'Invalid or expired verification code'
         });
       }
     } catch (error) {
-      console.error('❌ Token validation error:', error);
+      console.error('❌ Verification code validation error:', error);
       setTokenValid(false);
       setErrors({
-        token: isRTL 
-          ? 'حدث خطأ أثناء التحقق من الرمز المميز'
-          : 'Error occurred while validating token'
+        verificationCode: isRTL 
+          ? 'حدث خطأ أثناء التحقق من كود التوثيق'
+          : 'Error occurred while validating verification code'
       });
     }
   };
@@ -100,9 +100,11 @@ export function ResetPasswordScreen({
   const validateForm = useCallback((): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // التحقق من الرمز المميز
-    if (!formData.token.trim()) {
-      newErrors.token = isRTL ? 'يرجى إدخال رمز إعادة التعيين' : 'Please enter the reset token';
+    // التحقق من كود التوثيق
+    if (!formData.verificationCode.trim()) {
+      newErrors.verificationCode = isRTL ? 'يرجى إدخال كود التوثيق' : 'Please enter the verification code';
+    } else if (!/^\d{6}$/.test(formData.verificationCode.trim())) {
+      newErrors.verificationCode = isRTL ? 'كود التوثيق يجب أن يكون 6 أرقام' : 'Verification code must be 6 digits';
     }
 
     // التحقق من كلمة المرور الجديدة
@@ -136,10 +138,10 @@ export function ResetPasswordScreen({
     setSuccess('');
 
     try {
-      console.log('🔐 Resetting password with token:', formData.token);
+      console.log('🔐 Resetting password with verification code:', formData.verificationCode);
       
-      // استدعاء AuthService لإعادة تعيين كلمة المرور
-      const result = await authService.resetPassword(formData.token, formData.newPassword);
+      // استدعاء AuthService لإعادة تعيين كلمة المرور باستخدام كود التوثيق
+      const result = await authService.resetPasswordWithCode(formData.verificationCode, userEmail || '', formData.newPassword);
       
       if (result.success) {
         setSuccess(
@@ -205,8 +207,8 @@ export function ResetPasswordScreen({
             </CardTitle>
             <CardDescription className="text-gray-600 mt-2">
               {isRTL 
-                ? 'الرمز المميز غير صالح أو منتهي الصلاحية. يرجى طلب رابط جديد.'
-                : 'The reset token is invalid or expired. Please request a new link.'
+                ? 'كود التوثيق غير صالح أو منتهي الصلاحية. يرجى طلب كود جديد.'
+                : 'The verification code is invalid or expired. Please request a new code.'
               }
             </CardDescription>
           </CardHeader>
@@ -215,7 +217,7 @@ export function ResetPasswordScreen({
               onClick={onBack}
               className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold"
             >
-              {isRTL ? 'طلب رابط جديد' : 'Request New Link'}
+              {isRTL ? 'طلب كود جديد' : 'Request New Code'}
             </Button>
           </CardContent>
         </Card>
@@ -264,35 +266,59 @@ export function ResetPasswordScreen({
                   {userEmail}
                 </span>
               )}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                <p className="text-blue-800 text-sm font-medium">
+                  {isRTL 
+                    ? '📧 تم إرسال كود التوثيق إلى بريدك الإلكتروني'
+                    : '📧 Verification code has been sent to your email'
+                  }
+                </p>
+                <p className="text-blue-600 text-xs mt-1">
+                  {isRTL 
+                    ? 'يرجى التحقق من بريدك الإلكتروني وإدخال الكود المكون من 6 أرقام'
+                    : 'Please check your email and enter the 6-digit code'
+                  }
+                </p>
+              </div>
               {isRTL 
-                ? 'أدخل كلمة المرور الجديدة لحسابك'
-                : 'Enter your new password for your account'
+                ? 'أدخل كود التوثيق وكلمة المرور الجديدة لحسابك'
+                : 'Enter the verification code and your new password for your account'
               }
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Reset Token Input */}
+              {/* Verification Code Input */}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">
-                  {isRTL ? 'رمز إعادة التعيين' : 'Reset Token'}
+                  {isRTL ? 'كود التوثيق' : 'Verification Code'}
                 </label>
                 <div className="relative">
                   <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
                     type="text"
-                    placeholder={isRTL ? 'أدخل رمز إعادة التعيين...' : 'Enter reset token...'}
-                    value={formData.token}
-                    onChange={(e) => handleInputChange('token', e.target.value)}
-                    className="pl-10 h-12 border-2 focus:border-green-500 transition-colors"
+                    placeholder={isRTL ? 'أدخل كود التوثيق المكون من 6 أرقام...' : 'Enter 6-digit verification code...'}
+                    value={formData.verificationCode}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                      handleInputChange('verificationCode', value);
+                    }}
+                    className="pl-10 h-12 border-2 focus:border-green-500 transition-colors text-center text-2xl font-mono tracking-widest"
                     disabled={isLoading}
+                    maxLength={6}
                     required
                   />
                 </div>
-                {errors.token && (
-                  <p className="text-red-600 text-sm">{errors.token}</p>
+                {errors.verificationCode && (
+                  <p className="text-red-600 text-sm">{errors.verificationCode}</p>
                 )}
+                <p className="text-xs text-gray-500 text-center">
+                  {isRTL 
+                    ? 'أدخل الكود المكون من 6 أرقام المرسل إلى بريدك الإلكتروني'
+                    : 'Enter the 6-digit code sent to your email'
+                  }
+                </p>
               </div>
 
               {/* New Password Input */}

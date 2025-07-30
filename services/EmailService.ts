@@ -50,6 +50,13 @@ interface PasswordResetEmailData {
   expiresIn: string;
 }
 
+interface VerificationCodeEmailData {
+  userName: string;
+  userEmail: string;
+  verificationCode: string;
+  expiresIn: string;
+}
+
 class EmailService {
   private isInitialized: boolean = false;
 
@@ -988,6 +995,262 @@ class EmailService {
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     console.log(`✅ [FALLBACK MOCK] Password reset email sent successfully to: ${resetData.userEmail}`);
+    return true;
+  }
+
+  /**
+   * إنشاء HTML لبريد كود التوثيق
+   */
+  private generateVerificationCodeEmailHTML(data: VerificationCodeEmailData): string {
+    return `
+    <!DOCTYPE html>
+    <html dir="rtl" lang="ar">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>كود التوثيق - سكيلو</title>
+      <style>
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          line-height: 1.6;
+          margin: 0;
+          padding: 0;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          direction: rtl;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .email-card {
+          background: white;
+          border-radius: 20px;
+          overflow: hidden;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .header {
+          background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+          padding: 40px 30px;
+          text-align: center;
+          color: white;
+        }
+        .header h1 {
+          margin: 0;
+          font-size: 28px;
+          font-weight: bold;
+        }
+        .content {
+          padding: 40px 30px;
+          text-align: center;
+        }
+        .verification-message {
+          margin-bottom: 30px;
+        }
+        .verification-message h2 {
+          color: #333;
+          font-size: 24px;
+          margin-bottom: 15px;
+        }
+        .verification-message p {
+          color: #666;
+          font-size: 16px;
+          line-height: 1.8;
+        }
+        .code-container {
+          background: #f8f9ff;
+          border-radius: 15px;
+          padding: 30px;
+          margin: 30px 0;
+        }
+        .code-label {
+          color: #333;
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 15px;
+        }
+        .verification-code {
+          background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+          color: white;
+          padding: 20px 30px;
+          border-radius: 15px;
+          font-family: 'Courier New', monospace;
+          font-size: 36px;
+          font-weight: bold;
+          letter-spacing: 8px;
+          margin: 20px 0;
+          display: inline-block;
+          box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        }
+        .expiry-warning {
+          background: #fff3cd;
+          border: 2px solid #ffeaa7;
+          border-radius: 10px;
+          padding: 20px;
+          margin: 20px 0;
+        }
+        .expiry-warning h4 {
+          color: #856404;
+          margin: 0 0 10px 0;
+          font-size: 16px;
+        }
+        .expiry-warning p {
+          color: #856404;
+          margin: 0;
+          font-weight: bold;
+        }
+        .security-info {
+          background: #e8f4fd;
+          border-radius: 15px;
+          padding: 25px;
+          margin: 30px 0;
+          text-align: right;
+        }
+        .security-info h3 {
+          color: #0984e3;
+          font-size: 18px;
+          margin: 0 0 15px 0;
+        }
+        .security-info ul {
+          color: #0984e3;
+          margin: 0;
+          padding-right: 20px;
+        }
+        .security-info li {
+          margin-bottom: 8px;
+        }
+        .footer {
+          background: #f8f9ff;
+          padding: 30px;
+          text-align: center;
+          border-top: 1px solid #eee;
+        }
+        .footer p {
+          color: #666;
+          font-size: 14px;
+          margin: 5px 0;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="email-card">
+          <div class="header">
+            <h1>🔐 كود التوثيق</h1>
+            <p>سكيلو - لعبة تعليمية للأطفال</p>
+          </div>
+          
+          <div class="content">
+            <div class="verification-message">
+              <h2>مرحباً ${data.userName}!</h2>
+              <p>تم طلب كود توثيق لإعادة تعيين كلمة المرور الخاصة بحسابك في سكيلو.</p>
+            </div>
+
+            <div class="code-container">
+              <div class="code-label">كود التوثيق الخاص بك:</div>
+              <div class="verification-code">${data.verificationCode}</div>
+            </div>
+
+            <div class="expiry-warning">
+              <h4>⏰ تنبيه مهم:</h4>
+              <p>هذا الكود صالح لمدة ${data.expiresIn} فقط</p>
+            </div>
+
+            <div class="security-info">
+              <h3>🛡️ معلومات الأمان:</h3>
+              <ul>
+                <li>لا تشارك هذا الكود مع أي شخص آخر</li>
+                <li>إذا لم تطلب إعادة تعيين كلمة المرور، تجاهل هذا البريد</li>
+                <li>الكود صالح لاستخدام واحد فقط</li>
+                <li>في حالة انتهاء صلاحية الكود، يمكنك طلب كود جديد</li>
+              </ul>
+            </div>
+
+            <p>شكراً لك لاستخدام سكيلو!</p>
+            <p><strong>فريق سكيلو التعليمي</strong></p>
+          </div>
+
+          <div class="footer">
+            <p>تم إرسال هذا البريد إلى: ${data.userEmail}</p>
+            <p>📧 ${EMAILJS_CONFIG.supportEmail} | 🎮 سكيلو - لعبة تعليمية للأطفال</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+  }
+
+  /**
+   * إرسال بريد كود التوثيق
+   */
+  public async sendVerificationCodeEmail(codeData: VerificationCodeEmailData): Promise<boolean> {
+    try {
+      if (!(await this.ensureInitialized())) {
+        console.error('❌ EmailJS service not initialized');
+        return false;
+      }
+
+      // في وضع المحاكاة أو مع مفتاح مؤقت
+      if (EMAILJS_CONFIG.mockMode || EMAILJS_CONFIG.publicKey === 'temp_public_key') {
+        console.log('📧 [MOCK] Sending verification code email to:', codeData.userEmail);
+        console.log('📧 [MOCK] Email subject: 🔐 كود التوثيق - سكيلو');
+        console.log('📧 [MOCK] Verification code:', codeData.verificationCode);
+        console.log('📧 [MOCK] Expires in:', codeData.expiresIn);
+        console.log('📧 [MOCK] Using Gmail SMTP:', SMTP_REFERENCE.user);
+        
+        // محاكاة تأخير الإرسال
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        
+        console.log(`✅ [MOCK] Verification code email sent successfully to: ${codeData.userEmail}`);
+        return true;
+      }
+
+      // إعداد معاملات القالب للإرسال الحقيقي
+      const templateParams = {
+        to_email: codeData.userEmail,
+        to_name: codeData.userName,
+        from_name: EMAILJS_CONFIG.fromName,
+        from_email: EMAILJS_CONFIG.fromEmail,
+        subject: `🔐 كود التوثيق - سكيلو`,
+        verification_code: codeData.verificationCode,
+        expires_in: codeData.expiresIn,
+        html_content: this.generateVerificationCodeEmailHTML(codeData)
+      };
+
+      // إرسال البريد عبر EmailJS
+      const response = await emailjs.send(
+        EMAILJS_CONFIG.serviceId,
+        EMAILJS_CONFIG.templateId,
+        templateParams
+      );
+
+      console.log(`✅ Verification code email sent successfully to: ${codeData.userEmail}`, response);
+      return true;
+
+    } catch (error) {
+      console.error('❌ Failed to send verification code email:', error);
+      console.log('💡 Note: Make sure to configure EmailJS service with your Gmail SMTP settings');
+      console.log('📧 Gmail SMTP Config:', SMTP_REFERENCE);
+      
+      // في حالة فشل الإرسال، نستخدم المحاكاة
+      console.log('🔄 Falling back to mock mode for verification code email');
+      return await this.sendVerificationCodeEmailMock(codeData);
+    }
+  }
+
+  /**
+   * محاكاة إرسال بريد كود التوثيق
+   */
+  private async sendVerificationCodeEmailMock(codeData: VerificationCodeEmailData): Promise<boolean> {
+    console.log('📧 [FALLBACK MOCK] Sending verification code email to:', codeData.userEmail);
+    console.log('📧 [FALLBACK MOCK] Verification code:', codeData.verificationCode);
+    console.log('📧 [FALLBACK MOCK] Using Gmail SMTP:', SMTP_REFERENCE.user);
+    
+    // محاكاة تأخير الإرسال
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    console.log(`✅ [FALLBACK MOCK] Verification code email sent successfully to: ${codeData.userEmail}`);
     return true;
   }
 

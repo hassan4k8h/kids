@@ -102,11 +102,19 @@ export function SignupScreen({
     return Object.keys(newErrors).length === 0;
   }, [formData, isRTL]);
 
-  const handleSignup = useCallback(async () => {
+  const handleSignup = useCallback(async (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+    
+    console.log('🔄 Signup button clicked, isLoading:', isLoading);
+    
     if (!validateForm()) return;
     
     // Prevent double submission
-    if (isLoading) return;
+    if (isLoading) {
+      console.log('⚠️ Already loading, ignoring click');
+      return;
+    }
 
     setIsLoading(true);
     setErrors({});
@@ -137,7 +145,7 @@ export function SignupScreen({
         // تقليل التأخير لتحسين تجربة المستخدم
         setTimeout(() => {
           onSignupSuccess();
-        }, 800);
+        }, 500);
       } else {
         console.log('❌ Signup failed:', result.error);
         setErrors({
@@ -150,6 +158,7 @@ export function SignupScreen({
         general: isRTL ? 'حدث خطأ أثناء إنشاء الحساب' : 'An error occurred while creating account'
       });
     } finally {
+      setLoadingStep('');
       setIsLoading(false);
     }
   }, [formData, isLoading, validateForm, onSignupSuccess, isRTL]);
@@ -434,7 +443,7 @@ export function SignupScreen({
 
               {/* Signup Button */}
               <Button
-                onClick={handleSignup}
+                onClick={(e) => handleSignup(e)}
                 disabled={isLoading || !formData.acceptTerms}
                 className="btn-primary w-full"
                 style={{ 
@@ -480,7 +489,13 @@ export function SignupScreen({
                   {isRTL ? "لديك حساب بالفعل؟" : "Already have an account?"}
                 </p>
                 <Button
-                  onClick={onSwitchToLogin}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!isLoading) {
+                      onSwitchToLogin();
+                    }
+                  }}
                   variant="outline"
                   className="w-full font-bold border-2 bg-white hover:bg-gray-50"
                   style={{ 

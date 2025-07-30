@@ -84,8 +84,13 @@ export function PlayerSelectionScreen({
   }, []);
 
   const handlePlayerSelect = (player: Player) => {
-    // التأكد من أن اللاعب ينتمي للمستخدم الحالي
-    if (player.userId !== userId) {
+    // منع الضغط المتكرر
+    if (selectedPlayerId === player.id) {
+      return;
+    }
+
+    // التأكد من أن اللاعب ينتمي للمستخدم الحالي أو أن userId فارغ (للتخزين المحلي)
+    if (player.userId && player.userId !== userId) {
       console.error('❌ Security violation: Player does not belong to current user');
       return;
     }
@@ -101,7 +106,7 @@ export function PlayerSelectionScreen({
     // تأخير قصير لإظهار التحديد
     setTimeout(() => {
       onPlayerSelect(player);
-    }, 300);
+    }, 200);
     
     console.log(`✅ Player selected: ${player.name} (${player.id})`);
   };

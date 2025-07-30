@@ -52,14 +52,14 @@ export function ForgotPasswordScreen({
     try {
       console.log('🔐 Requesting password reset for:', email);
       
-      // استدعاء AuthService لإرسال رابط إعادة التعيين
-      const result = await authService.requestPasswordReset(email.trim());
+      // استدعاء AuthService لإرسال كود التوثيق
+      const result = await authService.requestVerificationCode(email.trim());
       
       if (result.success) {
         setSuccess(
           result.message || (isRTL 
-            ? `تم إرسال رابط إعادة تعيين كلمة المرور إلى ${email}. يرجى التحقق من صندوق الوارد الخاص بك.`
-            : `Password reset link has been sent to ${email}. Please check your inbox.`)
+            ? `تم إرسال كود التوثيق إلى ${email}. يرجى التحقق من صندوق الوارد الخاص بك.`
+            : `Verification code has been sent to ${email}. Please check your inbox.`)
         );
         
         setTimeout(() => {
@@ -68,8 +68,8 @@ export function ForgotPasswordScreen({
       } else {
         setError(
           result.error || (isRTL 
-            ? 'فشل في إرسال رابط إعادة التعيين. يرجى المحاولة مرة أخرى.'
-            : 'Failed to send reset link. Please try again.')
+            ? 'فشل في إرسال كود التوثيق. يرجى المحاولة مرة أخرى.'
+            : 'Failed to send verification code. Please try again.')
         );
       }
     } catch (error) {
@@ -121,8 +121,8 @@ export function ForgotPasswordScreen({
             </CardTitle>
             <CardDescription className="text-gray-600 mt-2">
               {isRTL 
-                ? 'لا تقلق! أدخل عنوان بريدك الإلكتروني وسنرسل لك رابط إعادة تعيين كلمة المرور'
-                : "Don't worry! Enter your email address and we'll send you a password reset link"
+                ? 'لا تقلق! أدخل عنوان بريدك الإلكتروني وسنرسل لك كود توثيق لإعادة تعيين كلمة المرور'
+                : "Don't worry! Enter your email address and we'll send you a verification code to reset your password"
               }
             </CardDescription>
           </CardHeader>
@@ -182,7 +182,7 @@ export function ForgotPasswordScreen({
                 ) : (
                   <>
                     <Send className="w-5 h-5 ml-2" />
-                    {isRTL ? 'إرسال رابط إعادة التعيين' : 'Send Reset Link'}
+                    {isRTL ? 'إرسال كود التوثيق' : 'Send Verification Code'}
                   </>
                 )}
               </Button>
@@ -198,15 +198,15 @@ export function ForgotPasswordScreen({
                 <li className="flex items-center">
                   <Clock className="w-3 h-3 ml-2 flex-shrink-0" />
                   {isRTL 
-                    ? 'الرابط صالح لمدة 30 دقيقة فقط'
-                    : 'Link expires in 30 minutes'
+                    ? 'كود التوثيق صالح لمدة 15 دقيقة فقط'
+                    : 'Verification code expires in 15 minutes'
                   }
                 </li>
                 <li className="flex items-center">
                   <CheckCircle className="w-3 h-3 ml-2 flex-shrink-0" />
                   {isRTL 
-                    ? 'يعمل الرابط مرة واحدة فقط لضمان الأمان'
-                    : 'Link works only once for security'
+                    ? 'الكود يعمل مرة واحدة فقط لضمان الأمان'
+                    : 'Code works only once for security'
                   }
                 </li>
                 <li className="flex items-center">
@@ -245,8 +245,8 @@ export function ForgotPasswordScreen({
         <div className="text-center mt-6 text-white/80 text-sm">
           <p>
             {isRTL 
-              ? 'لم تتلق البريد الإلكتروني؟ تحقق من مجلد الرسائل غير المرغوب فيها أو'
-              : "Didn't receive the email? Check your spam folder or"
+              ? 'لم تتلق كود التوثيق؟ تحقق من مجلد الرسائل غير المرغوب فيها أو'
+              : "Didn't receive the verification code? Check your spam folder or"
             }
           </p>
           <Button

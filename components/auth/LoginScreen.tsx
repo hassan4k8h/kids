@@ -53,25 +53,37 @@ export function LoginScreen({
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
     // Prevent double submission
-    if (isLoading) return;
+    if (isLoading) {
+      console.log('⏳ Login already in progress, ignoring click');
+      return;
+    }
     
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      console.log('❌ Form validation failed');
+      return;
+    }
 
+    console.log('🔐 Starting login process...');
     setIsLoading(true);
     setErrors({});
     setLoadingStep(isRTL ? 'جاري التحقق من البيانات...' : 'Validating credentials...');
 
     try {
-      console.log('🔐 Attempting login with:', { email, password: '***' });
+      console.log('🔐 Attempting login with:', { email: email.trim(), password: '***' });
       
       setLoadingStep(isRTL ? 'جاري تسجيل الدخول...' : 'Signing in...');
       const result = await authService.login(email.trim(), password);
       
       if (result.success) {
         console.log('✅ Login successful:', result.user);
-        onLoginSuccess();
+        setLoadingStep(isRTL ? 'تم تسجيل الدخول بنجاح!' : 'Login successful!');
+        // تأخير قصير لإظهار رسالة النجاح
+        setTimeout(() => {
+          onLoginSuccess();
+        }, 500);
       } else {
         console.log('❌ Login failed:', result.error);
         setErrors({
@@ -85,6 +97,7 @@ export function LoginScreen({
       });
     } finally {
       setIsLoading(false);
+      setLoadingStep('');
     }
   }, [email, password, isLoading, validateForm, onLoginSuccess, isRTL]);
 

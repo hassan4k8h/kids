@@ -33,10 +33,24 @@ export interface TokenValidationResult {
   error?: string;
 }
 
+export interface VerificationCodeResult {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
+export interface CodeValidationResult {
+  valid: boolean;
+  expired: boolean;
+  email?: string;
+  error?: string;
+}
+
 class AuthService {
   private currentUser: User | null = null;
   private listeners: Array<(authState: AuthState) => void> = [];
   private resetTokens: Map<string, { userId: string; email: string; expiresAt: number }> = new Map();
+  private verificationCodes: Map<string, { email: string; code: string; expiresAt: number }> = new Map();
   private useSupabase: boolean = true; // التحكم في استخدام Supabase
   private supabaseHealthy: boolean = true; // حالة صحة Supabase
 
@@ -260,6 +274,11 @@ class AuthService {
 
   private generateSecureCode(): string {
     return Math.random().toString(36).substr(2, 8).toUpperCase();
+  }
+
+  private generateVerificationCode(): string {
+    // إنشاء كود من 6 أرقام
+    return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
   private notifyListeners(): void {
@@ -801,6 +820,213 @@ class AuthService {
   /**
    * طلب إعادة تعيين كلمة المرور
    */
+  /**
+   * طلب كود التوثيق لإعادة تعيين كلمة المرور
+   */
+  public async requestVerificationCode(email: string): Promise<VerificationCodeResult> {
+    try {
+      console.log('🔐 Requesting verification code for:', email);
+      
+      // محاكاة تأخير API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // البحث عن المستخدم
+      const users = this.getAllUsers();
+      const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      
+      if (!user) {
+        console.log('❌ User not found for verification code:', email);
+        // لأغراض الأمان، لا نكشف أن المستخدم غير موجود
+        return {
+          success: true,
+          message: 'إذا كان هذا البريد الإلكتروني مسجلاً لدينا، ستتلقى كود التوثيق قريباً.'
+        };
+      }
+      
+      // إنشاء كود التوثيق
+      const verificationCode = this.generateVerificationCode();
+      const expiresAt = Date.now() + (10 * 60 * 1000); // 10 دقائق
+      
+      // حذف أي كود سابق لنفس البريد الإلكتروني
+      for (const [key, data] of this.verificationCodes.entries()) {
+        if (data.email === email) {
+          this.verificationCodes.delete(key);
+        }
+      }
+      
+      // حفظ كود التوثيق الجديد
+      const codeId = `code_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      this.verificationCodes.set(codeId, {
+        email: user.email,
+        code: verificationCode,
+        expiresAt
+      });
+      
+      // إرسال بريد كود التوثيق
+      try {
+        console.log('📧 Sending verification code email to:', user.email);
+        const emailSent = await emailService.sendVerificationCodeEmail({
+          userName: user.name,
+          userEmail: user.email,
+          verificationCode: verificationCode,
+          expiresIn: '10 دقائق'
+        });
+        
+        if (emailSent) {
+          console.log('✅ Verification code email sent successfully to:', user.email);
+        } else {
+          console.warn('⚠️ Failed to send verification code email to:', user.email);
+        }
+      } catch (emailError) {
+        console.error('❌ Error sending verification code email:', emailError);
+        // لا نفشل العملية إذا فشل إرسال البريد
+      }
+      
+      console.log('✅ Verification code requested successfully for:', email);
+      
+      return {
+        success: true,
+        message: 'تم إرسال كود التوثيق إلى بريدك الإلكتروني. الكود صالح لمدة 10 دقائق.'
+      };
+      
+    } catch (error) {
+      console.error('❌ Verification code request error:', error);
+      return {
+        success: false,
+        error: 'حدث خطأ أثناء معالجة طلب كود التوثيق'
+      };
+    }
+  }
+
+  /**
+   * التحقق من صحة كود التوثيق
+   */
+  public async validateVerificationCode(email: string, code: string): Promise<CodeValidationResult> {
+    try {
+      console.log('🔍 Validating verification code for:', email);
+      
+      // محاكاة تأخير API
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // البحث عن الكود
+      let foundCodeData = null;
+      let foundCodeId = null;
+      
+      for (const [codeId, codeData] of this.verificationCodes.entries()) {
+        if (codeData.email === email && codeData.code === code) {
+          foundCodeData = codeData;
+          foundCodeId = codeId;
+          break;
+        }
+      }
+      
+      if (!foundCodeData) {
+        console.log('❌ Invalid verification code:', code);
+        return {
+          valid: false,
+          expired: false,
+          error: 'كود التوثيق غير صحيح'
+        };
+      }
+      
+      // التحقق من انتهاء الصلاحية
+      if (Date.now() > foundCodeData.expiresAt) {
+        console.log('❌ Verification code expired:', code);
+        this.verificationCodes.delete(foundCodeId!);
+        return {
+          valid: false,
+          expired: true,
+          error: 'كود التوثيق منتهي الصلاحية'
+        };
+      }
+      
+      console.log('✅ Verification code is valid:', code);
+      
+      return {
+        valid: true,
+        expired: false,
+        email: foundCodeData.email
+      };
+      
+    } catch (error) {
+      console.error('❌ Code validation error:', error);
+      return {
+        valid: false,
+        expired: false,
+        error: 'حدث خطأ أثناء التحقق من الكود'
+      };
+    }
+  }
+
+  /**
+   * إعادة تعيين كلمة المرور باستخدام كود التوثيق
+   */
+  public async resetPasswordWithCode(email: string, code: string, newPassword: string): Promise<PasswordResetResult> {
+    try {
+      console.log('🔐 Resetting password with verification code for:', email);
+      
+      // التحقق من صحة الكود
+      const validation = await this.validateVerificationCode(email, code);
+      
+      if (!validation.valid) {
+        return {
+          success: false,
+          error: validation.error || 'كود التوثيق غير صالح'
+        };
+      }
+      
+      // البحث عن المستخدم
+      const users = this.getAllUsers();
+      const user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      
+      if (!user) {
+        return {
+          success: false,
+          error: 'المستخدم غير موجود'
+        };
+      }
+      
+      // تحديث كلمة المرور
+      const passwords = JSON.parse(localStorage.getItem('skilloo_passwords') || '{}');
+      passwords[user.id] = newPassword;
+      localStorage.setItem('skilloo_passwords', JSON.stringify(passwords));
+      
+      // حذف كود التوثيق المستخدم
+      for (const [codeId, codeData] of this.verificationCodes.entries()) {
+        if (codeData.email === email && codeData.code === code) {
+          this.verificationCodes.delete(codeId);
+          break;
+        }
+      }
+      
+      console.log('✅ Password reset successfully for user:', user.email);
+      
+      // إرسال بريد تأكيد إعادة التعيين
+      try {
+        await emailService.sendNotificationEmail({
+          userName: user.name,
+          userEmail: user.email,
+          message: 'تم إعادة تعيين كلمة المرور الخاصة بحسابك بنجاح! إذا لم تقم بهذا الإجراء، يرجى التواصل معنا فوراً.',
+          type: 'general'
+        });
+      } catch (emailError) {
+        console.error('❌ Error sending password reset confirmation email:', emailError);
+      }
+      
+      return {
+        success: true,
+        message: 'تم إعادة تعيين كلمة المرور بنجاح! يمكنك الآن تسجيل الدخول بكلمة المرور الجديدة.'
+      };
+      
+    } catch (error) {
+      console.error('❌ Password reset with code error:', error);
+      return {
+        success: false,
+        error: 'حدث خطأ أثناء إعادة تعيين كلمة المرور'
+      };
+    }
+  }
+
   public async requestPasswordReset(email: string): Promise<PasswordResetRequestResult> {
     try {
       console.log('🔐 Requesting password reset for:', email);
@@ -860,11 +1086,10 @@ class AuthService {
       // إرسال بريد إعادة التعيين
       try {
         console.log('📧 Sending password reset email to:', user.email);
-        const emailSent = await emailService.sendPasswordResetEmail({
+        const emailSent = await emailService.sendVerificationCodeEmail({
           userName: user.name,
           userEmail: user.email,
-          resetToken: secureCode,
-          resetUrl: resetUrl,
+          verificationCode: secureCode,
           expiresIn: '30 دقيقة'
         });
         

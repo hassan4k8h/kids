@@ -91,24 +91,23 @@ export function EmailTestFull({ isRTL = true }: EmailTestFullProps) {
           : `❌ فشل في إرسال الإشعار إلى ${testEmail}`
       );
 
-      // اختبار 7: إرسال بريد إعادة تعيين كلمة المرور
-      addResult('إعادة تعيين كلمة المرور', true, 'جاري إرسال بريد إعادة تعيين كلمة المرور...');
-      const resetEmailSent = await emailService.sendPasswordResetEmail({
+      // اختبار 7: إرسال كود التوثيق لإعادة تعيين كلمة المرور
+      addResult('كود التوثيق', true, 'جاري إرسال كود التوثيق...');
+      const verificationCodeSent = await emailService.sendVerificationCodeEmail({
         userName: testName,
         userEmail: testEmail,
-        resetToken: 'test_token_123',
-        resetUrl: 'https://skilloo.netlify.app/reset?token=test_token_123',
-        expiresIn: '30 دقيقة'
+        verificationCode: '123456',
+        expiresIn: '15 دقيقة'
       });
-      addResult('نتيجة إعادة التعيين', resetEmailSent,
-        resetEmailSent 
-          ? `✅ تم إرسال بريد إعادة التعيين بنجاح إلى ${testEmail}` 
-          : `❌ فشل في إرسال بريد إعادة التعيين إلى ${testEmail}`
+      addResult('نتيجة كود التوثيق', verificationCodeSent,
+        verificationCodeSent 
+          ? `✅ تم إرسال كود التوثيق بنجاح إلى ${testEmail}` 
+          : `❌ فشل في إرسال كود التوثيق إلى ${testEmail}`
       );
 
       // النتيجة النهائية
       const totalTests = 4; // عدد الاختبارات الفعلية (الاتصال + الترحيب + الإشعار + إعادة التعيين)
-      const successfulTests = [connectionTest, welcomeEmailSent, notificationSent, resetEmailSent].filter(Boolean).length;
+      const successfulTests = [connectionTest, welcomeEmailSent, notificationSent, verificationCodeSent].filter(Boolean).length;
       
       addResult('النتيجة النهائية', successfulTests > 0,
         `تم بنجاح: ${successfulTests} من أصل ${totalTests} اختبارات. ${successfulTests === totalTests ? '🎉 جميع الاختبارات نجحت!' : '⚠️ بعض الاختبارات فشلت'}`

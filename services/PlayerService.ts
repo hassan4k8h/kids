@@ -68,17 +68,24 @@ class PlayerService {
         }
       } catch (error) {
         console.error('Error loading players from Supabase:', error);
-        // العودة للتخزين المحلي في حالة الخطأ
-        return this.getPlayersLocal();
+        // العودة للتخزين المحلي في حالة الخطأ مع تمرير userId
+        return this.getPlayersLocal(userId);
       }
     }
     return this.getPlayersLocal();
   }
 
-  private static getPlayersLocal(): Player[] {
+  private static getPlayersLocal(userId?: string): Player[] {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+      const allPlayers = stored ? JSON.parse(stored) : [];
+      
+      // إذا تم تمرير userId، فلتر اللاعبين حسب المستخدم
+      if (userId) {
+        return allPlayers.filter((player: Player) => player.userId === userId);
+      }
+      
+      return allPlayers;
     } catch (error) {
       console.error('Error loading players:', error);
       return [];
