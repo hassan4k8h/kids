@@ -828,7 +828,7 @@ class AuthService {
       return 'مشكلة في كلمة المرور. تأكد من أنها صحيحة وقوية.';
     }
     if (errorMessage.toLowerCase().includes('email')) {
-      return 'تم إنشاء حسابك بنجاح! يمكنك تسجيل الدخول مباشرة.';
+      return 'خطأ في البريد الإلكتروني. تحقق من صحة الإيميل المدخل.';
     }
     if (errorMessage.toLowerCase().includes('network') || errorMessage.toLowerCase().includes('timeout')) {
       return 'مشكلة في الاتصال. تحقق من الإنترنت وحاول مرة أخرى.';
