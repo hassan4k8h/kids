@@ -385,9 +385,11 @@ class AuthService {
           if (error) {
             console.log('❌ Supabase login error:', error.message);
             
-            // إذا كان خطأ في الشبكة أو الخادم، تحول للنظام المحلي
-            if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('timeout')) {
-              console.warn('⚠️ Supabase appears unhealthy, falling back to localStorage');
+            // إذا كان خطأ في الشبكة أو الخادم أو إعدادات المصادقة، تحول للنظام المحلي
+            if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('timeout') || 
+                error.message.includes('400') || error.message.includes('422') || 
+                error.message.includes('Bad Request') || error.message.includes('Unprocessable Entity')) {
+              console.warn('⚠️ Supabase appears unhealthy or misconfigured, falling back to localStorage');
               this.supabaseHealthy = false;
               return await this.loginWithLocalStorage(email, password);
             }
@@ -561,9 +563,11 @@ class AuthService {
           if (error) {
             console.log('❌ Supabase signup error:', error.message);
             
-            // إذا كان خطأ في الشبكة أو الخادم، تحول للنظام المحلي
-            if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('timeout')) {
-              console.warn('⚠️ Supabase appears unhealthy, falling back to localStorage');
+            // إذا كان خطأ في الشبكة أو الخادم أو إعدادات المصادقة، تحول للنظام المحلي
+            if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('timeout') || 
+                error.message.includes('400') || error.message.includes('422') || 
+                error.message.includes('Bad Request') || error.message.includes('Unprocessable Entity')) {
+              console.warn('⚠️ Supabase appears unhealthy or misconfigured, falling back to localStorage');
               this.supabaseHealthy = false;
               return await this.signupWithLocalStorage(email, password, name);
             }
@@ -786,6 +790,7 @@ class AuthService {
   }
 
   private translateAuthError(errorMessage: string): string {
+    console.log('🔍 Original error message:', errorMessage);
     const errorMap: Record<string, string> = {
       'Invalid login credentials': 'بيانات تسجيل الدخول غير صحيحة. تحقق من الإيميل وكلمة المرور.',
       'Email not confirmed': 'تم إنشاء حسابك بنجاح! يمكنك الآن تسجيل الدخول مباشرة.',
@@ -805,15 +810,15 @@ class AuthService {
       'Database timeout': 'انتهت مهلة الاتصال بالخادم. يرجى المحاولة مرة أخرى.',
       'Insert timeout': 'انتهت مهلة إنشاء الحساب في قاعدة البيانات.',
       'PGRST116': 'المستخدم غير موجود في قاعدة البيانات.',
-      '400': 'خطأ في بيانات الطلب. يرجى المحاولة مرة أخرى.',
-      '422': 'بيانات غير صالحة. تحقق من صحة البيانات المدخلة وحاول مرة أخرى.',
+      '400': 'مشكلة في إعدادات الخادم. سيتم استخدام النظام المحلي.',
+      '422': 'مشكلة في إعدادات المصادقة. سيتم استخدام النظام المحلي.',
+      'Bad Request': 'مشكلة في إعدادات الخادم. سيتم استخدام النظام المحلي.',
+      'Unprocessable Entity': 'مشكلة في إعدادات المصادقة. سيتم استخدام النظام المحلي.',
       'Failed to fetch': 'مشكلة في الاتصال بالخادم. تحقق من الإنترنت.',
       'fetch': 'مشكلة في الاتصال بالخادم.',
       'confirm': 'تم إنشاء حسابك بنجاح! لا حاجة لتأكيد البريد الإلكتروني.',
       'confirmation': 'تم إنشاء حسابك بنجاح! يمكنك البدء في الاستخدام مباشرة.',
-      'Unprocessable Entity': 'البيانات المرسلة غير صالحة. يرجى التحقق من المعلومات.',
-      'Invalid request': 'طلب غير صالح. يرجى المحاولة مرة أخرى.',
-      'Bad request': 'خطأ في البيانات المرسلة. تحقق من المعلومات وحاول مرة أخرى.'
+      'Invalid request': 'طلب غير صالح. يرجى المحاولة مرة أخرى.'
     };
 
     // البحث عن أخطاء جزئية
@@ -828,9 +833,12 @@ class AuthService {
       return 'مشكلة في كلمة المرور. تأكد من أنها صحيحة وقوية.';
     }
     if (errorMessage.toLowerCase().includes('email')) {
+      console.log('🔍 Email error detected, checking for already/exists:', errorMessage.toLowerCase().includes('already'), errorMessage.toLowerCase().includes('exists'));
       if (errorMessage.toLowerCase().includes('already') || errorMessage.toLowerCase().includes('exists')) {
+        console.log('🔍 Returning already exists message');
         return 'هذا البريد الإلكتروني مسجل مسبقاً. يمكنك تسجيل الدخول أو استخدام بريد إلكتروني آخر.';
       }
+      console.log('🔍 Returning generic email error message');
       return 'خطأ في البريد الإلكتروني. تحقق من صحة الإيميل المدخل.';
     }
     if (errorMessage.toLowerCase().includes('network') || errorMessage.toLowerCase().includes('timeout')) {
