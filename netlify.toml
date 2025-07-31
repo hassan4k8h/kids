@@ -9,7 +9,7 @@
   publish = "dist"
   
   # Environment variables for build
-  environment = { NODE_VERSION = "18", NODE_ENV = "production" }
+  environment = { NODE_VERSION = "18", NPM_VERSION = "9", NODE_ENV = "production", GENERATE_SOURCEMAP = "false", CI = "false", NODE_OPTIONS = "--max-old-space-size=4096" }
 
 [build.processing]
   # Skip processing for already optimized files
@@ -114,12 +114,3 @@
   port = 3000
   publish = "dist"
   autoLaunch = false
-
-# Environment variables
-[build.environment]
-  NODE_VERSION = "18"
-  NPM_VERSION = "9"
-  NODE_ENV = "production"
-  GENERATE_SOURCEMAP = "false"
-  CI = "false"
-  NODE_OPTIONS = "--max-old-space-size=4096"
