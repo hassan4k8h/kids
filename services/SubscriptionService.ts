@@ -489,6 +489,11 @@ class SubscriptionService {
     this.ensureUserData(userId);
     
     const subscription = this.subscriptionData[userId];
+    
+    if (!subscription) {
+      return false;
+    }
+    
     const plan = subscription.activePlan;
     
     if (!plan || plan.id === 'free') {
@@ -526,6 +531,11 @@ class SubscriptionService {
     
     const subscription = this.subscriptionData[this.currentUserId];
     const usage = this.usageData[this.currentUserId];
+    
+    if (!subscription) {
+      return { canAccess: false, reason: 'بيانات الاشتراك غير متوفرة' };
+    }
+    
     const plan = subscription.activePlan;
 
     if (!this.isSubscriptionValid(this.currentUserId)) {
@@ -614,6 +624,11 @@ class SubscriptionService {
     
     Object.keys(this.usageData).forEach(userId => {
       const usage = this.usageData[userId];
+      
+      if (!usage) {
+        return;
+      }
+      
       const lastReset = new Date(usage.lastReset).toDateString();
       
       if (lastReset !== today) {
@@ -633,6 +648,11 @@ class SubscriptionService {
     
     Object.keys(this.usageData).forEach(userId => {
       const usage = this.usageData[userId];
+      
+      if (!usage) {
+        return;
+      }
+      
       const lastReset = new Date(usage.lastReset);
       
       if (lastReset < weekStart) {
@@ -694,6 +714,10 @@ class SubscriptionService {
     let revenue = 0;
     
     Object.values(this.subscriptionData).forEach(subscription => {
+      if (!subscription || !subscription.activePlan) {
+        return;
+      }
+      
       if (subscription.activePlan.id !== 'free') {
         activeSubscriptions++;
       }
@@ -722,7 +746,7 @@ class SubscriptionService {
     this.ensureUserData(userId);
     const subscription = this.subscriptionData[userId];
     
-    if (!subscription.currentSubscription) {
+    if (!subscription || !subscription.currentSubscription) {
       return [];
     }
     
@@ -745,7 +769,7 @@ class SubscriptionService {
       this.ensureUserData(userId);
       const subscription = this.subscriptionData[userId];
       
-      if (!subscription.currentSubscription || !subscription.activePlan) {
+      if (!subscription || !subscription.currentSubscription || !subscription.activePlan) {
         return { success: false, error: 'No active subscription to renew' };
       }
       
@@ -797,7 +821,7 @@ class SubscriptionService {
       this.ensureUserData(userId);
       const subscription = this.subscriptionData[userId];
       
-      if (!subscription.currentSubscription) {
+      if (!subscription || !subscription.currentSubscription) {
         return { success: false, error: 'No active subscription to cancel' };
       }
       

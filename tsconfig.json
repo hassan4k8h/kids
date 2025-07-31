@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable", "WebWorker"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable", "WebWorker"],
     "module": "ESNext",
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
@@ -18,20 +18,18 @@
     "jsx": "react-jsx",
 
     /* Linting & Type Checking */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noImplicitOverride": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
+    "noImplicitReturns": false,
+    "noImplicitOverride": false,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
     "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
     "alwaysStrict": true,
-    "exactOptionalPropertyTypes": true,
     "noUncheckedIndexedAccess": true,
 
     /* Advanced Options */

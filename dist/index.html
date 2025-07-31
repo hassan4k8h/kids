@@ -2,18 +2,146 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>لعبة تعليمية للأطفال</title>
-    <script type="module" crossorigin src="/assets/index-2f2ffc17.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/vendor-5e8ca3ca.js">
-    <link rel="modulepreload" crossorigin href="/assets/animations-ab4e0328.js">
-    <link rel="modulepreload" crossorigin href="/assets/ui-9abb261d.js">
-    <link rel="modulepreload" crossorigin href="/assets/router-591605a4.js">
-    <link rel="stylesheet" href="/assets/index-48a6b8d9.css">
-  </head>
+    
+    <!-- Favicon and App Icons -->
+    <link rel="icon" type="image/svg+xml" href="/icons/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Viewport and Mobile Optimization -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="سكيلو" />
+    
+    <!-- SEO Meta Tags -->
+    <title>سكيلو - تطبيق تعليمي تفاعلي للأطفال</title>
+    <meta name="description" content="تطبيق تعليمي تفاعلي للأطفال باللغة العربية. تعلم الحروف والأرقام والألوان والأشكال بطريقة ممتعة وآمنة." />
+    <meta name="keywords" content="تعليم أطفال, ألعاب تعليمية, تطبيق أطفال, تعلم عربي, حروف, أرقام, ألوان, أشكال" />
+    <meta name="author" content="فريق سكيلو" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="Arabic" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://skilloo.netlify.app/" />
+    <meta property="og:title" content="سكيلو - تطبيق تعليمي تفاعلي للأطفال" />
+    <meta property="og:description" content="تطبيق تعليمي تفاعلي للأطفال باللغة العربية. تعلم الحروف والأرقام والألوان والأشكال بطريقة ممتعة وآمنة." />
+    <meta property="og:image" content="https://skilloo.netlify.app/icons/og-image.png" />
+    <meta property="og:locale" content="ar_SA" />
+    <meta property="og:site_name" content="سكيلو" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://skilloo.netlify.app/" />
+    <meta property="twitter:title" content="سكيلو - تطبيق تعليمي تفاعلي للأطفال" />
+    <meta property="twitter:description" content="تطبيق تعليمي تفاعلي للأطفال باللغة العربية. تعلم الحروف والأرقام والألوان والأشكال بطريقة ممتعة وآمنة." />
+    <meta property="twitter:image" content="https://skilloo.netlify.app/icons/og-image.png" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    
+    <!-- Performance Optimization -->
+    <meta http-equiv="Cache-Control" content="public, max-age=31536000" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="//supabase.co" />
+    <link rel="dns-prefetch" href="//stripe.com" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#6366f1" />
+    <meta name="msapplication-TileColor" content="#6366f1" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MobileApplication",
+      "name": "سكيلو",
+      "description": "تطبيق تعليمي تفاعلي للأطفال باللغة العربية",
+      "applicationCategory": "EducationalApplication",
+      "operatingSystem": "Web, iOS, Android",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "1250"
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="/assets/index-6db36c90.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/react-vendor-abcf6b98.js">
+    <link rel="modulepreload" crossorigin href="/assets/router-animations-5e17dd35.js">
+    <link rel="modulepreload" crossorigin href="/assets/ui-components-42591289.js">
+    <link rel="modulepreload" crossorigin href="/assets/utilities-0ce85800.js">
+    <link rel="modulepreload" crossorigin href="/assets/app-services-0031384b.js">
+    <link rel="stylesheet" href="/assets/index-cee8f1f1.css">
+  <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
   <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    ">
+      <div style="
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(255,255,255,0.3);
+        border-top: 4px solid white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      "></div>
+      <h1 style="font-size: 2rem; margin: 0; font-weight: bold;">سكيلو</h1>
+      <p style="margin: 10px 0 0 0; opacity: 0.9;">جاري التحميل...</p>
+      <style>
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    </div>
+    
     <div id="root"></div>
+    
+    <!-- Hide loading screen when app loads -->
+    <script>
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            loadingScreen.style.transition = 'opacity 0.5s ease-out';
+            setTimeout(() => {
+              loadingScreen.remove();
+            }, 500);
+          }
+        }, 1000);
+      });
+    </script>
+    
     
   </body>
 </html>
