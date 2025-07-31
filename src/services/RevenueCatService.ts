@@ -231,14 +231,16 @@ class RevenueCatService {
               price: parseFloat(plan.price.replace('$', '')),
               priceString: plan.price,
               currencyCode: 'USD',
-              introPrice: plan.trialDays ? {
-                price: 0,
-                priceString: 'Free',
-                period: `P${plan.trialDays}D`,
-                cycles: 1,
-                periodUnit: 'DAY',
-                periodNumberOfUnits: plan.trialDays
-              } as PurchasesIntroPrice : undefined
+              ...(plan.trialDays && {
+                introPrice: {
+                  price: 0,
+                  priceString: 'Free',
+                  period: `P${plan.trialDays}D`,
+                  cycles: 1,
+                  periodUnit: 'DAY',
+                  periodNumberOfUnits: plan.trialDays
+                } as PurchasesIntroPrice
+              })
             }
           }))
         }
@@ -401,7 +403,7 @@ class RevenueCatService {
         return {
           isActive: premium.isActive,
           plan: premium.productIdentifier,
-          expirationDate: premium.expirationDate || undefined,
+          ...(premium.expirationDate && { expirationDate: premium.expirationDate }),
           willRenew: premium.willRenew
         };
       }
