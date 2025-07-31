@@ -19,6 +19,12 @@
       "purpose": "any"
     },
     {
+      "src": "icons/pwa-64x64.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "icons/apple-touch-icon-180x180.png",
       "sizes": "180x180",
       "type": "image/png",
@@ -43,70 +49,31 @@
       "purpose": "maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "screenshots/desktop-1.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "الشاشة الرئيسية للتطبيق"
-    },
-    {
-      "src": "screenshots/mobile-1.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "واجهة الألعاب التعليمية"
-    }
-  ],
+
   "shortcuts": [
     {
       "name": "لعبة الحروف",
       "short_name": "حروف",
       "description": "تعلم الحروف العربية",
-      "url": "/?game=letters",
-      "icons": [
-        {
-          "src": "icons/shortcut-letters.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/?game=letters"
     },
     {
       "name": "لعبة الأرقام",
       "short_name": "أرقام",
       "description": "تعلم الأرقام والحساب",
-      "url": "/?game=numbers",
-      "icons": [
-        {
-          "src": "icons/shortcut-numbers.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/?game=numbers"
     },
     {
       "name": "لعبة الألوان",
       "short_name": "ألوان",
       "description": "تعلم الألوان المختلفة",
-      "url": "/?game=colors",
-      "icons": [
-        {
-          "src": "icons/shortcut-colors.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/?game=colors"
     },
     {
       "name": "القصص التفاعلية",
       "short_name": "قصص",
       "description": "استمع للقصص التعليمية",
-      "url": "/?section=stories",
-      "icons": [
-        {
-          "src": "icons/shortcut-stories.png",
-          "sizes": "96x96"
-        }
-      ]
+      "url": "/?section=stories"
     }
   ],
   "related_applications": [

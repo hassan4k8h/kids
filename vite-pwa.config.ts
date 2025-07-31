@@ -16,33 +16,16 @@ export const pwaConfig = VitePWA({
     lang: 'ar',
     dir: 'rtl',
     categories: ['education', 'games', 'kids'],
-    screenshots: [
-      {
-        src: '/screenshots/mobile-1.png',
-        sizes: '390x844',
-        type: 'image/png',
-        form_factor: 'narrow',
-        label: 'Main game screen'
-      },
-      {
-        src: '/screenshots/mobile-2.png',
-        sizes: '390x844',
-        type: 'image/png',
-        form_factor: 'narrow',
-        label: 'Alphabet learning game'
-      },
-      {
-        src: '/screenshots/tablet-1.png',
-        sizes: '1024x768',
-        type: 'image/png',
-        form_factor: 'wide',
-        label: 'Tablet view'
-      }
-    ],
+
     icons: [
       {
         src: '/icons/pwa-64x64.png',
         sizes: '64x64',
+        type: 'image/png'
+      },
+      {
+        src: '/icons/icon-144x144.png',
+        sizes: '144x144',
         type: 'image/png'
       },
       {
@@ -74,29 +57,25 @@ export const pwaConfig = VitePWA({
         name: 'Alphabet Game',
         short_name: 'Alphabet',
         description: 'Learn the alphabet with fun games',
-        url: '/games/alphabet',
-        icons: [{ src: '/icons/alphabet-96x96.png', sizes: '96x96' }]
+        url: '/games/alphabet'
       },
       {
         name: 'Numbers Game',
         short_name: 'Numbers',
         description: 'Learn numbers and counting',
-        url: '/games/numbers',
-        icons: [{ src: '/icons/numbers-96x96.png', sizes: '96x96' }]
+        url: '/games/numbers'
       },
       {
         name: 'Colors Game',
         short_name: 'Colors',
         description: 'Learn colors and shapes',
-        url: '/games/colors',
-        icons: [{ src: '/icons/colors-96x96.png', sizes: '96x96' }]
+        url: '/games/colors'
       },
       {
         name: 'Parent Dashboard',
         short_name: 'Dashboard',
         description: 'View your child\'s progress',
-        url: '/parent-dashboard',
-        icons: [{ src: '/icons/dashboard-96x96.png', sizes: '96x96' }]
+        url: '/parent-dashboard'
       }
     ]
   },

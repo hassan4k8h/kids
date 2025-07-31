@@ -55,6 +55,8 @@ class AuthService {
   private supabaseHealthy: boolean = true; // حالة صحة Supabase
   private isProcessingAuth: boolean = false; // منع التحديث المتكرر
   private lastAuthProcessTime: number = 0; // آخر وقت معالجة مصادقة
+  private retryAttempts: number = 3; // عدد محاولات إعادة المحاولة
+  private retryDelay: number = 1000; // تأخير بين المحاولات (مللي ثانية)
 
   constructor() {
     this.loadSavedUser();
@@ -309,6 +311,51 @@ class AuthService {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
+  // دالة إعادة المحاولة للطلبات الفاشلة
+  private async retryRequest<T>(
+    requestFn: () => Promise<T>,
+    maxAttempts: number = this.retryAttempts,
+    delay: number = this.retryDelay
+  ): Promise<T> {
+    let lastError: Error;
+    
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        console.log(`🔄 Attempt ${attempt}/${maxAttempts}`);
+        const result = await requestFn();
+        if (attempt > 1) {
+          console.log(`✅ Request succeeded on attempt ${attempt}`);
+        }
+        return result;
+      } catch (error) {
+        lastError = error as Error;
+        console.warn(`⚠️ Attempt ${attempt} failed:`, error);
+        
+        // إذا كان خطأ 422 أو خطأ في البيانات، لا نعيد المحاولة
+        if (error instanceof Error) {
+          const errorMessage = error.message.toLowerCase();
+          if (errorMessage.includes('422') || 
+              errorMessage.includes('unprocessable') ||
+              errorMessage.includes('invalid email') ||
+              errorMessage.includes('invalid login credentials')) {
+            console.log('❌ Data validation error, not retrying');
+            throw error;
+          }
+        }
+        
+        // إذا لم تكن المحاولة الأخيرة، انتظر قبل إعادة المحاولة
+        if (attempt < maxAttempts) {
+          const waitTime = delay * Math.pow(2, attempt - 1); // تأخير متزايد
+          console.log(`⏳ Waiting ${waitTime}ms before retry...`);
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+      }
+    }
+    
+    console.error(`❌ All ${maxAttempts} attempts failed`);
+    throw lastError!;
+  }
+
   private notifyListeners(): void {
     const authState = this.getAuthState();
     this.listeners.forEach(listener => listener(authState));
@@ -325,10 +372,12 @@ class AuthService {
       
       if (this.useSupabase && this.supabaseHealthy) {
         try {
-          // استخدام Supabase Auth مع timeout
-          const loginPromise = supabase.auth.signInWithPassword({
-            email: email.trim().toLowerCase(),
-            password
+          // استخدام Supabase Auth مع timeout وآلية إعادة المحاولة
+          const loginPromise = this.retryRequest(async () => {
+            return await supabase.auth.signInWithPassword({
+              email: email.trim().toLowerCase(),
+              password
+            });
           });
 
           const { data, error } = await Promise.race([loginPromise, timeoutPromise]);
@@ -491,18 +540,20 @@ class AuthService {
       
       if (this.useSupabase && this.supabaseHealthy) {
         try {
-          // استخدام Supabase Auth مع timeout وبدون توثيق البريد الإلكتروني
-          const signupPromise = supabase.auth.signUp({
-            email: email.trim().toLowerCase(),
-            password,
-            options: {
-              data: {
-                name: name.trim(),
-                email_confirm: false // تعطيل تأكيد البريد الإلكتروني
-              },
-              emailRedirectTo: undefined, // تعطيل إعادة التوجيه للبريد الإلكتروني
-              captchaToken: undefined // تعطيل الكابتشا
-            }
+          // استخدام Supabase Auth مع timeout وآلية إعادة المحاولة وبدون توثيق البريد الإلكتروني
+          const signupPromise = this.retryRequest(async () => {
+            return await supabase.auth.signUp({
+              email: email.trim().toLowerCase(),
+              password,
+              options: {
+                data: {
+                  name: name.trim(),
+                  email_confirm: false // تعطيل تأكيد البريد الإلكتروني
+                },
+                emailRedirectTo: undefined, // تعطيل إعادة التوجيه للبريد الإلكتروني
+                captchaToken: undefined // تعطيل الكابتشا
+              }
+            });
           });
 
           const { data, error } = await Promise.race([signupPromise, timeoutPromise]);
@@ -755,10 +806,14 @@ class AuthService {
       'Insert timeout': 'انتهت مهلة إنشاء الحساب في قاعدة البيانات.',
       'PGRST116': 'المستخدم غير موجود في قاعدة البيانات.',
       '400': 'خطأ في بيانات الطلب. يرجى المحاولة مرة أخرى.',
+      '422': 'بيانات غير صالحة. تحقق من صحة البيانات المدخلة وحاول مرة أخرى.',
       'Failed to fetch': 'مشكلة في الاتصال بالخادم. تحقق من الإنترنت.',
       'fetch': 'مشكلة في الاتصال بالخادم.',
       'confirm': 'تم إنشاء حسابك بنجاح! لا حاجة لتأكيد البريد الإلكتروني.',
-      'confirmation': 'تم إنشاء حسابك بنجاح! يمكنك البدء في الاستخدام مباشرة.'
+      'confirmation': 'تم إنشاء حسابك بنجاح! يمكنك البدء في الاستخدام مباشرة.',
+      'Unprocessable Entity': 'البيانات المرسلة غير صالحة. يرجى التحقق من المعلومات.',
+      'Invalid request': 'طلب غير صالح. يرجى المحاولة مرة أخرى.',
+      'Bad request': 'خطأ في البيانات المرسلة. تحقق من المعلومات وحاول مرة أخرى.'
     };
 
     // البحث عن أخطاء جزئية
