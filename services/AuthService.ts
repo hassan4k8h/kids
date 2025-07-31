@@ -120,7 +120,7 @@ class AuthService {
         name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'مستخدم',
         avatar: supabaseUser.user_metadata?.avatar_url,
         provider: 'email',
-        isEmailVerified: supabaseUser.email_confirmed_at !== null,
+        isEmailVerified: true, // تعيين التوثيق كمكتمل مباشرة
         createdAt: supabaseUser.created_at || new Date().toISOString(),
         lastLogin: new Date().toISOString(),
         preferences: {
@@ -234,7 +234,7 @@ class AuthService {
         name: supabaseUser.user_metadata?.name || supabaseUser.email?.split('@')[0] || 'مستخدم',
         avatar: supabaseUser.user_metadata?.avatar_url,
         provider: 'email',
-        isEmailVerified: supabaseUser.email_confirmed_at !== null,
+        isEmailVerified: true, // تعيين التوثيق كمكتمل مباشرة
         createdAt: supabaseUser.created_at || new Date().toISOString(),
         lastLogin: new Date().toISOString(),
         preferences: {
@@ -366,7 +366,7 @@ class AuthService {
                 name: data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'مستخدم',
                 avatar: data.user.user_metadata?.avatar_url,
                 provider: 'email',
-                isEmailVerified: data.user.email_confirmed_at !== null,
+                isEmailVerified: true, // تعيين التوثيق كمكتمل مباشرة
                 createdAt: data.user.created_at || new Date().toISOString(),
                 lastLogin: new Date().toISOString(),
                 preferences: {
@@ -491,14 +491,15 @@ class AuthService {
       
       if (this.useSupabase && this.supabaseHealthy) {
         try {
-          // استخدام Supabase Auth مع timeout
+          // استخدام Supabase Auth مع timeout وبدون توثيق البريد الإلكتروني
           const signupPromise = supabase.auth.signUp({
             email: email.trim().toLowerCase(),
             password,
             options: {
               data: {
                 name: name.trim()
-              }
+              },
+              emailRedirectTo: undefined // تعطيل إعادة التوجيه للبريد الإلكتروني
             }
           });
 
@@ -542,7 +543,7 @@ class AuthService {
                 name: name.trim() || data.user.email?.split('@')[0] || 'مستخدم',
                 avatar: data.user.user_metadata?.avatar_url,
                 provider: 'email',
-                isEmailVerified: data.user.email_confirmed_at !== null,
+                isEmailVerified: true, // تعيين التوثيق كمكتمل مباشرة
                 createdAt: data.user.created_at || new Date().toISOString(),
                 lastLogin: new Date().toISOString(),
                 preferences: {
@@ -649,7 +650,7 @@ class AuthService {
       email: email.toLowerCase(),
       name: name,
       provider: 'email',
-      isEmailVerified: false,
+      isEmailVerified: true, // تعيين التوثيق كمكتمل مباشرة
       createdAt: new Date().toISOString(),
       lastLogin: new Date().toISOString(),
       preferences: {

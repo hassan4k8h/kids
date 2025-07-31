@@ -310,12 +310,9 @@ export default function App() {
         email: currentUser.email,
         name: currentUser.name
       });
-      const allPlayers = await PlayerService.getPlayers();
-      if (allPlayers.length > 0) {
-        setCurrentScreen("playerSelection");
-      } else {
-        setCurrentScreen("playerSetup");
-      }
+      // إعادة التوجيه مباشرة إلى صفحة إعداد الطفل للمستخدمين الجدد
+      setCurrentScreen("playerSetup");
+      console.log('🎮 New user redirected to player setup');
     }
   };
 
