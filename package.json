@@ -103,7 +103,8 @@
     "rollup-plugin-visualizer": "^5.9.2",
     "vite-plugin-compression": "^0.5.1",
     "vite-plugin-eslint": "^1.8.1",
-    "terser": "^5.24.0"
+    "terser": "^5.24.0",
+    "babel-plugin-transform-remove-console": "^6.9.4"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
@@ -112,7 +113,6 @@
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
     "autoprefixer": "^10.4.16",
-    "babel-plugin-transform-remove-console": "^6.9.4",
     "cssnano": "^6.0.1",
     "eslint": "^8.53.0",
     "eslint-plugin-jsx-a11y": "^6.8.0",
