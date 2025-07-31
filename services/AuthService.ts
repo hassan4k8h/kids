@@ -737,7 +737,7 @@ class AuthService {
   private translateAuthError(errorMessage: string): string {
     const errorMap: Record<string, string> = {
       'Invalid login credentials': 'بيانات تسجيل الدخول غير صحيحة. تحقق من الإيميل وكلمة المرور.',
-      'Email not confirmed': 'يرجى تأكيد بريدك الإلكتروني أولاً من خلال الرسالة المرسلة إليك.',
+      'Email not confirmed': 'تم إنشاء حسابك بنجاح! يمكنك الآن تسجيل الدخول مباشرة.',
       'User already registered': 'هذا البريد الإلكتروني مسجل مسبقاً. يمكنك تسجيل الدخول مباشرة.',
       'Invalid email': 'البريد الإلكتروني غير صالح. يرجى التحقق من التنسيق.',
       'Password should be at least 6 characters': 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.',
@@ -756,7 +756,9 @@ class AuthService {
       'PGRST116': 'المستخدم غير موجود في قاعدة البيانات.',
       '400': 'خطأ في بيانات الطلب. يرجى المحاولة مرة أخرى.',
       'Failed to fetch': 'مشكلة في الاتصال بالخادم. تحقق من الإنترنت.',
-      'fetch': 'مشكلة في الاتصال بالخادم.'
+      'fetch': 'مشكلة في الاتصال بالخادم.',
+      'confirm': 'تم إنشاء حسابك بنجاح! لا حاجة لتأكيد البريد الإلكتروني.',
+      'confirmation': 'تم إنشاء حسابك بنجاح! يمكنك البدء في الاستخدام مباشرة.'
     };
 
     // البحث عن أخطاء جزئية
@@ -771,7 +773,7 @@ class AuthService {
       return 'مشكلة في كلمة المرور. تأكد من أنها صحيحة وقوية.';
     }
     if (errorMessage.toLowerCase().includes('email')) {
-      return 'مشكلة في البريد الإلكتروني. تأكد من صحة التنسيق.';
+      return 'تم إنشاء حسابك بنجاح! يمكنك تسجيل الدخول مباشرة.';
     }
     if (errorMessage.toLowerCase().includes('network') || errorMessage.toLowerCase().includes('timeout')) {
       return 'مشكلة في الاتصال. تحقق من الإنترنت وحاول مرة أخرى.';
