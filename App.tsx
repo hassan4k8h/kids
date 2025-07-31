@@ -157,8 +157,17 @@ export default function App() {
   // تحميل البيانات المحفوظة عند بدء التطبيق
   useEffect(() => {
     let mounted = true;
+    let hasLoaded = false; // منع التحميل المتكرر
     
     const loadUserData = async () => {
+      if (hasLoaded) {
+        console.log('🔄 Data already loaded, skipping');
+        return;
+      }
+      
+      hasLoaded = true;
+      console.log('📱 Starting app initialization');
+      
       const savedUser = authService.getCurrentUser();
       if (!mounted) return;
       
@@ -170,8 +179,6 @@ export default function App() {
           email: savedUser.email,
           name: savedUser.name
         });
-        
-        // ملاحظة: لا نغير اللغة تلقائياً عند تحميل المستخدم المحفوظ
         
         // التأكد من وجود اشتراك صالح
         const isSubscribed = subscriptionService.isSubscriptionValid(savedUser.id);
@@ -213,7 +220,11 @@ export default function App() {
     
     loadUserData().finally(() => {
       // إخفاء loading screen بعد تحميل البيانات
-      setTimeout(() => setIsAppLoading(false), 800);
+      setTimeout(() => {
+        if (mounted) {
+          setIsAppLoading(false);
+        }
+      }, 800);
     });
     
     return () => {
@@ -251,7 +262,7 @@ export default function App() {
       console.log(`🚀 App start - subscription valid: ${isSubscribed}`);
       
       // الانتقال لاختيار اللاعب
-      const allPlayers = await PlayerService.getPlayers();
+      const allPlayers = await PlayerService.getPlayers(currentUser.id);
       if (allPlayers.length > 0) {
         console.log('🎮 Navigating to player selection');
         setCurrentScreen("playerSelection");
@@ -281,7 +292,7 @@ export default function App() {
     // التأكد من وجود اشتراك
     subscriptionService.isSubscriptionValid(currentUser.id);
     
-    const allPlayers = await PlayerService.getPlayers();
+    const allPlayers = await PlayerService.getPlayers(currentUser.id);
     if (allPlayers.length > 0) {
       setCurrentScreen("playerSelection");
     } else {

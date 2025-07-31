@@ -162,7 +162,7 @@ export function PlayerSelectionScreen({
   };
 
   const canAddMorePlayers = () => {
-    const maxPlayers = subscriptionState.activePlan?.limits?.maxPlayers || 1;
+    const maxPlayers = subscriptionState.activePlan?.limits?.maxPlayers || 2;
     return maxPlayers === -1 || players.length < maxPlayers;
   };
 

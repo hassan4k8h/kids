@@ -53,6 +53,8 @@ class AuthService {
   private verificationCodes: Map<string, { email: string; code: string; expiresAt: number }> = new Map();
   private useSupabase: boolean = true; // التحكم في استخدام Supabase
   private supabaseHealthy: boolean = true; // حالة صحة Supabase
+  private isProcessingAuth: boolean = false; // منع التحديث المتكرر
+  private lastAuthProcessTime: number = 0; // آخر وقت معالجة مصادقة
 
   constructor() {
     this.loadSavedUser();
@@ -69,24 +71,46 @@ class AuthService {
         await this.handleSupabaseAuth(session.user);
       }
 
-      // الاستماع لتغييرات حالة المصادقة
+      // الاستماع لتغييرات حالة المصادقة مع منع التحديث المتكرر
       supabase.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          await this.handleSupabaseAuth(session.user);
-        } else if (event === 'SIGNED_OUT') {
-          this.currentUser = null;
-          localStorage.removeItem('skilloo_current_user');
-          this.notifyListeners();
+        const now = Date.now();
+        
+        // منع المعالجة المتكررة خلال ثانيتين
+        if (this.isProcessingAuth || (now - this.lastAuthProcessTime) < 2000) {
+          console.log('🔄 Skipping auth state change - already processing or too recent');
+          return;
+        }
+        
+        this.isProcessingAuth = true;
+        this.lastAuthProcessTime = now;
+        
+        try {
+          if (event === 'SIGNED_IN' && session?.user) {
+            await this.handleSupabaseAuth(session.user);
+          } else if (event === 'SIGNED_OUT') {
+            this.currentUser = null;
+            localStorage.removeItem('skilloo_current_user');
+            this.notifyListeners();
+          }
+        } finally {
+          this.isProcessingAuth = false;
         }
       });
     } catch (error) {
       console.error('❌ Error initializing Supabase auth:', error);
       this.useSupabase = false; // العودة للطريقة المحلية
+      this.isProcessingAuth = false;
     }
   }
 
   private async handleSupabaseAuth(supabaseUser: any): Promise<void> {
     try {
+      // التحقق من أن المستخدم الحالي ليس نفس المستخدم لمنع التحديث المتكرر
+      if (this.currentUser && this.currentUser.id === supabaseUser.id) {
+        console.log('🔄 User already authenticated, skipping duplicate processing');
+        return;
+      }
+      
       console.log('🔄 Processing Supabase auth for user:', supabaseUser.email);
       
       // إنشاء مستخدم أساسي من بيانات Supabase مباشرة كـ fallback
