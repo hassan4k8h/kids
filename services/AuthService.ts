@@ -692,7 +692,7 @@ class AuthService {
       console.log('❌ User already exists:', email);
       return {
         success: false,
-        error: 'User already exists'
+        error: 'Email already exists'
       };
     }
     
@@ -828,6 +828,9 @@ class AuthService {
       return 'مشكلة في كلمة المرور. تأكد من أنها صحيحة وقوية.';
     }
     if (errorMessage.toLowerCase().includes('email')) {
+      if (errorMessage.toLowerCase().includes('already') || errorMessage.toLowerCase().includes('exists')) {
+        return 'هذا البريد الإلكتروني مسجل مسبقاً. يمكنك تسجيل الدخول أو استخدام بريد إلكتروني آخر.';
+      }
       return 'خطأ في البريد الإلكتروني. تحقق من صحة الإيميل المدخل.';
     }
     if (errorMessage.toLowerCase().includes('network') || errorMessage.toLowerCase().includes('timeout')) {
