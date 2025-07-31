@@ -497,9 +497,11 @@ class AuthService {
             password,
             options: {
               data: {
-                name: name.trim()
+                name: name.trim(),
+                email_confirm: false // تعطيل تأكيد البريد الإلكتروني
               },
-              emailRedirectTo: undefined // تعطيل إعادة التوجيه للبريد الإلكتروني
+              emailRedirectTo: undefined, // تعطيل إعادة التوجيه للبريد الإلكتروني
+              captchaToken: undefined // تعطيل الكابتشا
             }
           });
 
