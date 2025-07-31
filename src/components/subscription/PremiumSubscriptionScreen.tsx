@@ -94,6 +94,7 @@ export function PremiumSubscriptionScreen({
   const getFeatureIcon = (index: number) => {
     const icons = [CheckCircle, Shield, Zap, Gift, Star, Users];
     const IconComponent = icons[index % icons.length];
+    if (!IconComponent) return null;
     return <IconComponent className="w-5 h-5 text-green-500 flex-shrink-0" />;
   };
 

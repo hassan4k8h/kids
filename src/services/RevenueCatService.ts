@@ -238,7 +238,7 @@ class RevenueCatService {
                 cycles: 1,
                 periodUnit: 'DAY',
                 periodNumberOfUnits: plan.trialDays
-              } : undefined
+              } as PurchasesIntroPrice : undefined
             }
           }))
         }
@@ -401,7 +401,7 @@ class RevenueCatService {
         return {
           isActive: premium.isActive,
           plan: premium.productIdentifier,
-          expirationDate: premium.expirationDate,
+          expirationDate: premium.expirationDate || undefined,
           willRenew: premium.willRenew
         };
       }
