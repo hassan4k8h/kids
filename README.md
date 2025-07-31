@@ -1,6 +1,58 @@
-# 🎮 لعبة تعليمية للأطفال
+# Skilloo Educational App | تطبيق سكيلو التعليمي
 
-لعبة تعليمية تفاعلية مصممة لتعليم الأطفال الحروف والأرقام والألوان بطريقة ممتعة وتفاعلية.
+<div align="center">
+
+![Skilloo Logo](public/logo.svg)
+
+**An interactive Arabic educational platform for children aged 3-12**
+
+**منصة تعليمية تفاعلية باللغة العربية للأطفال من سن 3-12 سنة**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.2.2-blue.svg)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-4.5.0-646CFF.svg)](https://vitejs.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.6-38B2AC.svg)](https://tailwindcss.com/)
+[![PWA](https://img.shields.io/badge/PWA-Ready-green.svg)](https://web.dev/progressive-web-apps/)
+[![Accessibility](https://img.shields.io/badge/Accessibility-WCAG_2.1_AA-green.svg)](https://www.w3.org/WAI/WCAG21/quickref/)
+
+[🎮 Live Demo](https://skilloo.netlify.app) • [📚 Documentation](https://docs.skilloo.com) • [🐛 Report Bug](https://github.com/skilloo/skilloo/issues) • [✨ Request Feature](https://github.com/skilloo/skilloo/issues)
+
+</div>
+
+## Table of Contents | جدول المحتويات
+
+- [About](#about--حول)
+- [Features](#features--الميزات)
+- [Demo](#demo--العرض-التوضيحي)
+- [Getting Started](#getting-started--البدء)
+- [Installation](#installation--التثبيت)
+- [Usage](#usage--الاستخدام)
+- [Games & Activities](#games--activities--الألعاب-والأنشطة)
+- [Technology Stack](#technology-stack--المكدس-التقني)
+- [Contributing](#contributing--المساهمة)
+- [Accessibility](#accessibility--إمكانية-الوصول)
+- [Performance](#performance--الأداء)
+- [Security](#security--الأمان)
+- [License](#license--الترخيص)
+- [Support](#support--الدعم)
+
+## About | حول
+
+Skilloo is a modern, interactive educational web application designed specifically for Arabic-speaking children. Our mission is to make learning fun, engaging, and accessible through games, stories, and interactive activities that promote cognitive development and Arabic language skills.
+
+سكيلو هو تطبيق ويب تعليمي حديث وتفاعلي مصمم خصيصاً للأطفال الناطقين بالعربية. مهمتنا هي جعل التعلم ممتعاً وجذاباً ومتاحاً من خلال الألعاب والقصص والأنشطة التفاعلية التي تعزز التطور المعرفي ومهارات اللغة العربية.
+
+### Why Skilloo? | لماذا سكيلو؟
+
+- **🎯 Age-Appropriate**: Designed specifically for children aged 3-12
+- **🌍 Arabic-First**: Native Arabic language support with cultural relevance
+- **🎮 Gamified Learning**: Learning through play and interactive experiences
+- **📱 Cross-Platform**: Works on all devices - phones, tablets, and computers
+- **♿ Accessible**: WCAG 2.1 AA compliant for children with different abilities
+- **🔒 Safe & Private**: COPPA compliant with no data collection from children
+- **🎨 Beautiful Design**: Child-friendly interface with engaging animations
+- **📚 Educational**: Curriculum-aligned content developed with educators
 
 ## 🆕 آخر التحديثات (يناير 2025) ✨
 

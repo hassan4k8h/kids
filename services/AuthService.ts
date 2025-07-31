@@ -177,7 +177,9 @@ class AuthService {
             if (!insertError && insertedUser) {
               console.log('✅ User created in database successfully');
               // تحديث fallbackUser بالبيانات من قاعدة البيانات
-              fallbackUser.subscription.type = insertedUser.subscription_type || 'free';
+              if (fallbackUser.subscription) {
+                fallbackUser.subscription.type = insertedUser.subscription_type || 'free';
+              }
             } else {
               console.warn('⚠️ Failed to create user in database, using fallback:', insertError);
             }
@@ -190,7 +192,9 @@ class AuthService {
           fallbackUser.name = userData.name || fallbackUser.name;
           fallbackUser.avatar = userData.avatar || fallbackUser.avatar;
           fallbackUser.preferences = userData.preferences || fallbackUser.preferences;
-          fallbackUser.subscription.type = userData.subscription_type || 'free';
+          if (fallbackUser.subscription) {
+            fallbackUser.subscription.type = userData.subscription_type || 'free';
+          }
           fallbackUser.lastLogin = userData.last_login || fallbackUser.lastLogin;
           
           // تحديث آخر تسجيل دخول في الخلفية
@@ -267,7 +271,7 @@ class AuthService {
         // التحقق من أن البيانات المحفوظة صحيحة
         if (parsedUser && parsedUser.id && parsedUser.email) {
           this.currentUser = parsedUser;
-          console.log('🔐 Loaded saved user:', this.currentUser.email);
+          console.log('🔐 Loaded saved user:', this.currentUser?.email);
         } else {
           console.warn('⚠️ Invalid saved user data, removing from storage');
           localStorage.removeItem('skilloo_current_user');
@@ -358,7 +362,7 @@ class AuthService {
               console.warn('⚠️ currentUser not set by handleSupabaseAuth, creating emergency user');
               const emergencyUser: User = {
                 id: data.user.id,
-                email: data.user.email,
+                email: data.user.email || '',
                 name: data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'مستخدم',
                 avatar: data.user.user_metadata?.avatar_url,
                 provider: 'email',
@@ -534,7 +538,7 @@ class AuthService {
               console.warn('⚠️ currentUser not set by handleSupabaseAuth during signup, creating emergency user');
               const emergencyUser: User = {
                 id: data.user.id,
-                email: data.user.email,
+                email: data.user.email || '',
                 name: name.trim() || data.user.email?.split('@')[0] || 'مستخدم',
                 avatar: data.user.user_metadata?.avatar_url,
                 provider: 'email',
@@ -933,8 +937,8 @@ class AuthService {
       await new Promise(resolve => setTimeout(resolve, 500));
       
       // البحث عن الكود
-      let foundCodeData = null;
-      let foundCodeId = null;
+      let foundCodeData: { email: string; code: string; expiresAt: number } | null = null;
+      let foundCodeId: string | null = null;
       
       for (const [codeId, codeData] of this.verificationCodes.entries()) {
         if (codeData.email === email && codeData.code === code) {

@@ -1,0 +1,161 @@
+{
+  "name": "سكيلو - تطبيق تعليمي تفاعلي للأطفال",
+  "short_name": "سكيلو",
+  "description": "تطبيق تعليمي تفاعلي للأطفال باللغة العربية. تعلم الحروف والأرقام والألوان والأشكال بطريقة ممتعة وآمنة.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["education", "kids", "games"],
+  "icons": [
+    {
+      "src": "icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icons/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/desktop-1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "الشاشة الرئيسية للتطبيق"
+    },
+    {
+      "src": "screenshots/mobile-1.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "واجهة الألعاب التعليمية"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "لعبة الحروف",
+      "short_name": "حروف",
+      "description": "تعلم الحروف العربية",
+      "url": "/?game=letters",
+      "icons": [
+        {
+          "src": "icons/shortcut-letters.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "لعبة الأرقام",
+      "short_name": "أرقام",
+      "description": "تعلم الأرقام والحساب",
+      "url": "/?game=numbers",
+      "icons": [
+        {
+          "src": "icons/shortcut-numbers.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "لعبة الألوان",
+      "short_name": "ألوان",
+      "description": "تعلم الألوان المختلفة",
+      "url": "/?game=colors",
+      "icons": [
+        {
+          "src": "icons/shortcut-colors.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "القصص التفاعلية",
+      "short_name": "قصص",
+      "description": "استمع للقصص التعليمية",
+      "url": "/?section=stories",
+      "icons": [
+        {
+          "src": "icons/shortcut-stories.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.skilloo.app",
+      "id": "com.skilloo.app"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/skilloo/id123456789",
+      "id": "123456789"
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

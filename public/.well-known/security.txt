@@ -1,0 +1,63 @@
+Contact: mailto:security@skilloo.app
+Contact: https://skilloo.netlify.app/security
+Expires: 2025-12-31T23:59:59.000Z
+Encryption: https://skilloo.netlify.app/pgp-key.txt
+Acknowledgments: https://skilloo.netlify.app/security/acknowledgments
+Preferred-Languages: ar, en
+Canonical: https://skilloo.netlify.app/.well-known/security.txt
+Policy: https://skilloo.netlify.app/security/policy
+
+# Security Policy for Skilloo Educational App
+# سياسة الأمان لتطبيق سكيلو التعليمي
+
+# We take security seriously and appreciate responsible disclosure.
+# نحن نأخذ الأمان على محمل الجد ونقدر الإفصاح المسؤول.
+
+# Please report security vulnerabilities to: security@skilloo.app
+# يرجى الإبلاغ عن الثغرات الأمنية إلى: security@skilloo.app
+
+# Areas of Interest:
+# المجالات المهمة:
+# - Authentication and authorization issues
+# - Data privacy and protection concerns  
+# - Cross-site scripting (XSS) vulnerabilities
+# - SQL injection vulnerabilities
+# - Cross-site request forgery (CSRF) issues
+# - Sensitive data exposure
+# - Security misconfigurations
+# - Insecure direct object references
+# - Missing function level access control
+# - Unvalidated redirects and forwards
+
+# Out of Scope:
+# خارج النطاق:
+# - Social engineering attacks
+# - Physical attacks
+# - Denial of service attacks
+# - Issues in third-party services
+# - Issues requiring physical access
+
+# Response Time:
+# وقت الاستجابة:
+# - Critical: 24 hours
+# - High: 72 hours  
+# - Medium: 1 week
+# - Low: 2 weeks
+
+# Bug Bounty Program:
+# برنامج مكافآت الأخطاء:
+# We currently do not offer monetary rewards but provide:
+# نحن حالياً لا نقدم مكافآت مالية ولكن نوفر:
+# - Public acknowledgment (with permission)
+# - Hall of fame listing
+# - Direct communication with our security team
+
+# Legal:
+# القانونية:
+# - Testing must not violate any applicable laws
+# - Do not access or modify user data
+# - Do not perform attacks that could harm our users
+# - Do not publicly disclose vulnerabilities before we've had time to fix them
+
+# Thank you for helping keep Skilloo secure!
+# شكراً لمساعدتك في الحفاظ على أمان سكيلو!

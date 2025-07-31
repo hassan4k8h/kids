@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة غير موجودة - سكيلو</title>
+    <meta name="description" content="عذراً، الصفحة التي تبحث عنها غير موجودة. عد إلى الصفحة الرئيسية لمتابعة التعلم والمرح.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .error-animation {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .error-number {
+            font-size: 8rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            animation: bounce 2s infinite;
+            margin-bottom: 1rem;
+        }
+
+        .robot {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .robot-body {
+            width: 80px;
+            height: 80px;
+            background: #4CAF50;
+            border-radius: 20px;
+            position: relative;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .robot-head {
+            width: 60px;
+            height: 60px;
+            background: #66BB6A;
+            border-radius: 50%;
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .robot-eyes {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .robot-eye {
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            animation: blink 3s infinite;
+        }
+
+        .robot-mouth {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 10px;
+            border: 2px solid #fff;
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .robot-arms {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+        }
+
+        .robot-arm {
+            width: 15px;
+            height: 40px;
+            background: #4CAF50;
+            border-radius: 10px;
+            position: absolute;
+            animation: wave 2s ease-in-out infinite;
+        }
+
+        .robot-arm.left {
+            left: -20px;
+            animation-delay: 0.5s;
+        }
+
+        .robot-arm.right {
+            right: -20px;
+        }
+
+        .message {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+        }
+
+        .message h1 {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .message p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #A8E6CF, #88D8C0);
+            color: #333;
+            box-shadow: 0 4px 15px rgba(168, 230, 207, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float-shapes 20s infinite linear;
+        }
+
+        .shape:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            top: 60%;
+            left: 80%;
+            animation-delay: 5s;
+        }
+
+        .shape:nth-child(3) {
+            top: 80%;
+            left: 20%;
+            animation-delay: 10s;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes blink {
+            0%, 90%, 100% {
+                opacity: 1;
+            }
+            95% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes wave {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            50% {
+                transform: rotate(20deg);
+            }
+        }
+
+        @keyframes float-shapes {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .error-number {
+                font-size: 6rem;
+            }
+
+            .message h1 {
+                font-size: 1.5rem;
+            }
+
+            .message p {
+                font-size: 1rem;
+            }
+
+            .buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape">🎨</div>
+        <div class="shape">🔢</div>
+        <div class="shape">📚</div>
+    </div>
+
+    <div class="container">
+        <div class="error-animation">
+            <div class="error-number">404</div>
+            <div class="robot">
+                <div class="robot-body">
+                    <div class="robot-head">
+                        <div class="robot-eyes">
+                            <div class="robot-eye"></div>
+                            <div class="robot-eye"></div>
+                        </div>
+                        <div class="robot-mouth"></div>
+                    </div>
+                    <div class="robot-arms">
+                        <div class="robot-arm left"></div>
+                        <div class="robot-arm right"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="message">
+            <h1>عذراً! الصفحة غير موجودة</h1>
+            <p>يبدو أن الصفحة التي تبحث عنها قد اختفت أو تم نقلها. لا تقلق، يمكنك العودة إلى الصفحة الرئيسية ومتابعة رحلة التعلم الممتعة!</p>
+            
+            <div class="buttons">
+                <a href="/" class="btn btn-primary">
+                    🏠 العودة للرئيسية
+                </a>
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    ↩️ الصفحة السابقة
+                </a>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">🔤</div>
+                <div class="feature-title">تعلم الحروف</div>
+                <div class="feature-desc">اكتشف الحروف العربية بطريقة ممتعة</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔢</div>
+                <div class="feature-title">تعلم الأرقام</div>
+                <div class="feature-desc">تعلم الأرقام والعد بألعاب تفاعلية</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎨</div>
+                <div class="feature-title">الألوان والأشكال</div>
+                <div class="feature-desc">استكشف عالم الألوان والأشكال</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📚</div>
+                <div class="feature-title">القصص</div>
+                <div class="feature-desc">استمتع بقصص تعليمية شيقة</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click sound effect (optional)
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // Add hover effect to robot
+            const robot = document.querySelector('.robot');
+            robot.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+            });
+            robot.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+            });
+
+            // Add random floating shapes
+            function createFloatingShape() {
+                const shapes = ['🌟', '⭐', '🎈', '🎁', '🎪', '🎭', '🎨', '🎵'];
+                const shape = document.createElement('div');
+                shape.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+                shape.style.position = 'fixed';
+                shape.style.left = Math.random() * 100 + 'vw';
+                shape.style.top = '100vh';
+                shape.style.fontSize = '2rem';
+                shape.style.pointerEvents = 'none';
+                shape.style.zIndex = '-1';
+                shape.style.opacity = '0.3';
+                shape.style.animation = 'float-shapes 15s linear forwards';
+                
+                document.body.appendChild(shape);
+                
+                setTimeout(() => {
+                    shape.remove();
+                }, 15000);
+            }
+
+            // Create floating shapes periodically
+            setInterval(createFloatingShape, 3000);
+        });
+    </script>
+</body>
+</html>

@@ -1,11 +1,125 @@
+# Netlify Configuration for Skilloo Educational App
+# إعدادات Netlify لتطبيق سكيلو التعليمي
+
 [build]
-  publish = "dist"
+  # Build command
   command = "npm run build"
+  
+  # Directory to publish
+  publish = "dist"
+  
+  # Environment variables for build
+  environment = { NODE_VERSION = "18", NODE_ENV = "production" }
+
+[build.processing]
+  # Skip processing for already optimized files
+  skip_processing = false
+
+[build.processing.css]
+  # CSS minification
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  # JavaScript minification
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  # HTML minification
+  pretty_urls = true
+
+[build.processing.images]
+  # Image optimization
+  compress = true
+
+# Context-specific builds
+[context.production]
+  command = "npm run build"
+  environment = { NODE_ENV = "production" }
+
+[context.deploy-preview]
+  command = "npm run build"
+  environment = { NODE_ENV = "preview" }
+
+[context.branch-deploy]
+  command = "npm run build"
+  environment = { NODE_ENV = "staging" }
+
+# Headers configuration
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Content-Type = "application/javascript; charset=utf-8"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Content-Type = "text/css; charset=utf-8"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Content-Type = "application/javascript; charset=utf-8"
+
+[[headers]]
+  for = "/manifest.json"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+    Content-Type = "application/manifest+json; charset=utf-8"
+
+# Redirects configuration
+[[redirects]]
+  from = "https://www.skilloo.netlify.app/*"
+  to = "https://skilloo.netlify.app/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://zwwyifnikprfbdikskvg.supabase.co/rest/v1/:splat"
+  status = 200
+  headers = {X-From = "Netlify"}
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
+# Functions configuration
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Dev server configuration
+[dev]
+  command = "npm run dev"
+  port = 3000
+  publish = "dist"
+  autoLaunch = false
+
+# Environment variables
 [build.environment]
   NODE_VERSION = "18"
+  NPM_VERSION = "9"
+  NODE_ENV = "production"
+  GENERATE_SOURCEMAP = "false"
+  CI = "false"
+  NODE_OPTIONS = "--max-old-space-size=4096"
