@@ -49,7 +49,7 @@ export function PlayerSelectionScreen({
         setPlayers(userPlayers);
         
         // تعيين اللاعب المحدد حالياً إذا كان هناك لاعب واحد فقط
-        if (userPlayers.length === 1) {
+        if (userPlayers.length === 1 && userPlayers[0]) {
           setSelectedPlayerId(userPlayers[0].id);
         }
         

@@ -1,7 +1,10 @@
+/// <reference types="vite/client" />
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 // إعداد Supabase
+// @ts-ignore - Vite will handle this at build time
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+// @ts-ignore - Vite will handle this at build time
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 if (!supabaseUrl || !supabaseAnonKey) {
@@ -200,8 +203,22 @@ export class AchievementService {
   }
 
   // فتح إنجاز للاعب
-  static async unlockAchievement(playerId: string, achievementId: string): Promise<boolean> {
+  static async unlockAchievement(playerId: string, achievementId: string, userId?: string): Promise<boolean> {
     try {
+      // التحقق من ملكية اللاعب إذا تم تمرير userId
+      if (userId) {
+        const { data: player } = await supabase
+          .from('players')
+          .select('user_id')
+          .eq('id', playerId)
+          .single();
+        
+        if (!player || player.user_id !== userId) {
+          console.error('❌ Security violation: Player does not belong to current user');
+          return false;
+        }
+      }
+
       // التحقق من عدم وجود الإنجاز مسبقاً
       const { data: existing } = await supabase
         .from('player_achievements')
@@ -211,6 +228,7 @@ export class AchievementService {
         .single();
 
       if (existing) {
+        console.log(`ℹ️ Achievement already unlocked: ${achievementId} for player ${playerId}`);
         return false; // الإنجاز موجود مسبقاً
       }
 
@@ -237,6 +255,7 @@ export class AchievementService {
           player_id: playerId,
           coins_to_add: achievement.data.reward_coins
         });
+        console.log(`🏆 Achievement unlocked: ${achievementId} for player ${playerId} (+${achievement.data.reward_coins} coins)`);
       }
 
       return true;

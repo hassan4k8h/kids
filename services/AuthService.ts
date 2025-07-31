@@ -415,7 +415,7 @@ class AuthService {
     } catch (error) {
       console.error('❌ Login error:', error);
       
-      if (error.message === 'Login timeout') {
+      if (error instanceof Error && error.message === 'Login timeout') {
         return {
           success: false,
           error: 'انتهت مهلة تسجيل الدخول. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.'
@@ -590,7 +590,7 @@ class AuthService {
     } catch (error) {
       console.error('❌ Signup error:', error);
       
-      if (error.message === 'Signup timeout') {
+      if (error instanceof Error && error.message === 'Signup timeout') {
         return {
           success: false,
           error: 'انتهت مهلة إنشاء الحساب. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.'
@@ -1108,9 +1108,6 @@ class AuthService {
         expiresAt
       });
       
-      // إنشاء رابط إعادة التعيين
-      const resetUrl = `${window.location.origin}/#/reset-password?token=${resetToken}&email=${encodeURIComponent(user.email)}`;
-      
       // إرسال بريد إعادة التعيين
       try {
         console.log('📧 Sending password reset email to:', user.email);
@@ -1266,7 +1263,10 @@ class AuthService {
       // تحديث كلمة المرور (يتم التعامل معها بشكل منفصل عن بيانات المستخدم)
       // في التطبيق الحقيقي، ستكون كلمة المرور مشفرة ومحفوظة بشكل آمن
       const passwords = JSON.parse(localStorage.getItem('skilloo_passwords') || '{}');
-      passwords[users[userIndex].id] = newPassword; // في التطبيق الحقيقي، ستكون مشفرة
+      const user = users[userIndex];
+      if (user) {
+        passwords[user.id] = newPassword; // في التطبيق الحقيقي، ستكون مشفرة
+      }
       localStorage.setItem('skilloo_passwords', JSON.stringify(passwords));
       
       // حفظ التغييرات

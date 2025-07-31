@@ -373,11 +373,17 @@ export default function App() {
         return;
       }
       
-      // التأكد من أن اللاعب ينتمي للمستخدم الحالي
-      if (player.userId !== currentUser.id) {
+      // التأكد من أن اللاعب ينتمي للمستخدم الحالي أو تحديث userId إذا كان فارغاً
+      if (player.userId && player.userId !== currentUser.id) {
         console.error('❌ Player does not belong to current user');
         handleError(new Error('هذا اللاعب لا ينتمي لحسابك'), 'اختيار اللاعب');
         return;
+      }
+      
+      // تحديث userId للاعب إذا كان فارغاً (للتوافق مع البيانات القديمة)
+      if (!player.userId) {
+        player.userId = currentUser.id;
+        console.log(`🔄 Updated player userId: ${player.name} -> ${currentUser.id}`);
       }
       
       // تعيين اللاعب الحالي
@@ -526,7 +532,7 @@ export default function App() {
         }
       };
       setCurrentPlayer(updatedPlayer);
-      await PlayerService.updatePlayer(currentUser.id, updatedPlayer);
+      await PlayerService.updatePlayer(updatedPlayer);
     }
 
     // تحديث تفضيلات المستخدم

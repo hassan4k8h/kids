@@ -51,6 +51,7 @@ class PlayerService {
   static async getPlayers(userId?: string): Promise<Player[]> {
     if (this.useSupabase) {
       try {
+        // يجب دائماً تمرير userId للتأكد من الأمان
         if (userId) {
           // الحصول على لاعبي مستخدم معين
           const { data: profiles, error } = await supabase
@@ -60,19 +61,21 @@ class PlayerService {
             .order('created_at', { ascending: false });
 
           if (error) throw error;
-          return (profiles || []).map(this.profileToPlayer);
+          const players = (profiles || []).map(this.profileToPlayer);
+          console.log(`✅ Loaded ${players.length} players for user ${userId}`);
+          return players;
         } else {
-          // الحصول على جميع اللاعبين (للإدارة)
-          const profiles = await SupabasePlayerService.getAllPlayers();
-          return profiles.map(this.profileToPlayer);
+          console.warn('⚠️ getPlayers called without userId - this may be a security issue');
+          return [];
         }
       } catch (error) {
         console.error('Error loading players from Supabase:', error);
         // العودة للتخزين المحلي في حالة الخطأ مع تمرير userId
         return this.getPlayersLocal(userId);
       }
+    } else {
+      return this.getPlayersLocal(userId);
     }
-    return this.getPlayersLocal();
   }
 
   private static getPlayersLocal(userId?: string): Player[] {
@@ -184,9 +187,18 @@ class PlayerService {
     return this.getPlayersLocal().find(p => p.id === playerId);
   }
 
-  static async updatePlayerProgress(playerId: string, gameType: string, score: number): Promise<void> {
+  static async updatePlayerProgress(playerId: string, gameType: string, score: number, userId?: string): Promise<void> {
     if (this.useSupabase) {
       try {
+        // التحقق من ملكية اللاعب إذا تم تمرير userId
+        if (userId) {
+          const player = await this.getPlayer(playerId);
+          if (!player || player.userId !== userId) {
+            console.error('❌ Security violation: Player does not belong to current user');
+            throw new Error('غير مسموح: اللاعب لا ينتمي للمستخدم الحالي');
+          }
+        }
+
         // حفظ النتيجة
         await ScoreService.saveScore({
           player_id: playerId,
@@ -198,9 +210,6 @@ class PlayerService {
         });
 
         // تحديث خبرة اللاعب
-        const experienceGained = Math.floor(score / 10);
-        const coinsEarned = Math.floor(score / 5);
-        
         // استخدام RPC functions لتحديث الخبرة والعملات
         // هذا يتطلب تنفيذ الوظائف في قاعدة البيانات
         
@@ -303,7 +312,7 @@ class PlayerService {
   }
 
   // تحديث لاعب
-  static async updatePlayer(userId: string, player: Player): Promise<void> {
+  static async updatePlayer(player: Player): Promise<void> {
     await this.savePlayer(player);
   }
 
@@ -311,6 +320,12 @@ class PlayerService {
   static async updateStoryStats(userId: string, playerId: string, stats: { totalRead: number; readingTime: number }): Promise<void> {
     const player = await this.getPlayer(playerId);
     if (player) {
+      // التحقق من ملكية اللاعب
+      if (player.userId !== userId) {
+        console.error('❌ Security violation: Player does not belong to current user');
+        throw new Error('غير مسموح: اللاعب لا ينتمي للمستخدم الحالي');
+      }
+      
       // تحديث إحصائيات القراءة
       player.storiesCompleted += stats.totalRead;
       
@@ -330,6 +345,7 @@ class PlayerService {
       player.totalScore += pointsEarned;
       
       await this.savePlayer(player);
+      console.log(`✅ Story stats updated for player: ${player.name} (User: ${userId})`);
     }
   }
 
