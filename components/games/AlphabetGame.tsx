@@ -891,7 +891,10 @@ export function AlphabetGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpda
       </div>
 
       {/* محتوى التحدي */}
-      {renderChallenge()}
+      {/* جعل لوحة التحدي تتمدد وتظهر كل الخيارات */}
+      <div className="w-full">
+        {renderChallenge()}
+      </div>
 
       {/* عرض الإنجازات */}
       <AnimatePresence>

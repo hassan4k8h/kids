@@ -283,9 +283,8 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
         </div>
 
         {/* Game Board at the top */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-3 sm:p-4 md:p-6 shadow-lg border border-white/20 grid"
-             style={{ minHeight: '55svh', maxHeight: '75svh', overflow: 'hidden' }}>
-          <div className="w-full h-full place-self-stretch">
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-3 sm:p-4 md:p-6 shadow-lg border border-white/20">
+          <div className="w-full">
             <GameEngine
               gameId={gameId}
               isRTL={isRTL}
