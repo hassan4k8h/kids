@@ -6,6 +6,7 @@ import { GameEngine, GameStats } from "./games/GameEngine";
 import PlayerService from "../services/PlayerService";
 import { motion, AnimatePresence } from "framer-motion";
 import { formatNumber, formatPercent, formatTimeMMSS, formatFraction } from "../utils/locale.ts";
+import { audioService } from "../services/AudioService";
 
 interface GameScreenProps {
   gameId: string;
@@ -32,11 +33,41 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
 
   // Countdown before game starts
   useEffect(() => {
+    // Optimize viewport and font scaling for small devices
+    const originalFontSize = getComputedStyle(document.documentElement).getPropertyValue('--font-size');
+    const adjustBaseFont = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const minSide = Math.min(w, h);
+      let scale = 1;
+      if (minSide < 360) scale = 0.85;
+      else if (minSide < 400) scale = 0.9;
+      else if (minSide < 450) scale = 0.95;
+      document.documentElement.style.setProperty('--font-size', `${Math.round(18 * scale)}px`);
+    };
+    adjustBaseFont();
+    window.addEventListener('resize', adjustBaseFont);
+
+    // Lock scroll and optimize touch while in game
+    const html = document.documentElement;
+    const body = document.body;
+    const prevOverflow = body.style.overflow;
+    body.style.overflow = 'hidden';
+    body.style.touchAction = 'none';
+    body.classList.add('game-active');
+
     if (showCountdown && countdown > 0) {
       const timer = setTimeout(() => {
         setCountdown(countdown - 1);
       }, 1000);
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener('resize', adjustBaseFont);
+        document.documentElement.style.setProperty('--font-size', originalFontSize || '18px');
+        body.style.overflow = prevOverflow;
+        body.style.touchAction = 'pan-y';
+        body.classList.remove('game-active');
+      };
     } else if (showCountdown && countdown === 0) {
       setShowCountdown(false);
       setGameStarted(true);
@@ -88,7 +119,7 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
 
   if (showCountdown) {
     return (
-      <div className={`min-h-screen bg-gradient-to-br from-purple-400 via-pink-400 to-blue-400 flex items-center justify-center ${isRTL ? 'rtl' : ''}`}>
+      <div className={`min-h-[100svh] min-h-screen bg-gradient-to-br from-purple-400 via-pink-400 to-blue-400 flex items-center justify-center ${isRTL ? 'rtl' : ''}`}>
         <motion.div
           key={countdown}
           initial={{ scale: 0, opacity: 0 }}
@@ -112,8 +143,8 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
 
   if (gameCompleted && gameResult) {
     return (
-      <div className={`min-h-screen bg-gradient-to-br from-yellow-200 via-orange-200 to-red-200 ${isRTL ? 'rtl' : ''}`}>
-        <div className="container-responsive safe-area-padding">
+      <div className={`min-h-[100svh] min-h-screen bg-gradient-to-br from-yellow-200 via-orange-200 to-red-200 ${isRTL ? 'rtl' : ''}`}>
+        <div className="container-responsive safe-area-padding flex flex-col min-h-[100svh] min-h-screen">
           {/* Header */}
           <div className="flex items-center justify-between mb-8 pt-4">
             <Button
@@ -133,7 +164,7 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="space-y-6"
+            className="space-y-4 flex-1"
           >
             {/* Trophy */}
             <div className="text-center">
@@ -194,10 +225,10 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3">
+            <div className="space-y-2 pb-4">
               <Button
                 onClick={resetGame}
-                className="w-full btn-fun bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600"
+                className="w-full btn-fun bg-gradient-to-r from-green-500 to-blue-500 text-white hover:from-green-600 hover:to-blue-600 min-h-[48px]"
               >
                 <RotateCcw className="w-5 h-5 mr-2" />
                 {isRTL ? "العب مرة أخرى" : "Play Again"}
@@ -206,7 +237,7 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
               <Button
                 onClick={onHome}
                 variant="outline"
-                className="w-full btn-fun border-2 border-gray-300 hover:border-gray-400"
+                className="w-full btn-fun border-2 border-gray-300 hover:border-gray-400 min-h-[48px]"
               >
                 <Home className="w-5 h-5 mr-2" />
                 {isRTL ? "الصفحة الرئيسية" : "Home"}
@@ -219,10 +250,10 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
   }
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 ${isRTL ? 'rtl' : ''}`}>
-      <div className="container-responsive safe-area-padding">
+    <div className={`min-h-[100svh] min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 ${isRTL ? 'rtl' : ''}`}>
+      <div className="container-responsive safe-area-padding flex flex-col min-h-[100svh] min-h-screen">
         {/* Header */}
-        <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-2xl p-4 mb-4">
+        <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-2xl p-3 mb-3">
           <div className="flex items-center justify-between mb-4">
             <Button
               variant="ghost"
@@ -232,7 +263,7 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
               {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
             </Button>
             
-            <h2 className="font-bold text-lg text-gray-800 text-center">
+            <h2 className="font-bold text-[clamp(14px,4vw,18px)] text-gray-800 text-center">
               {isRTL ? gameNameAr : gameName}
             </h2>
             
@@ -247,19 +278,19 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
 
           {/* Game stats */}
           <div className="grid grid-cols-4 gap-2">
-            <div className="bg-yellow-50 rounded-xl p-3 text-center border border-yellow-200">
-              <div className="text-yellow-600 font-bold text-lg">{formatNumber(score, isRTL)}</div>
+            <div className="bg-yellow-50 rounded-xl p-2 text-center border border-yellow-200">
+              <div className="text-yellow-600 font-bold text-[clamp(12px,3.5vw,16px)]">{formatNumber(score, isRTL)}</div>
               <div className="text-xs text-yellow-700">{isRTL ? "النقاط" : "Score"}</div>
             </div>
-            <div className="bg-blue-50 rounded-xl p-3 text-center border border-blue-200">
-              <div className="text-blue-600 font-bold text-lg">{formatNumber(level, isRTL)}</div>
+            <div className="bg-blue-50 rounded-xl p-2 text-center border border-blue-200">
+              <div className="text-blue-600 font-bold text-[clamp(12px,3.5vw,16px)]">{formatNumber(level, isRTL)}</div>
               <div className="text-xs text-blue-700">{isRTL ? "المستوى" : "Level"}</div>
             </div>
-            <div className="bg-red-50 rounded-xl p-3 text-center border border-red-200">
+            <div className="bg-red-50 rounded-xl p-2 text-center border border-red-200">
               <div className="text-red-600 font-bold text-lg">{"❤️".repeat(lives)}</div>
               <div className="text-xs text-red-700">{isRTL ? "الحياة" : "Lives"}</div>
             </div>
-            <div className="bg-green-50 rounded-xl p-3 text-center border border-green-200">
+            <div className="bg-green-50 rounded-xl p-2 text-center border border-green-200">
               <div className="text-green-600 font-bold text-sm flex items-center justify-center space-x-1 rtl:space-x-reverse">
                 <Clock className="w-3 h-3" />
                 <span>{formatTime(timeLeft)}</span>
@@ -269,35 +300,37 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
           </div>
 
           {/* Progress bar */}
-          <div className="mt-4">
+          <div className="mt-3">
             <Progress value={(300 - timeLeft) / 300 * 100} className="h-2" />
           </div>
         </div>
 
         {/* Game Area */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-6 min-h-[500px] shadow-lg border border-white/20">
-          <GameEngine
-            gameId={gameId}
-            isRTL={isRTL}
-            onGameComplete={handleGameComplete}
-            onScoreUpdate={setScore}
-            onLivesUpdate={setLives}
-            onLevelUpdate={setLevel}
-          />
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-3 sm:p-4 md:p-6 shadow-lg border border-white/20 flex-1 min-h-0">
+          <div className="w-full h-full">
+            <GameEngine
+              gameId={gameId}
+              isRTL={isRTL}
+              onGameComplete={handleGameComplete}
+              onScoreUpdate={setScore}
+              onLivesUpdate={setLives}
+              onLevelUpdate={setLevel}
+            />
+          </div>
         </div>
 
         {/* Game controls */}
-        <div className="flex justify-center space-x-4 rtl:space-x-reverse mt-6">
+        <div className="flex justify-center space-x-3 rtl:space-x-reverse mt-3 pb-3">
           <Button
             onClick={() => setIsPaused(!isPaused)}
-            className="btn-fun bg-white text-purple-600 hover:bg-gray-50 shadow-lg border border-purple-200"
+            className="btn-fun bg-white text-purple-600 hover:bg-gray-50 shadow-lg border border-purple-200 min-h-[44px]"
           >
             {isPaused ? <Play className="w-5 h-5 mr-2" /> : <Pause className="w-5 h-5 mr-2" />}
             {isPaused ? (isRTL ? "استئناف" : "Resume") : (isRTL ? "إيقاف" : "Pause")}
           </Button>
           <Button
             onClick={resetGame}
-            className="btn-fun bg-white text-red-600 hover:bg-gray-50 shadow-lg border border-red-200"
+            className="btn-fun bg-white text-red-600 hover:bg-gray-50 shadow-lg border border-red-200 min-h-[44px]"
           >
             <RotateCcw className="w-5 h-5 mr-2" />
             {isRTL ? "إعادة تشغيل" : "Restart"}
