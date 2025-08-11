@@ -257,7 +257,7 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
   }
 
   return (
-    <div className={`min-h-[100svh] min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 ${isRTL ? 'rtl' : ''}`}>
+    <div className={`min-h-[100svh] min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 overflow-y-auto ${isRTL ? 'rtl' : ''}`}>
       <div className="container-responsive safe-area-padding flex flex-col min-h-[100svh] min-h-screen">
         {/* Header */}
         <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-2xl p-3 mb-3">
@@ -313,7 +313,8 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
         </div>
 
         {/* Game Area */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-3 sm:p-4 md:p-6 shadow-lg border border-white/20 flex-1 min-h-0 grid">
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-3 sm:p-4 md:p-6 shadow-lg border border-white/20 grid"
+             style={{ minHeight: '55svh', maxHeight: '75svh', overflow: 'hidden' }}>
           <div className="w-full h-full place-self-stretch">
             <GameEngine
               gameId={gameId}
@@ -327,7 +328,7 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
         </div>
 
         {/* Game controls */}
-        <div className="flex justify-center space-x-3 rtl:space-x-reverse mt-3 pb-3 sticky bottom-2 z-20">
+        <div className="flex justify-center space-x-3 rtl:space-x-reverse mt-3 pb-5">
           <Button
             onClick={() => setIsPaused(!isPaused)}
             className="btn-fun bg-white text-purple-600 hover:bg-gray-50 shadow-lg border border-purple-200 min-h-[44px]"
