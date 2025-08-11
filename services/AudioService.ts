@@ -5,6 +5,8 @@ class AudioService {
   private soundEnabled: boolean = true;
   private volume: number = 0.7;
   private currentBackgroundMusic: HTMLAudioElement | null = null;
+  // مصادر أصوات الحيوانات النشطة حالياً لإيقافها عند الانتقال/الإغلاق
+  private activeAnimalSources: Set<AudioBufferSourceNode> = new Set();
 
   constructor() {
     this.initializeAudio();
@@ -330,6 +332,7 @@ class AudioService {
     this.soundEnabled = enabled;
     if (!enabled) {
       this.stopBackgroundMusic();
+      this.stopAnimalSounds();
     }
   }
 
@@ -410,6 +413,9 @@ class AudioService {
         gainNode.gain.value = this.volume;
         source.connect(gainNode);
         gainNode.connect(this.audioContext.destination);
+        // تتبع المصدر لإمكانية إيقافه لاحقاً
+        this.activeAnimalSources.add(source);
+        source.onended = () => this.activeAnimalSources.delete(source);
         source.start();
         return;
       }
@@ -425,10 +431,31 @@ class AudioService {
       gainNode.gain.value = this.volume * 0.5;
       source.connect(gainNode);
       gainNode.connect(this.audioContext.destination);
+      this.activeAnimalSources.add(source);
+      source.onended = () => this.activeAnimalSources.delete(source);
       source.start();
     } catch (e) {
       console.warn('Error playing fallback animal tone:', e);
     }
+  }
+
+  // إيقاف كل أصوات الحيوانات النشطة وإلغاء نطق الأسماء
+  stopAnimalSounds(): void {
+    try {
+      this.activeAnimalSources.forEach(src => {
+        try { src.stop(); } catch {}
+      });
+      this.activeAnimalSources.clear();
+      if ('speechSynthesis' in window) {
+        try { speechSynthesis.cancel(); } catch {}
+      }
+    } catch {}
+  }
+
+  // إيقاف كل المؤثرات الصوتية (يُستخدم عند مغادرة اللعبة)
+  stopAllSounds(): void {
+    this.stopBackgroundMusic();
+    this.stopAnimalSounds();
   }
 
   // نطق أسماء الحيوانات
@@ -471,6 +498,7 @@ class AudioService {
   // تنظيف الذاكرة
   dispose(): void {
     this.stopBackgroundMusic();
+    this.stopAnimalSounds();
     this.audioCache.clear();
     if (this.audioContext) {
       this.audioContext.close();

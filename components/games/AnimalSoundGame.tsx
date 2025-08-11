@@ -311,6 +311,13 @@ export function AnimalSoundGame({ isRTL, onGameComplete, onScoreUpdate, onLivesU
     }
   }, [currentChallenge, level, getDifficultySettings, playAnimalSound]);
 
+  // إيقاف أي صوت عند تفكيك اللعبة (مغادرة الصفحة/اللعبة)
+  useEffect(() => {
+    return () => {
+      audioService.stopAllSounds();
+    };
+  }, []);
+
   // معالجة الإجابة
   const handleAnswer = useCallback(async (selectedAnimal: typeof animalDatabase[0]) => {
     if (isAnswering || !currentChallenge) return;
