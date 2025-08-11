@@ -44,15 +44,15 @@ export function MenuHeader({
       animate={{ opacity: 1, y: 0 }}
       className="bg-white/95 backdrop-blur-sm shadow-lg rounded-3xl p-6 mb-6 border border-white/50"
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         {/* Player Info Section */}
-        <div className="flex items-center space-x-4 rtl:space-x-reverse">
+        <div className="flex items-center space-x-4 rtl:space-x-reverse min-w-0">
           <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
             className="relative"
           >
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center border-3 border-gradient-to-r from-purple-400 to-pink-400 overflow-hidden bg-gradient-to-br from-purple-100 to-pink-100 shadow-lg">
+            <div className="w-[clamp(44px,10vw,64px)] h-[clamp(44px,10vw,64px)] rounded-2xl flex items-center justify-center border-3 border-gradient-to-r from-purple-400 to-pink-400 overflow-hidden bg-gradient-to-br from-purple-100 to-pink-100 shadow-lg">
               {isImageAvatar ? (
                 <img 
                   src={playerAvatar} 
@@ -60,7 +60,7 @@ export function MenuHeader({
                   className="w-full h-full object-cover rounded-xl"
                 />
               ) : (
-                <span className="text-3xl">{playerAvatar}</span>
+                 <span className="text-[clamp(20px,5vw,28px)]">{playerAvatar}</span>
               )}
             </div>
             {/* Online Status Indicator */}
@@ -69,11 +69,11 @@ export function MenuHeader({
             </div>
           </motion.div>
           
-          <div>
+           <div className="min-w-0">
             <motion.h2
               initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="text-2xl font-bold text-gray-800 mb-1"
+               className="text-[clamp(18px,4.5vw,24px)] font-bold text-gray-800 mb-1 truncate"
             >
               {isRTL ? `مرحباً ${playerName}! 👋` : `Hello ${playerName}! 👋`}
             </motion.h2>
@@ -81,7 +81,7 @@ export function MenuHeader({
               initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="flex items-center space-x-3 rtl:space-x-reverse"
+              className="flex items-center space-x-3 rtl:space-x-reverse flex-wrap gap-y-1"
             >
               <p className="text-gray-600 font-medium">
                 {isRTL ? "جاهز للتعلم والمرح!" : "Ready to learn and have fun!"}
@@ -97,7 +97,7 @@ export function MenuHeader({
         </div>
         
         {/* Controls Section */}
-        <div className="flex items-center space-x-3 rtl:space-x-reverse">
+        <div className="flex items-center space-x-3 rtl:space-x-reverse flex-wrap">
           {/* View Mode Toggle */}
           <div className="flex bg-gray-100 rounded-xl p-1 shadow-inner">
             <Button
@@ -127,7 +127,7 @@ export function MenuHeader({
           </div>
           
           {/* Action Buttons */}
-          <div className="flex items-center space-x-2 rtl:space-x-reverse">
+          <div className="flex items-center space-x-2 rtl:space-x-reverse flex-wrap">
             {/* Switch Player Button */}
             <motion.div 
               whileHover={{ scale: 1.05 }} 
@@ -158,7 +158,7 @@ export function MenuHeader({
               >
                 <Gift className="w-5 h-5" />
                 {/* Notification Badge */}
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full">
+                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full">
                   <div className="w-full h-full bg-red-400 rounded-full animate-ping"></div>
                 </div>
               </Button>

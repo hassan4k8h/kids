@@ -89,7 +89,7 @@ export function MainMenu({
         <div className="absolute bottom-20 right-10 w-28 h-28 bg-blue-300/10 rounded-full blur-xl animate-bounce"></div>
       </div>
 
-      <div className="container-pro py-6 space-y-6 relative z-10">
+      <div className="container-professional safe-area-padding py-6 space-y-6 relative z-10">
         {/* Header */}
         <MenuHeader
           playerName={playerName}
@@ -149,30 +149,30 @@ export function MainMenu({
               </div>
             </div>
 
-            <div className="relative z-10 flex items-center justify-between">
-              <div className="flex items-center space-x-6 rtl:space-x-reverse">
+            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="flex items-center space-x-4 rtl:space-x-reverse min-w-0">
                 <motion.div 
-                  className="w-20 h-20 bg-white/25 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30"
+                  className="w-[clamp(48px,12vw,80px)] h-[clamp(48px,12vw,80px)] bg-white/25 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30"
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <BookOpen className="w-10 h-10" />
+                  <BookOpen className="w-[clamp(20px,6vw,40px)] h-[clamp(20px,6vw,40px)]" />
                 </motion.div>
-                <div>
-                  <h3 className="font-ultra-bold mb-2 text-ultra-clear" style={{ fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+                <div className="min-w-0">
+                  <h3 className="font-ultra-bold mb-2 text-ultra-clear truncate" style={{ fontSize: 'clamp(1.25rem, 4.5vw, 2rem)' }}>
                     {isRTL ? "قصص البطل المغامر" : "Hero Adventure Stories"}
                   </h3>
-                  <p className="text-white/95 font-bold text-super-clear" style={{ fontSize: 'clamp(1rem, 2.5vw, 1.375rem)' }}>
+                  <p className="text-white/95 font-bold text-super-clear" style={{ fontSize: 'clamp(0.95rem, 3vw, 1.25rem)' }}>
                     {isRTL ? `كن البطل في قصتك يا ${playerName}!` : `Be the hero of your story, ${playerName}!`}
                   </p>
-                  <div className="flex items-center space-x-4 rtl:space-x-reverse mt-3">
+                  <div className="flex flex-wrap items-center gap-2 mt-3">
                     <div className="flex items-center space-x-2 rtl:space-x-reverse text-yellow-300">
                       <Star className="w-5 h-5 fill-current" />
-                      <span className="font-extra-bold text-super-clear">{isRTL ? "٢٠٠+ قصة تفاعلية" : "200+ Interactive Stories"}</span>
+                      <span className="font-extra-bold text-super-clear whitespace-nowrap">{isRTL ? "٢٠٠+ قصة تفاعلية" : "200+ Interactive Stories"}</span>
                     </div>
                     <div className="flex items-center space-x-2 rtl:space-x-reverse text-pink-200">
                       <Crown className="w-5 h-5" />
-                      <span className="font-extra-bold text-super-clear">{isRTL ? "١٠ أبطال خارقين" : "10 Superheroes"}</span>
+                      <span className="font-extra-bold text-super-clear whitespace-nowrap">{isRTL ? "١٠ أبطال خارقين" : "10 Superheroes"}</span>
                     </div>
                   </div>
                 </div>
@@ -189,8 +189,8 @@ export function MainMenu({
                   style={{
                     background: 'linear-gradient(135deg, #ffffff 0%, #f8faff 100%)',
                     boxShadow: '0 15px 35px rgba(0, 0, 0, 0.2), 0 8px 15px rgba(0, 0, 0, 0.1)',
-                    minHeight: 'clamp(64px, 12vw, 80px)',
-                    minWidth: 'clamp(180px, 25vw, 220px)',
+                    minHeight: 'clamp(56px, 12vw, 80px)',
+                    minWidth: 'clamp(160px, 40vw, 220px)',
                     padding: 'clamp(12px, 3vw, 20px) clamp(20px, 4vw, 32px)'
                   }}
                 >
@@ -212,7 +212,7 @@ export function MainMenu({
                     <span 
                       className="font-ultra-bold text-ultra-clear"
                       style={{
-                        fontSize: 'clamp(1.125rem, 3vw, 1.5rem)',
+                        fontSize: 'clamp(1rem, 3.5vw, 1.25rem)',
                         background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 50%, #3b82f6 100%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
