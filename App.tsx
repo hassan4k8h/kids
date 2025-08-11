@@ -244,6 +244,11 @@ export default function App() {
     // تطبيق النصوص السوداء على الجسم
     document.body.style.color = '#000000';
     document.body.classList.add('font-semi-bold');
+    // منع السحب الأفقي وإظهار انزلاقات غير مقصودة
+    document.documentElement.style.overflowX = 'hidden';
+    document.body.style.overflowX = 'hidden';
+    document.body.style.overscrollBehaviorX = 'none';
+    document.body.style.touchAction = 'pan-y';
   }, [isRTL]);
 
   // ملاحظة: تم إزالة معالجة URL parameters لأن النظام الجديد يستخدم كود التوثيق بدلاً من الروابط

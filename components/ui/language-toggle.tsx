@@ -41,7 +41,7 @@ export function LanguageToggle({
             `}
           >
             <div className="flex items-center space-x-3 rtl:space-x-reverse">
-              <span className="text-2xl">🇸🇦</span>
+              <span className="text-2xl">🇮🇶</span>
               <span className="font-ultra-bold text-super-clear">عربي</span>
               {isRTL && (
                 <motion.div
@@ -131,7 +131,7 @@ export function LanguageToggle({
             isRTL ? 'bg-purple-500 text-white' : 'text-gray-600 hover:bg-gray-100'
           }`}
         >
-          🇸🇦
+          🇮🇶
         </Button>
         <Button
           variant="ghost"
@@ -166,7 +166,7 @@ export function LanguageToggle({
           `}
         >
           <div className="flex items-center space-x-2 rtl:space-x-reverse">
-            <span className="text-lg">🇸🇦</span>
+            <span className="text-lg">🇮🇶</span>
             <span className="font-extra-bold">عربي</span>
             {isRTL && (
               <motion.div
