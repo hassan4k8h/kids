@@ -1,22 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { formatNumber } from "./utils/locale.ts";
 import { WelcomeScreen } from "./components/WelcomeScreen.tsx";
-import { LoginScreen } from "./components/auth/LoginScreen.tsx";
-import { SignupScreen } from "./components/auth/SignupScreen.tsx";
-import { ForgotPasswordScreen } from "./components/auth/ForgotPasswordScreen.tsx";
-import { ResetPasswordScreen } from "./components/auth/ResetPasswordScreen.tsx";
-import { PlayerSetupScreen } from "./components/PlayerSetupScreen.tsx";
-import { PlayerSelectionScreen } from "./components/PlayerSelectionScreen.tsx";
-import { MainMenu } from "./components/MainMenu.tsx";
-import { GameScreen } from "./components/GameScreen.tsx";
-import { RewardsScreen } from "./components/RewardsScreen.tsx";
-import { SettingsScreen } from "./components/SettingsScreen.tsx";
-import { AchievementsScreen } from "./components/AchievementsScreen.tsx";
-import { StoryEngine } from "./components/stories/StoryEngine.tsx";
-import { SubscriptionScreen } from "./components/subscription/SubscriptionScreen.tsx";
 import { UpgradePrompt } from "./components/subscription/UpgradePrompt.tsx";
-import { EmailTest } from "./components/EmailTest.tsx";
-import { EmailTestFull } from "./components/EmailTestFull.tsx";
+import { audioService } from "./services/AudioService.ts";
+
+// Lazy-loaded screens to reduce initial bundle size
+const LoginScreen = React.lazy(() => import("./components/auth/LoginScreen.tsx").then(m => ({ default: m.LoginScreen })));
+const SignupScreen = React.lazy(() => import("./components/auth/SignupScreen.tsx").then(m => ({ default: m.SignupScreen })));
+const ForgotPasswordScreen = React.lazy(() => import("./components/auth/ForgotPasswordScreen.tsx").then(m => ({ default: m.ForgotPasswordScreen })));
+const ResetPasswordScreen = React.lazy(() => import("./components/auth/ResetPasswordScreen.tsx").then(m => ({ default: m.ResetPasswordScreen })));
+const PlayerSetupScreen = React.lazy(() => import("./components/PlayerSetupScreen.tsx").then(m => ({ default: m.PlayerSetupScreen })));
+const PlayerSelectionScreen = React.lazy(() => import("./components/PlayerSelectionScreen.tsx").then(m => ({ default: m.PlayerSelectionScreen })));
+const MainMenu = React.lazy(() => import("./components/MainMenu.tsx").then(m => ({ default: m.MainMenu })));
+const GameScreen = React.lazy(() => import("./components/GameScreen.tsx").then(m => ({ default: m.GameScreen })));
+const RewardsScreen = React.lazy(() => import("./components/RewardsScreen.tsx").then(m => ({ default: m.RewardsScreen })));
+const SettingsScreen = React.lazy(() => import("./components/SettingsScreen.tsx").then(m => ({ default: m.SettingsScreen })));
+const AchievementsScreen = React.lazy(() => import("./components/AchievementsScreen.tsx").then(m => ({ default: m.AchievementsScreen })));
+const StoryEngine = React.lazy(() => import("./components/stories/StoryEngine.tsx").then(m => ({ default: m.StoryEngine })));
+const SubscriptionScreen = React.lazy(() => import("./components/subscription/SubscriptionScreen.tsx").then(m => ({ default: m.SubscriptionScreen })));
+const EmailTest = React.lazy(() => import("./components/EmailTest.tsx").then(m => ({ default: m.EmailTest })));
+const EmailTestFull = React.lazy(() => import("./components/EmailTestFull.tsx").then(m => ({ default: m.EmailTestFull })));
 import { gameNames } from "./constants/games.ts";
 import { Player } from "./types/Player.ts";
 import { User, AuthState } from "./types/Auth.ts";
@@ -444,6 +447,8 @@ export default function App() {
   // معالجات اللعبة مع فحص الحدود
   const handleGameSelect = (gameId: string, level: number = 1) => {
     if (!currentUser) return;
+    // إيقاف أي أصوات قبل الدخول للعبة
+    try { audioService.stopAllSounds(); } catch {}
     
     // تسجيل استخدام اللعبة
     subscriptionService.recordUsage(currentUser.id, 'game', level);
@@ -461,6 +466,8 @@ export default function App() {
 
   const handleStoriesSelect = () => {
     if (!currentUser) return;
+    // إيقاف أي أصوات قبل فتح القصص
+    try { audioService.stopAllSounds(); } catch {}
     
     setCurrentScreen("stories");
     console.log(`📚 Stories opened for user ${currentUser.id}`);
@@ -513,11 +520,13 @@ export default function App() {
   };
 
   const handleSwitchPlayer = () => {
+    try { audioService.stopAllSounds(); } catch {}
     setCurrentScreen("playerSelection");
     console.log('🔄 Switching to player selection');
   };
 
   const handleBackToMainMenu = () => {
+    try { audioService.stopAllSounds(); } catch {}
     setCurrentScreen("mainMenu");
     setCurrentGame(null);
   };
@@ -525,6 +534,7 @@ export default function App() {
   // تسجيل الخروج
   const handleLogout = async () => {
     console.log('👋 Logging out user...');
+    try { audioService.stopAllSounds(); } catch {}
     
     await authService.logout();
     setCurrentPlayer(null);
@@ -801,7 +811,9 @@ export default function App() {
       style={{ color: '#000000' }}
     >
       <div style={{ color: '#000000' }}>
-        {renderCurrentScreen()}
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-12 h-12 border-4 border-gray-300 border-t-primary-500 rounded-full animate-spin" /></div>}>
+          {renderCurrentScreen()}
+        </Suspense>
       </div>
       
       {/* عرض رسائل الأخطاء */}
