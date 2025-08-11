@@ -452,6 +452,7 @@ export default function App() {
   // معالجات اللعبة مع فحص الحدود
   const handleGameSelect = (gameId: string, level: number = 1) => {
     if (!currentUser) return;
+    try { localStorage.setItem('scroll_pos_main', String(window.scrollY || 0)); } catch {}
     // إيقاف أي أصوات قبل الدخول للعبة
     try { audioService.stopAllSounds(); } catch {}
     
@@ -471,6 +472,7 @@ export default function App() {
 
   const handleStoriesSelect = () => {
     if (!currentUser) return;
+    try { localStorage.setItem('scroll_pos_main', String(window.scrollY || 0)); } catch {}
     // إيقاف أي أصوات قبل فتح القصص
     try { audioService.stopAllSounds(); } catch {}
     
@@ -534,6 +536,14 @@ export default function App() {
     try { audioService.stopAllSounds(); } catch {}
     setCurrentScreen("mainMenu");
     setCurrentGame(null);
+    setTimeout(() => {
+      try {
+        const y = parseInt(localStorage.getItem('scroll_pos_main') || '0', 10);
+        document.body.classList.add('main-scroll-restored');
+        window.scrollTo(0, isNaN(y) ? 0 : y);
+        setTimeout(() => document.body.classList.remove('main-scroll-restored'), 50);
+      } catch {}
+    }, 0);
   };
 
   // تسجيل الخروج

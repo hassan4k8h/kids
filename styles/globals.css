@@ -208,6 +208,11 @@
     letter-spacing: 0.01em;
   }
 
+  /* استعادة التمرير بعد العودة من اللعبة مباشرة */
+  .main-scroll-restored {
+    scroll-behavior: auto !important;
+  }
+
   /* Enhanced scrollbar */
   ::-webkit-scrollbar {
     width: 12px;
