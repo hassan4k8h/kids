@@ -99,30 +99,32 @@ export function MenuHeader({
         {/* Controls Section */}
         <div className="flex items-center space-x-3 rtl:space-x-reverse flex-wrap w-full md:w-auto md:ms-auto gap-2">
           {/* View Mode Toggle */}
-          <div className="flex bg-gray-100 rounded-xl p-0.5 sm:p-1 shadow-inner">
+          <div className="flex bg-white rounded-xl p-1 shadow-inner border border-gray-200">
             <Button
-              variant="ghost"
+              variant="default"
               size="sm"
               onClick={() => onViewModeChange('grid')}
-              className={`p-2 sm:p-3 rounded-lg transition-all duration-300 ${
+              className={`px-3 py-2 rounded-lg transition-all duration-300 border-2 ${
                 viewMode === 'grid' 
-                  ? 'bg-white shadow-md text-blue-600' 
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'border-blue-400 shadow-md' 
+                  : 'border-gray-300'
               }`}
             >
               <Grid className="w-4 h-4" />
+              <span className="text-sm font-bold">{isRTL ? 'شبكي' : 'Grid'}</span>
             </Button>
             <Button
-              variant="ghost"
+              variant="default"
               size="sm"
               onClick={() => onViewModeChange('list')}
-              className={`p-2 sm:p-3 rounded-lg transition-all duration-300 ${
+              className={`px-3 py-2 rounded-lg transition-all duration-300 border-2 ${
                 viewMode === 'list' 
-                  ? 'bg-white shadow-md text-blue-600' 
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'border-blue-400 shadow-md' 
+                  : 'border-gray-300'
               }`}
             >
               <List className="w-4 h-4" />
+              <span className="text-sm font-bold">{isRTL ? 'قائمة' : 'List'}</span>
             </Button>
           </div>
           
@@ -134,13 +136,14 @@ export function MenuHeader({
               whileTap={{ scale: 0.95 }}
             >
               <Button
-                variant="ghost"
+                variant="default"
                 size="sm"
                 onClick={onSwitchPlayer}
-                className="p-2 sm:p-3 hover:bg-blue-50 rounded-xl shadow-md border border-blue-100 text-blue-600 hover:text-blue-700 transition-all duration-300"
+                className="px-3 py-2 rounded-xl shadow-md border-2 border-gray-300 text-black transition-all duration-300"
                 title={isRTL ? "تبديل اللاعب" : "Switch Player"}
               >
                 <Users className="w-5 h-5" />
+                <span className="text-sm font-bold">{isRTL ? 'تبديل اللاعب' : 'Switch'}</span>
               </Button>
             </motion.div>
             
@@ -150,13 +153,14 @@ export function MenuHeader({
               whileTap={{ scale: 0.95 }}
             >
               <Button
-                variant="ghost"
+                variant="default"
                 size="sm"
                 onClick={onRewards}
-                className="p-2 sm:p-3 hover:bg-yellow-50 rounded-xl shadow-md border border-yellow-100 text-yellow-600 hover:text-yellow-700 transition-all duration-300 relative"
+                className="px-3 py-2 rounded-xl shadow-md border-2 border-gray-300 text-black transition-all duration-300 relative"
                 title={isRTL ? "المكافآت" : "Rewards"}
               >
                 <Gift className="w-5 h-5" />
+                <span className="text-sm font-bold">{isRTL ? 'المكافآت' : 'Rewards'}</span>
                 {/* Notification Badge */}
                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full">
                   <div className="w-full h-full bg-red-400 rounded-full animate-ping"></div>
@@ -170,13 +174,14 @@ export function MenuHeader({
               whileTap={{ scale: 0.95 }}
             >
               <Button
-                variant="ghost"
+                variant="default"
                 size="sm"
                 onClick={onAchievements}
-                className="p-2 sm:p-3 hover:bg-purple-50 rounded-xl shadow-md border border-purple-100 text-purple-600 hover:text-purple-700 transition-all duration-300"
+                className="px-3 py-2 rounded-xl shadow-md border-2 border-gray-300 text-black transition-all duration-300"
                 title={isRTL ? "الإنجازات" : "Achievements"}
               >
                 <Trophy className="w-5 h-5" />
+                <span className="text-sm font-bold">{isRTL ? 'الإنجازات' : 'Achievements'}</span>
               </Button>
             </motion.div>
             
@@ -186,13 +191,14 @@ export function MenuHeader({
               whileTap={{ scale: 0.95 }}
             >
               <Button
-                variant="ghost"
+                variant="default"
                 size="sm"
                 onClick={onSettings}
-                className="p-2 sm:p-3 hover:bg-gray-50 rounded-xl shadow-md border border-gray-200 text-gray-600 hover:text-gray-700 transition-all duration-300"
+                className="px-3 py-2 rounded-xl shadow-md border-2 border-gray-300 text-black transition-all duration-300"
                 title={isRTL ? "الإعدادات" : "Settings"}
               >
                 <Settings className="w-5 h-5" />
+                <span className="text-sm font-bold">{isRTL ? 'الإعدادات' : 'Settings'}</span>
               </Button>
             </motion.div>
           </div>
