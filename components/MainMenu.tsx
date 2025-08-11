@@ -80,7 +80,7 @@ export function MainMenu({
   })();
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 ${isRTL ? 'rtl' : ''}`}>
+    <div className={`min-h-screen bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 ${isRTL ? 'rtl' : ''}`} style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
       {/* Floating Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-32 h-32 bg-white/5 rounded-full blur-xl animate-float"></div>
@@ -89,7 +89,7 @@ export function MainMenu({
         <div className="absolute bottom-20 right-10 w-28 h-28 bg-blue-300/10 rounded-full blur-xl animate-bounce"></div>
       </div>
 
-      <div className="container-professional safe-area-padding py-6 space-y-6 relative z-10">
+      <div className="container-professional safe-area-padding py-6 space-y-6 relative z-10" style={{ overflow: 'visible' }}>
         {/* Header */}
         <MenuHeader
           playerName={playerName}

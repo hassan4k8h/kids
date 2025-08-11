@@ -206,8 +206,8 @@
     font-feature-settings: "rlig" 1, "calt" 1, "kern" 1;
     font-weight: var(--font-weight-normal);
     overflow-x: hidden;
-    overscroll-behavior-x: none;
-    overscroll-behavior-y: contain;
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: auto;
     touch-action: pan-y;
     -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
     scroll-behavior: smooth;
@@ -244,15 +244,15 @@
 }
 
 /* Ensure game layout uses the full small viewport height on mobile */
-.min-h-svh {
-  min-height: 100svh;
-}
+.min-h-svh { min-height: 100svh; }
+.min-h-screen { min-height: 100svh; }
 
 /* ULTIMATE BLACK TEXT ENFORCEMENT - STRONGEST POSSIBLE RULES */
 
   /* Global black text enforcement (softened to avoid blocking interaction styles) */
-  :root, body, .card-professional, .input-professional {
-    color: #000000 !important;
+  :root, body, .card-professional, .input-professional, .text-clear, .text-super-clear, .text-ultra-clear {
+    color: #0b1020 !important; /* very dark navy for better readability on gradients */
+    text-shadow: none;
   }
 
 /* Remove overly aggressive global text coloring to avoid conflicts */
@@ -536,8 +536,8 @@ button[class*="outline"]:not(.btn-primary):not(.btn-fun):hover {
   border-radius: var(--radius-2xl);
   font-size: var(--text-large);
   font-weight: var(--font-weight-extra-bold);
-  letter-spacing: 0.025em;
-  text-shadow: var(--shadow-text-strong);
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.25);
   box-shadow: var(--shadow-large);
   position: relative;
   overflow: hidden;

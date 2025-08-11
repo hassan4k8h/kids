@@ -566,23 +566,22 @@ export default function App() {
 
   const handleBackToMainMenu = () => {
     try { audioService.stopAllSounds(); } catch {}
-    // استخدم history للعودة للصفحة السابقة إن أمكن
-    try {
-      if (window.history.length > 1) {
-        window.history.back();
-      } else {
-        setCurrentScreen("mainMenu");
-      }
-    } catch {
-      setCurrentScreen("mainMenu");
-    }
+    // ارجع دائماً للقائمة الرئيسية لضمان استقرار التمرير
+    setCurrentScreen("mainMenu");
     setCurrentGame(null);
+    // استعادة موضع التمرير بعد أن يتم تركيب القائمة
     setTimeout(() => {
       try {
         const y = parseInt(localStorage.getItem('scroll_pos_main') || '0', 10);
+        document.documentElement.style.overflowY = 'auto';
+        document.body.style.overflowY = 'auto';
         document.body.classList.add('main-scroll-restored');
-        window.scrollTo(0, isNaN(y) ? 0 : y);
-        setTimeout(() => document.body.classList.remove('main-scroll-restored'), 50);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            window.scrollTo(0, isNaN(y) ? 0 : y);
+            setTimeout(() => document.body.classList.remove('main-scroll-restored'), 100);
+          });
+        });
       } catch {}
     }, 0);
   };
