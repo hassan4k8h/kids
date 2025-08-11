@@ -141,11 +141,13 @@ export function SignupScreen({
       if (result.success) {
         console.log('✅ Signup successful:', result.user);
         setSuccess(isRTL ? 'تم إنشاء الحساب بنجاح! مرحباً بك في سكيلو!' : 'Account created successfully! Welcome to Skilloo!');
-        
-        // تقليل التأخير لتحسين تجربة المستخدم
+        try {
+          if (formData.email) localStorage.setItem('prefill_login_email', formData.email.trim());
+        } catch {}
+        // تحويل سريع إلى شاشة تسجيل الدخول
         setTimeout(() => {
           onSignupSuccess();
-        }, 500);
+        }, 300);
       } else {
         console.log('❌ Signup failed:', result.error);
         setErrors({

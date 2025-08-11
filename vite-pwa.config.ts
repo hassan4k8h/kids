@@ -2,7 +2,17 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export const pwaConfig = VitePWA({
   registerType: 'autoUpdate',
-  includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'safari-pinned-tab.svg'],
+  includeAssets: [
+    'favicon.ico',
+    'apple-touch-icon.png',
+    'safari-pinned-tab.svg',
+    'icons/pwa-64x64.png',
+    'icons/icon-144x144.png',
+    'icons/pwa-192x192.png',
+    'icons/pwa-512x512.png',
+    'icons/maskable-icon-512x512.png',
+    'icons/apple-touch-icon-180x180.png'
+  ],
   manifest: {
     name: 'Kids Educational Game - لعبة تعليمية للأطفال',
     short_name: 'KidsGame',

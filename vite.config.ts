@@ -24,7 +24,13 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/pwa-64x64.png', 'icons/apple-touch-icon-180x180.png', 'icons/maskable-icon-512x512.png'],
+      includeAssets: [
+        'icons/pwa-64x64.png',
+        'icons/pwa-192x192.png',
+        'icons/pwa-512x512.png',
+        'icons/maskable-icon-512x512.png',
+        'icons/apple-touch-icon-180x180.png'
+      ],
       manifest: {
         name: 'سكيلو - تطبيق تعليمي تفاعلي للأطفال',
         short_name: 'سكيلو',
@@ -39,22 +45,11 @@ export default defineConfig({
         dir: 'rtl',
         categories: ['education', 'kids', 'games'],
         icons: [
-          {
-            src: 'icons/pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: 'icons/pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          },
-          {
-            src: 'icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
+          { src: '/icons/pwa-64x64.png', sizes: '64x64', type: 'image/png' },
+          { src: '/icons/pwa-192x192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/icons/pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/icons/maskable-icon-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable any' },
+          { src: '/icons/apple-touch-icon-180x180.png', sizes: '180x180', type: 'image/png', purpose: 'apple touch icon' }
         ],
         shortcuts: [
           {
@@ -62,14 +57,14 @@ export default defineConfig({
             short_name: 'حروف',
             description: 'تعلم الحروف العربية',
             url: '/letters',
-            icons: [{ src: 'icon-192x192.png', sizes: '192x192' }]
+            icons: [{ src: '/icons/pwa-192x192.png', sizes: '192x192' }]
           },
           {
             name: 'ألعاب الأرقام',
             short_name: 'أرقام',
             description: 'تعلم الأرقام والحساب',
             url: '/numbers',
-            icons: [{ src: 'icon-192x192.png', sizes: '192x192' }]
+            icons: [{ src: '/icons/pwa-192x192.png', sizes: '192x192' }]
           }
         ]
       },

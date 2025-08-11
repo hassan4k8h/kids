@@ -1,15 +1,16 @@
 {
-  "name": "Skilloo Educational App",
-  "short_name": "Skilloo",
+  "name": "سكيلو - تطبيق تعليمي تفاعلي للأطفال",
+  "short_name": "سكيلو",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#7c3aed",
+  "theme_color": "#667eea",
   "icons": [
     { "src": "/icons/pwa-64x64.png", "sizes": "64x64", "type": "image/png" },
     { "src": "/icons/pwa-192x192.png", "sizes": "192x192", "type": "image/png" },
     { "src": "/icons/pwa-512x512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "/icons/maskable-icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "/icons/maskable-icon-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable any" },
+    { "src": "/icons/apple-touch-icon-180x180.png", "sizes": "180x180", "type": "image/png", "purpose": "apple touch icon" }
   ]
 }
 

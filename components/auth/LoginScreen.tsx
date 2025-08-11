@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -31,6 +31,17 @@ export function LoginScreen({
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState<string>('');
+
+  // Prefill email after signup
+  useEffect(() => {
+    try {
+      const prefill = localStorage.getItem('prefill_login_email');
+      if (prefill) {
+        setEmail(prefill);
+        // keep it for convenience across reloads; remove if undesired
+      }
+    } catch {}
+  }, []);
 
   const validateForm = useCallback(() => {
     const newErrors: { email?: string; password?: string } = {};

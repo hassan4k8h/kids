@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
 import { formatNumber } from "./utils/locale.ts";
 import { WelcomeScreen } from "./components/WelcomeScreen.tsx";
 import { UpgradePrompt } from "./components/subscription/UpgradePrompt.tsx";
@@ -76,6 +76,7 @@ export default function App() {
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null);
   const [isAppLoading, setIsAppLoading] = useState(true);
+  const lastPushedScreenRef = useRef<Screen | null>(null);
 
   // معالج الأخطاء العام
   const handleError = (error: any, context: string) => {
@@ -236,6 +237,42 @@ export default function App() {
     };
   }, []); // إزالة أي dependencies لتجنب إعادة التشغيل
 
+  // تكامل زر الرجوع في الجهاز والمتصفح باستخدام history API
+  useEffect(() => {
+    try {
+      // عند أول تحميل، ادفع الحالة الحالية
+      if (!lastPushedScreenRef.current) {
+        window.history.replaceState({ screen: currentScreen }, "", `#${currentScreen}`);
+        lastPushedScreenRef.current = currentScreen;
+      }
+
+      const onPopState = (e: PopStateEvent) => {
+        const state = (e.state || {}) as { screen?: Screen };
+        if (state.screen) {
+          setCurrentScreen(state.screen);
+        } else {
+          // رجوع بدون حالة: عد إلى القائمة الرئيسية إن وُجد لاعب، وإلا شاشة الترحيب
+          setCurrentScreen(currentPlayer ? "mainMenu" : "welcome");
+        }
+      };
+      window.addEventListener("popstate", onPopState);
+      return () => window.removeEventListener("popstate", onPopState);
+    } catch {}
+  }, [currentPlayer]);
+
+  // ادفع حالة جديدة كلما تغيّرت الشاشة
+  useEffect(() => {
+    try {
+      if (lastPushedScreenRef.current !== currentScreen) {
+        window.history.pushState({ screen: currentScreen }, "", `#${currentScreen}`);
+        lastPushedScreenRef.current = currentScreen;
+      }
+      // ضمان قابلية التمرير للصفحة الحالية
+      document.documentElement.style.overflowY = 'auto';
+      document.body.style.overflowY = 'auto';
+    } catch {}
+  }, [currentScreen]);
+
   // تطبيق إعدادات RTL على المستند مع النصوص السوداء
   useEffect(() => {
     document.documentElement.dir = isRTL ? "rtl" : "ltr";
@@ -310,19 +347,14 @@ export default function App() {
   };
 
   const handleSignupSuccess = async () => {
-    console.log(`✅ Signup successful for user: ${currentUser?.email}`);
-    
-    // بعد التسجيل، المستخدمون الجدد يحصلون على باقة مجانية تلقائياً
-    if (currentUser) {
-      // تعيين المستخدم في خدمة الاشتراكات
-      subscriptionService.setCurrentUser(currentUser.id, {
-        email: currentUser.email,
-        name: currentUser.name
-      });
-      // إعادة التوجيه مباشرة إلى صفحة إعداد الطفل للمستخدمين الجدد
-      setCurrentScreen("playerSetup");
-      console.log('🎮 New user redirected to player setup');
-    }
+    // بعد إنشاء الحساب، انقل المستخدم إلى صفحة تسجيل الدخول واملأ البريد تلقائياً
+    console.log('✅ Signup completed. Redirecting to login with prefilled email');
+    setCurrentScreen("login");
+    // تخزين البريد المؤقت لملئه في شاشة تسجيل الدخول
+    try {
+      const lastEmail = authService.getCurrentUser()?.email;
+      if (lastEmail) localStorage.setItem('prefill_login_email', lastEmail);
+    } catch {}
   };
 
   const handleSwitchToSignup = () => {
@@ -534,7 +566,16 @@ export default function App() {
 
   const handleBackToMainMenu = () => {
     try { audioService.stopAllSounds(); } catch {}
-    setCurrentScreen("mainMenu");
+    // استخدم history للعودة للصفحة السابقة إن أمكن
+    try {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        setCurrentScreen("mainMenu");
+      }
+    } catch {
+      setCurrentScreen("mainMenu");
+    }
     setCurrentGame(null);
     setTimeout(() => {
       try {
