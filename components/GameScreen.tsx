@@ -259,31 +259,46 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
   return (
     <div className={`min-h-[100svh] min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 overflow-y-auto ${isRTL ? 'rtl' : ''}`}>
       <div className="container-responsive safe-area-padding flex flex-col min-h-[100svh] min-h-screen">
-        {/* Header */}
-        <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-2xl p-3 mb-3">
-          <div className="flex items-center justify-between mb-4">
-            <Button
-              variant="ghost"
-              onClick={onBack}
-              className="p-2 hover:bg-gray-100 rounded-xl"
-            >
-              {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
-            </Button>
-            
-            <h2 className="font-bold text-[clamp(14px,4vw,18px)] text-gray-800 text-center">
-              {isRTL ? gameNameAr : gameName}
-            </h2>
-            
-            <Button
-              variant="ghost"
-              onClick={onHome}
-              className="p-2 hover:bg-gray-100 rounded-xl"
-            >
-              <Home className="w-5 h-5" />
-            </Button>
-          </div>
+        {/* Top bar: Back/Home and title */}
+        <div className="flex items-center justify-between py-2">
+          <Button
+            variant="ghost"
+            onClick={onBack}
+            className="p-2 hover:bg-gray-100 rounded-xl"
+            aria-label={isRTL ? 'رجوع' : 'Back'}
+          >
+            {isRTL ? <ArrowRight className="w-5 h-5" /> : <ArrowLeft className="w-5 h-5" />}
+          </Button>
+          <h2 className="font-bold text-[clamp(14px,4vw,18px)] text-gray-800 text-center">
+            {isRTL ? gameNameAr : gameName}
+          </h2>
+          <Button
+            variant="ghost"
+            onClick={onHome}
+            className="p-2 hover:bg-gray-100 rounded-xl"
+            aria-label={isRTL ? 'الرئيسية' : 'Home'}
+          >
+            <Home className="w-5 h-5" />
+          </Button>
+        </div>
 
-          {/* Game stats */}
+        {/* Game Board at the top */}
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-3 sm:p-4 md:p-6 shadow-lg border border-white/20 grid"
+             style={{ minHeight: '55svh', maxHeight: '75svh', overflow: 'hidden' }}>
+          <div className="w-full h-full place-self-stretch">
+            <GameEngine
+              gameId={gameId}
+              isRTL={isRTL}
+              onGameComplete={handleGameComplete}
+              onScoreUpdate={setScore}
+              onLivesUpdate={setLives}
+              onLevelUpdate={setLevel}
+            />
+          </div>
+        </div>
+
+        {/* Stats below the board */}
+        <div className="bg-white/95 backdrop-blur-sm shadow-sm rounded-2xl p-3 mt-3">
           <div className="grid grid-cols-4 gap-2">
             <div className="bg-yellow-50 rounded-xl p-2 text-center border border-yellow-200">
               <div className="text-yellow-600 font-bold text-[clamp(12px,3.5vw,16px)]">{formatNumber(score, isRTL)}</div>
@@ -305,25 +320,8 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
               <div className="text-xs text-green-700">{isRTL ? "الوقت" : "Time"}</div>
             </div>
           </div>
-
-          {/* Progress bar */}
           <div className="mt-3">
             <Progress value={(300 - timeLeft) / 300 * 100} className="h-2" />
-          </div>
-        </div>
-
-        {/* Game Area */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-3 sm:p-4 md:p-6 shadow-lg border border-white/20 grid"
-             style={{ minHeight: '55svh', maxHeight: '75svh', overflow: 'hidden' }}>
-          <div className="w-full h-full place-self-stretch">
-            <GameEngine
-              gameId={gameId}
-              isRTL={isRTL}
-              onGameComplete={handleGameComplete}
-              onScoreUpdate={setScore}
-              onLivesUpdate={setLives}
-              onLevelUpdate={setLevel}
-            />
           </div>
         </div>
 
