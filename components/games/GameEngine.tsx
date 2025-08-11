@@ -70,7 +70,7 @@ export function GameEngine({ gameId, ...props }: GameEngineProps) {
   };
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full grid place-items-stretch content-stretch">
       {renderGame()}
     </div>
   );

@@ -676,7 +676,7 @@ export function AlphabetGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpda
                 </div>
               )}
               
-              <div className="text-6xl font-bold text-purple-600 mb-4">
+              <div className="text-5xl md:text-6xl font-bold text-purple-600 mb-3">
                 {currentChallenge.type === 'missing-letter' 
                   ? '_' + (targetWord?.wordAr.slice(1) || '')
                   : currentChallenge.type === 'word-letter' 
@@ -685,7 +685,7 @@ export function AlphabetGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpda
                 }
               </div>
               
-              <h3 className="text-xl font-bold text-gray-800 mb-4">
+              <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-3">
                 {isRTL ? currentChallenge.questionAr : currentChallenge.question}
               </h3>
               
@@ -696,7 +696,7 @@ export function AlphabetGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpda
               </div>
             </motion.div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               {(currentChallenge.options as (AlphabetWord | string)[]).map((option, index) => {
                 const isWord = typeof option === 'object';
                 const displayText = isWord ? option.wordAr : option;
@@ -717,8 +717,8 @@ export function AlphabetGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpda
                         flashingAnswer === optionValue ? 'animate-pulse scale-110 border-yellow-400 bg-yellow-50' : ''
                       }`}
                     >
-                      {emoji && <span className="text-3xl mb-1">{emoji}</span>}
-                      <span className="text-lg font-bold">
+                      {emoji && <span className="text-2xl md:text-3xl mb-1">{emoji}</span>}
+                      <span className="text-base md:text-lg font-bold">
                         {displayText}
                       </span>
                     </Button>
@@ -850,7 +850,7 @@ export function AlphabetGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpda
   }
 
   return (
-    <div className="w-full max-w-md mx-auto space-y-6">
+    <div className="w-full max-w-md mx-auto space-y-4">
       {/* إحصائيات اللعبة المحسنة */}
       <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-lg">
         <div className="flex justify-between items-center mb-3">
