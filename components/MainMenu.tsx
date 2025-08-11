@@ -114,10 +114,10 @@ export function MainMenu({
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h1 className="text-white font-ultra-bold mb-2 drop-shadow-lg text-ultra-clear" style={{ fontSize: 'clamp(2rem, 6vw, 3.5rem)' }}>
+          <h1 className="font-ultra-bold mb-2 text-ultra-clear text-on-gradient" style={{ fontSize: 'clamp(2rem, 6vw, 3.5rem)' }}>
             {isRTL ? `أهلاً وسهلاً ${playerName}! 🌟` : `Welcome ${playerName}! 🌟`}
           </h1>
-          <p className="text-white/95 font-bold text-super-clear" style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}>
+          <p className="font-bold text-super-clear text-on-gradient" style={{ fontSize: 'clamp(1rem, 3vw, 1.5rem)' }}>
             {isRTL ? "استعد لمغامرة تعليمية ممتعة!" : "Get ready for an amazing learning adventure!"}
           </p>
         </motion.div>
@@ -159,20 +159,20 @@ export function MainMenu({
                   <BookOpen className="w-[clamp(20px,6vw,40px)] h-[clamp(20px,6vw,40px)]" />
                 </motion.div>
                 <div className="min-w-0">
-                  <h3 className="font-ultra-bold mb-2 text-ultra-clear truncate" style={{ fontSize: 'clamp(1.25rem, 4.5vw, 2rem)' }}>
+                  <h3 className="font-ultra-bold mb-2 text-ultra-clear text-on-gradient truncate" style={{ fontSize: 'clamp(1.25rem, 4.5vw, 2rem)' }}>
                     {isRTL ? "قصص البطل المغامر" : "Hero Adventure Stories"}
                   </h3>
-                  <p className="text-white/95 font-bold text-super-clear" style={{ fontSize: 'clamp(0.95rem, 3vw, 1.25rem)' }}>
+                  <p className="font-bold text-super-clear text-on-gradient" style={{ fontSize: 'clamp(0.95rem, 3vw, 1.25rem)' }}>
                     {isRTL ? `كن البطل في قصتك يا ${playerName}!` : `Be the hero of your story, ${playerName}!`}
                   </p>
                   <div className="flex flex-wrap items-center gap-2 mt-3">
                     <div className="flex items-center space-x-2 rtl:space-x-reverse text-yellow-300">
                       <Star className="w-5 h-5 fill-current" />
-                      <span className="font-extra-bold text-super-clear whitespace-nowrap">{isRTL ? "٢٠٠+ قصة تفاعلية" : "200+ Interactive Stories"}</span>
+                      <span className="font-extra-bold text-super-clear text-on-gradient whitespace-nowrap">{isRTL ? "٢٠٠+ قصة تفاعلية" : "200+ Interactive Stories"}</span>
                     </div>
                     <div className="flex items-center space-x-2 rtl:space-x-reverse text-pink-200">
                       <Crown className="w-5 h-5" />
-                      <span className="font-extra-bold text-super-clear whitespace-nowrap">{isRTL ? "١٠ أبطال خارقين" : "10 Superheroes"}</span>
+                      <span className="font-extra-bold text-super-clear text-on-gradient whitespace-nowrap">{isRTL ? "١٠ أبطال خارقين" : "10 Superheroes"}</span>
                     </div>
                   </div>
                 </div>
@@ -446,10 +446,10 @@ export function MainMenu({
           className="text-center py-8"
         >
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-            <h3 className="text-white font-ultra-bold mb-2 text-ultra-clear" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>
+              <h3 className="font-ultra-bold mb-2 text-ultra-clear text-on-gradient" style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)' }}>
               {isRTL ? `تابع التقدم يا ${playerName}! 🚀` : `Keep going ${playerName}! 🚀`}
             </h3>
-            <p className="text-white/90 font-bold text-super-clear">
+              <p className="font-bold text-super-clear text-on-gradient">
               {isRTL 
                 ? "كل لعبة تلعبها تجعلك أذكى وأقوى!"
                 : "Every game you play makes you smarter and stronger!"

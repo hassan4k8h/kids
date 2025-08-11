@@ -382,13 +382,13 @@ export function GameCard({ game, gameName, onSelect, isRTL, viewMode, animationD
             </div>
 
             {/* Game Title */}
-            <h3 className="font-ultra-bold text-xl mb-2 leading-tight" style={{ color: colors.textColor }}>
+            <h3 className="font-ultra-bold text-xl mb-2 leading-tight text-on-light" style={{ color: colors.textColor }}>
               {isRTL ? gameName.nameAr : gameName.name}
             </h3>
 
             {/* شريط متابعة سريع أعلى البطاقة */}
             <div className="flex items-center justify-between mb-3">
-              <div className="text-xs font-bold" style={{ color: colors.lightTextColor }}>
+              <div className="text-xs font-bold text-on-light" style={{ color: colors.lightTextColor }}>
                 {isRTL ? `آخر مستوى: ${game.progressLevel || 1}` : `Last level: ${game.progressLevel || 1}`}
               </div>
               {!isLocked && (
@@ -406,7 +406,7 @@ export function GameCard({ game, gameName, onSelect, isRTL, viewMode, animationD
                 </span>
               </div>
 
-              <div className="flex items-center justify-center space-x-4 rtl:space-x-reverse text-xs font-bold" style={{ color: colors.lightTextColor }}>
+              <div className="flex items-center justify-center space-x-4 rtl:space-x-reverse text-xs font-bold text-on-light" style={{ color: colors.lightTextColor }}>
                 <div className="flex items-center space-x-1 rtl:space-x-reverse">
                   <Clock className="w-3 h-3" />
                   <span>{game.estimatedTime} {isRTL ? 'د' : 'min'}</span>
@@ -417,7 +417,7 @@ export function GameCard({ game, gameName, onSelect, isRTL, viewMode, animationD
                 </div>
               </div>
 
-              <div className="text-xs font-bold bg-white/80 rounded-lg px-3 py-2" style={{ color: colors.textColor }}>
+              <div className="text-xs font-bold bg-white/90 rounded-lg px-3 py-2 badge-contrast" style={{ color: colors.textColor }}>
                 {getCategoryText(game.category)}
               </div>
             </div>
