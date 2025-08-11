@@ -1,0 +1,305 @@
+# Git Attributes for Skilloo Educational App
+# خصائص Git لتطبيق سكيلو التعليمي
+
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Text files
+*.txt text
+*.md text
+*.json text
+*.js text
+*.jsx text
+*.ts text
+*.tsx text
+*.css text
+*.scss text
+*.sass text
+*.less text
+*.html text
+*.htm text
+*.xml text
+*.svg text
+*.yml text
+*.yaml text
+*.toml text
+*.ini text
+*.cfg text
+*.conf text
+*.sh text eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Source code files
+*.c text
+*.cpp text
+*.h text
+*.hpp text
+*.java text
+*.py text
+*.rb text
+*.php text
+*.go text
+*.rs text
+*.swift text
+*.kt text
+*.scala text
+*.clj text
+*.hs text
+*.elm text
+*.dart text
+
+# Web files
+*.css text
+*.scss text
+*.sass text
+*.less text
+*.styl text
+*.js text
+*.jsx text
+*.ts text
+*.tsx text
+*.vue text
+*.svelte text
+*.html text
+*.htm text
+*.xhtml text
+*.xml text
+*.svg text
+*.json text
+*.jsonc text
+*.json5 text
+*.geojson text
+*.topojson text
+*.csv text
+*.tsv text
+
+# Configuration files
+*.env text
+*.env.* text
+*.config text
+*.conf text
+*.cfg text
+*.ini text
+*.properties text
+*.toml text
+*.yml text
+*.yaml text
+*.lock text
+*.log text
+
+# Documentation
+*.md text
+*.txt text
+*.rtf text
+*.tex text
+*.adoc text
+*.asciidoc text
+*.rst text
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.bmp binary
+*.tiff binary
+*.tif binary
+*.webp binary
+*.avif binary
+*.heic binary
+*.heif binary
+
+# Audio files
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.flac binary
+*.aac binary
+*.m4a binary
+*.wma binary
+
+# Video files
+*.mp4 binary
+*.avi binary
+*.mov binary
+*.wmv binary
+*.flv binary
+*.webm binary
+*.mkv binary
+*.m4v binary
+
+# Font files
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+
+# Archive files
+*.zip binary
+*.tar binary
+*.gz binary
+*.bz2 binary
+*.xz binary
+*.7z binary
+*.rar binary
+
+# Application files
+*.pdf binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary
+*.ppt binary
+*.pptx binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+*.app binary
+*.dmg binary
+*.pkg binary
+*.deb binary
+*.rpm binary
+*.msi binary
+
+# Database files
+*.db binary
+*.sqlite binary
+*.sqlite3 binary
+*.mdb binary
+
+# Specific file handling
+# Package lock files should not be merged
+package-lock.json binary
+yarn.lock binary
+pnpm-lock.yaml binary
+
+# Ignore files in diffs
+*.min.js linguist-generated=true
+*.min.css linguist-generated=true
+*.bundle.js linguist-generated=true
+*.bundle.css linguist-generated=true
+dist/* linguist-generated=true
+build/* linguist-generated=true
+coverage/* linguist-generated=true
+*.map linguist-generated=true
+
+# Language detection
+*.js linguist-language=JavaScript
+*.jsx linguist-language=JavaScript
+*.ts linguist-language=TypeScript
+*.tsx linguist-language=TypeScript
+*.css linguist-language=CSS
+*.scss linguist-language=SCSS
+*.sass linguist-language=Sass
+*.html linguist-language=HTML
+*.vue linguist-language=Vue
+*.svelte linguist-language=Svelte
+
+# Vendor files
+node_modules/* linguist-vendored
+vendor/* linguist-vendored
+third_party/* linguist-vendored
+libs/* linguist-vendored
+*.vendor.js linguist-vendored
+*.vendor.css linguist-vendored
+
+# Documentation files
+*.md linguist-documentation
+*.txt linguist-documentation
+README* linguist-documentation
+CHANGELOG* linguist-documentation
+LICENSE* linguist-documentation
+CONTRIBUTING* linguist-documentation
+AUTHORS* linguist-documentation
+COPYING* linguist-documentation
+INSTALL* linguist-documentation
+NEWS* linguist-documentation
+TODO* linguist-documentation
+docs/* linguist-documentation
+
+# Test files
+*.test.js linguist-generated=true
+*.test.ts linguist-generated=true
+*.test.jsx linguist-generated=true
+*.test.tsx linguist-generated=true
+*.spec.js linguist-generated=true
+*.spec.ts linguist-generated=true
+*.spec.jsx linguist-generated=true
+*.spec.tsx linguist-generated=true
+__tests__/* linguist-generated=true
+tests/* linguist-generated=true
+test/* linguist-generated=true
+
+# Build and generated files
+dist/* linguist-generated=true
+build/* linguist-generated=true
+out/* linguist-generated=true
+target/* linguist-generated=true
+bin/* linguist-generated=true
+obj/* linguist-generated=true
+*.min.* linguist-generated=true
+*.bundle.* linguist-generated=true
+*.chunk.* linguist-generated=true
+*.map linguist-generated=true
+
+# IDE and editor files
+.vscode/* linguist-generated=true
+.idea/* linguist-generated=true
+*.swp linguist-generated=true
+*.swo linguist-generated=true
+*~ linguist-generated=true
+
+# OS generated files
+.DS_Store linguist-generated=true
+Thumbs.db linguist-generated=true
+desktop.ini linguist-generated=true
+
+# Merge strategies
+# Use union merge for changelog files
+CHANGELOG.md merge=union
+CHANGELOG.txt merge=union
+NEWS.md merge=union
+NEWS.txt merge=union
+
+# Use ours merge for generated files
+*.min.js merge=ours
+*.min.css merge=ours
+package-lock.json merge=ours
+yarn.lock merge=ours
+
+# Custom diff drivers
+*.json diff=json
+*.md diff=markdown
+*.css diff=css
+*.js diff=javascript
+*.ts diff=typescript
+
+# Export ignore (files not included in git archive)
+export-ignore .gitignore
+export-ignore .gitattributes
+export-ignore .github/
+export-ignore .vscode/
+export-ignore .idea/
+export-ignore node_modules/
+export-ignore coverage/
+export-ignore .nyc_output/
+export-ignore tests/
+export-ignore __tests__/
+export-ignore *.test.*
+export-ignore *.spec.*
+export-ignore .eslintrc.*
+export-ignore .prettierrc*
+export-ignore jest.config.*
+export-ignore vitest.config.*
+export-ignore .env.example
+export-ignore .env.local
+export-ignore .env.development
+export-ignore .env.test
+export-ignore *.log
+export-ignore .DS_Store
+export-ignore Thumbs.db

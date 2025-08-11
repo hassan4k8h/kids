@@ -1,0 +1,98 @@
+{
+  "name": "سكيلو - تطبيق تعليمي تفاعلي للأطفال",
+  "short_name": "سكيلو",
+  "description": "تطبيق تعليمي تفاعلي للأطفال باللغة العربية. تعلم الحروف والأرقام والألوان والأشكال بطريقة ممتعة وآمنة.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["education", "kids", "games"],
+  "icons": [
+    {
+      "src": "icons/pwa-64x64.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/apple-touch-icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+
+  "shortcuts": [
+    {
+      "name": "لعبة الحروف",
+      "short_name": "حروف",
+      "description": "تعلم الحروف العربية",
+      "url": "/?game=letters"
+    },
+    {
+      "name": "لعبة الأرقام",
+      "short_name": "أرقام",
+      "description": "تعلم الأرقام والحساب",
+      "url": "/?game=numbers"
+    },
+    {
+      "name": "لعبة الألوان",
+      "short_name": "ألوان",
+      "description": "تعلم الألوان المختلفة",
+      "url": "/?game=colors"
+    },
+    {
+      "name": "القصص التفاعلية",
+      "short_name": "قصص",
+      "description": "استمع للقصص التعليمية",
+      "url": "/?section=stories"
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.skilloo.app",
+      "id": "com.skilloo.app"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/skilloo/id123456789",
+      "id": "123456789"
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

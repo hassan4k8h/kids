@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>ar</string>
+	<key>CFBundleDisplayName</key>
+	<string>Kids Educational Game</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	
+	<!-- دعم الاتجاهات -->
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	
+	<!-- إعدادات الشاشة -->
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
+	
+	<!-- دعم الأجهزة المختلفة -->
+	<key>UIDeviceFamily</key>
+	<array>
+		<integer>1</integer> <!-- iPhone -->
+		<integer>2</integer> <!-- iPad -->
+	</array>
+	
+	<!-- إعدادات الأمان والخصوصية -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsArbitraryLoadsInWebContent</key>
+		<true/>
+	</dict>
+	
+	<!-- أذونات الكاميرا -->
+	<key>NSCameraUsageDescription</key>
+	<string>يستخدم التطبيق الكاميرا للألعاب التفاعلية والتعلم البصري</string>
+	
+	<!-- أذونات الميكروفون -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>يستخدم التطبيق الميكروفون للألعاب الصوتية وتعلم النطق</string>
+	
+	<!-- أذونات الصور -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>يستخدم التطبيق مكتبة الصور لحفظ إنجازات الطفل ومشاركتها</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>يستخدم التطبيق مكتبة الصور لحفظ شهادات الإنجاز والذكريات</string>
+	
+	<!-- أذونات الموقع (اختيارية) -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>يستخدم التطبيق الموقع لتخصيص المحتوى التعليمي حسب المنطقة</string>
+	
+	<!-- أذونات الإشعارات -->
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>يستخدم التطبيق الإشعارات لتذكير الطفل بأوقات التعلم والأنشطة</string>
+	
+	<!-- إعدادات الخلفية -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>background-processing</string>
+		<string>remote-notification</string>
+		<string>background-fetch</string>
+	</array>
+	
+	<!-- إعدادات الصوت -->
+	<key>AVAudioSessionCategory</key>
+	<string>AVAudioSessionCategoryPlayback</string>
+	<key>AVAudioSessionCategoryOptions</key>
+	<array>
+		<string>AVAudioSessionCategoryOptionMixWithOthers</string>
+	</array>
+	
+	<!-- إعدادات أمان الأطفال -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	
+	<!-- تصنيف العمر -->
+	<key>ITSAppContentRating</key>
+	<string>4+</string>
+	
+	<!-- فئة التطبيق -->
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.education</string>
+	
+	<!-- دعم اللغات -->
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>ar</string>
+		<string>en</string>
+	</array>
+	
+	<!-- إعدادات الشاشة الآمنة -->
+	<key>UIStatusBarHidden</key>
+	<false/>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleDefault</string>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<true/>
+	
+	<!-- منع لقطات الشاشة في المحتوى الحساس -->
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	
+	<!-- دعم الاختصارات -->
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.kidseducationalgame.app.alphabet</string>
+		<string>com.kidseducationalgame.app.numbers</string>
+		<string>com.kidseducationalgame.app.colors</string>
+		<string>com.kidseducationalgame.app.dashboard</string>
+	</array>
+	
+	<!-- إعدادات الشبكة -->
+	<key>NSAllowsArbitraryLoads</key>
+	<false/>
+	
+	<!-- دعم CarPlay (اختياري) -->
+	<key>MKDirectionsApplicationSupportedModes</key>
+	<array/>
+	
+	<!-- إعدادات الأداء -->
+	<key>UIApplicationSupportsMultipleScenes</key>
+	<false/>
+	
+	<!-- دعم Handoff -->
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.kidseducationalgame.app.continue-learning</string>
+	</array>
+	
+	<!-- إعدادات الذاكرة -->
+	<key>UIFileSharingEnabled</key>
+	<false/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<false/>
+	
+	<!-- دعم الوضع المظلم -->
+	<key>UIUserInterfaceStyle</key>
+	<string>Automatic</string>
+	
+	<!-- إعدادات الأمان الإضافية -->
+	<key>NSAllowsLocalNetworking</key>
+	<true/>
+	
+</dict>
+</plist>

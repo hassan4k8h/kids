@@ -1,0 +1,186 @@
+# Security and Performance Headers for Skilloo Educational App
+# رؤوس الأمان والأداء لتطبيق سكيلو التعليمي
+
+/*
+  # Security Headers
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
+  
+  # Content Security Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: blob:; media-src 'self' data: blob:; connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://api.stripe.com https://fonts.googleapis.com https://fonts.gstatic.com; frame-src 'self' https://js.stripe.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';
+  # السماح بتحميل ملفات أصوات الحيوانات
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, OPTIONS
+  Access-Control-Allow-Headers: *
+  
+  # Performance Headers
+  Cache-Control: public, max-age=31536000, immutable
+  
+  # HSTS (HTTP Strict Transport Security)
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  
+  # Feature Policy
+  Feature-Policy: camera 'none'; microphone 'none'; geolocation 'none'; payment 'none'
+
+# Static Assets - Long term caching
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+  
+# JavaScript and CSS files
+*.js
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/javascript; charset=utf-8
+  
+*.css
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: text/css; charset=utf-8
+
+# Images
+*.png
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/png
+  
+*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/jpeg
+  
+*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/jpeg
+  
+*.gif
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/gif
+  
+*.svg
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/svg+xml; charset=utf-8
+  
+*.webp
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/webp
+  
+*.avif
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: image/avif
+
+# Fonts
+*.woff
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: font/woff
+  
+*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: font/woff2
+  
+*.ttf
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: font/ttf
+  
+*.eot
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/vnd.ms-fontobject
+
+# Manifest and Service Worker
+/manifest.json
+  Cache-Control: public, max-age=86400
+  Content-Type: application/manifest+json; charset=utf-8
+  
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Content-Type: application/javascript; charset=utf-8
+  
+/workbox-*.js
+  Cache-Control: no-cache, no-store, must-revalidate
+  Content-Type: application/javascript; charset=utf-8
+
+# HTML files - Short term caching
+*.html
+  Cache-Control: public, max-age=3600
+  Content-Type: text/html; charset=utf-8
+  
+# Index page - No caching for SPA
+/index.html
+  Cache-Control: no-cache, no-store, must-revalidate
+  Content-Type: text/html; charset=utf-8
+
+# API routes - No caching
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate
+  
+# Special files
+/robots.txt
+  Cache-Control: public, max-age=86400
+  Content-Type: text/plain; charset=utf-8
+  
+/sitemap.xml
+  Cache-Control: public, max-age=86400
+  Content-Type: application/xml; charset=utf-8
+  
+/humans.txt
+  Cache-Control: public, max-age=86400
+  Content-Type: text/plain; charset=utf-8
+  
+/.well-known/*
+  Cache-Control: public, max-age=86400
+  
+/favicon.ico
+  Cache-Control: public, max-age=31536000
+  Content-Type: image/x-icon
+
+# Compressed files
+*.gz
+  Content-Encoding: gzip
+  
+*.br
+  Content-Encoding: br
+
+# CORS for fonts and assets
+/assets/fonts/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+  Access-Control-Allow-Headers: Content-Type
+
+# CORS لأصوات الحيوانات
+/audio/animals/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET
+  Access-Control-Allow-Headers: *
+  
+# Preload critical resources
+/
+  Link: </assets/fonts/main.woff2>; rel=preload; as=font; type=font/woff2; crossorigin
+  Link: </assets/css/main.css>; rel=preload; as=style
+  Link: </assets/js/main.js>; rel=preload; as=script
+  
+# DNS prefetch for external resources
+/
+  Link: <https://fonts.googleapis.com>; rel=dns-prefetch
+  Link: <https://fonts.gstatic.com>; rel=dns-prefetch
+  Link: <https://www.google-analytics.com>; rel=dns-prefetch
+  Link: <https://api.stripe.com>; rel=dns-prefetch
+  
+# Early hints for critical resources
+/
+  Link: </assets/css/main.css>; rel=preload; as=style
+  Link: </assets/js/main.js>; rel=modulepreload
+  
+# Error pages
+/404.html
+  Cache-Control: public, max-age=3600
+  Content-Type: text/html; charset=utf-8
+  
+/offline.html
+  Cache-Control: public, max-age=86400
+  Content-Type: text/html; charset=utf-8
+
+# Development files - No caching
+*.map
+  Cache-Control: no-cache, no-store, must-revalidate
+  
+# Temporary files
+*.tmp
+  Cache-Control: no-cache, no-store, must-revalidate

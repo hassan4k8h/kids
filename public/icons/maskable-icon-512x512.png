@@ -1,0 +1,40 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Full background for maskable -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+  
+  <!-- Safe zone content (centered in 80% of the icon) -->
+  <g transform="translate(51.2, 51.2) scale(0.8)">
+    <!-- Book icon -->
+    <g transform="translate(128, 128)">
+      <rect x="50" y="50" width="150" height="192" rx="12" fill="#FFFFFF" opacity="0.95"/>
+      <rect x="60" y="60" width="130" height="172" rx="6" fill="#F8FAFC"/>
+      
+      <!-- Book pages -->
+      <line x1="80" y1="96" x2="170" y2="96" stroke="#64748B" stroke-width="5" stroke-linecap="round"/>
+      <line x1="80" y1="118" x2="160" y2="118" stroke="#64748B" stroke-width="5" stroke-linecap="round"/>
+      <line x1="80" y1="140" x2="170" y2="140" stroke="#64748B" stroke-width="5" stroke-linecap="round"/>
+      <line x1="80" y1="162" x2="155" y2="162" stroke="#64748B" stroke-width="5" stroke-linecap="round"/>
+      <line x1="80" y1="184" x2="170" y2="184" stroke="#64748B" stroke-width="5" stroke-linecap="round"/>
+      
+      <!-- Star decoration -->
+      <polygon points="125,210 130,222 142,222 133,230 136,242 125,235 114,242 117,230 108,222 120,222" fill="#FBBF24"/>
+    </g>
+    
+    <!-- Educational symbols -->
+    <circle cx="380" cy="180" r="25" fill="#FFFFFF" opacity="0.9"/>
+    <text x="380" y="190" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="#4F46E5">1</text>
+    
+    <circle cx="380" cy="240" r="25" fill="#FFFFFF" opacity="0.9"/>
+    <text x="380" y="250" font-family="Arial, sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="#7C3AED">A</text>
+    
+    <circle cx="380" cy="300" r="25" fill="#FFFFFF" opacity="0.9"/>
+    <text x="380" y="310" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#059669">+</text>
+  </g>
+</svg>

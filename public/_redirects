@@ -1,0 +1,110 @@
+# Netlify Redirects for Skilloo Educational App
+# إعادة توجيه Netlify لتطبيق سكيلو التعليمي
+
+# Force HTTPS redirect
+http://skilloo.netlify.app/*    https://skilloo.netlify.app/:splat    301!
+http://www.skilloo.netlify.app/*    https://skilloo.netlify.app/:splat    301!
+
+# Redirect www to non-www
+https://www.skilloo.netlify.app/*    https://skilloo.netlify.app/:splat    301!
+
+# Legacy URL redirects
+/home    /    301
+/dashboard    /parent-dashboard    301
+/profile    /parent-dashboard    301
+/settings    /parent-dashboard    301
+
+# API proxy to prevent CORS issues
+/api/*    https://zwwyifnikprfbdikskvg.supabase.co/rest/v1/:splat    200
+
+# Stripe webhook proxy
+/webhooks/stripe    /.netlify/functions/stripe-webhook    200
+
+# Contact form submission
+/contact    /.netlify/functions/contact-form    200  POST
+
+# Newsletter subscription
+/newsletter    /.netlify/functions/newsletter    200  POST
+
+# Error pages
+/404    /404.html    404
+/offline    /offline.html    200
+
+# Security redirects - Block access to sensitive files
+/.env*    /404.html    404!
+/config/*    /404.html    404!
+/.git/*    /404.html    404!
+/node_modules/*    /404.html    404!
+/src/*    /404.html    404!
+/.vscode/*    /404.html    404!
+/.idea/*    /404.html    404!
+
+# Block common attack vectors
+/wp-admin/*    /404.html    404!
+/wp-login.php    /404.html    404!
+/admin/*    /404.html    404!
+/administrator/*    /404.html    404!
+/phpmyadmin/*    /404.html    404!
+/mysql/*    /404.html    404!
+/.htaccess    /404.html    404!
+/.htpasswd    /404.html    404!
+/web.config    /404.html    404!
+
+# Block file extensions that shouldn't be accessible
+*.php    /404.html    404!
+*.asp    /404.html    404!
+*.aspx    /404.html    404!
+*.jsp    /404.html    404!
+*.cgi    /404.html    404!
+*.pl    /404.html    404!
+*.py    /404.html    404!
+*.rb    /404.html    404!
+*.sh    /404.html    404!
+*.bat    /404.html    404!
+*.cmd    /404.html    404!
+
+# Redirect old file extensions to clean URLs
+/letters.html    /letters    301
+/numbers.html    /numbers    301
+/colors.html    /colors    301
+/stories.html    /stories    301
+/about.html    /about    301
+/contact.html    /contact    301
+/privacy.html    /privacy    301
+/terms.html    /terms    301
+
+# Social media redirects
+/facebook    https://facebook.com/skilloo    302
+/twitter    https://twitter.com/skilloo    302
+/instagram    https://instagram.com/skilloo    302
+/youtube    https://youtube.com/skilloo    302
+/linkedin    https://linkedin.com/company/skilloo    302
+
+# App store redirects
+/ios    https://apps.apple.com/app/skilloo    302
+/android    https://play.google.com/store/apps/details?id=com.skilloo.app    302
+/download    /    302
+
+# Support and help redirects
+/help    /support    302
+/faq    /support    302
+/support-center    /support    302
+
+# Marketing campaign redirects
+/promo/*    /?utm_source=promo&utm_campaign=:splat    302
+/campaign/*    /?utm_source=campaign&utm_medium=web&utm_campaign=:splat    302
+
+# Partner and affiliate redirects
+/partner/*    /?ref=:splat    302
+/ref/*    /?ref=:splat    302
+
+# Rate limiting for API endpoints
+/api/auth/*    /api/auth/:splat    200  Rate-Limit=100
+/api/user/*    /api/user/:splat    200  Rate-Limit=200
+/api/games/*    /api/games/:splat    200  Rate-Limit=500
+
+# Serverless functions
+/.netlify/functions/*    /.netlify/functions/:splat    200
+
+# SPA fallback - All routes should serve index.html for client-side routing
+/*    /index.html   200

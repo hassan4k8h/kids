@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تشخيص المشكلة - سكيلو</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .step {
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+            border-radius: 5px;
+        }
+        .error {
+            background: #fff5f5;
+            border-left-color: #dc3545;
+        }
+        .success {
+            background: #f0fff4;
+            border-left-color: #28a745;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        #results {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 تشخيص مشكلة زر "ابدأ المغامرة"</h1>
+        
+        <div class="step">
+            <h3>الخطوة 1: فحص الصفحة الرئيسية</h3>
+            <p>تحقق من أن الصفحة الرئيسية تحمل بشكل صحيح</p>
+            <button onclick="testMainPage()">اختبار الصفحة الرئيسية</button>
+        </div>
+
+        <div class="step">
+            <h3>الخطوة 2: فحص وحدة التحكم</h3>
+            <p>افتح وحدة التحكم (F12) وابحث عن الأخطاء</p>
+            <button onclick="testConsole()">اختبار وحدة التحكم</button>
+        </div>
+
+        <div class="step">
+            <h3>الخطوة 3: محاكاة النقر</h3>
+            <p>محاولة محاكاة النقر على زر "ابدأ المغامرة"</p>
+            <button onclick="simulateClick()">محاكاة النقر</button>
+        </div>
+
+        <div class="step">
+            <h3>الخطوة 4: فحص Local Storage</h3>
+            <p>فحص البيانات المحفوظة محلياً</p>
+            <button onclick="checkStorage()">فحص التخزين</button>
+        </div>
+
+        <div class="step">
+            <h3>الخطوة 5: إعادة تعيين البيانات</h3>
+            <p>مسح جميع البيانات المحفوظة</p>
+            <button onclick="clearStorage()" style="background: #dc3545;">مسح البيانات</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const results = document.getElementById('results');
+            results.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+        }
+
+        function testMainPage() {
+            log('🔍 فحص الصفحة الرئيسية...');
+            
+            // فحص وجود العناصر الأساسية
+            const button = document.querySelector('[data-testid="start-adventure"]') || 
+                          document.querySelector('button:contains("ابدأ المغامرة")') ||
+                          document.querySelector('button:contains("Start Adventure")');
+            
+            if (button) {
+                log('✅ تم العثور على زر "ابدأ المغامرة"');
+            } else {
+                log('❌ لم يتم العثور على زر "ابدأ المغامرة"');
+            }
+
+            // فحص React
+            if (window.React) {
+                log('✅ React محمل بشكل صحيح');
+            } else {
+                log('❌ React غير محمل');
+            }
+
+            // فحص الأخطاء في وحدة التحكم
+            const errors = window.console.error.toString();
+            log('📊 حالة وحدة التحكم: ' + (errors.includes('error') ? 'توجد أخطاء' : 'لا توجد أخطاء'));
+        }
+
+        function testConsole() {
+            log('🔍 فحص وحدة التحكم...');
+            
+            // إضافة مستمع للأخطاء
+            window.addEventListener('error', function(e) {
+                log('❌ خطأ JavaScript: ' + e.message);
+            });
+
+            // فحص الشبكة
+            if (navigator.onLine) {
+                log('✅ الاتصال بالإنترنت متاح');
+            } else {
+                log('❌ لا يوجد اتصال بالإنترنت');
+            }
+
+            log('💡 افتح وحدة التحكم (F12) وابحث عن رسائل تبدأ بـ 🚀 أو ❌');
+        }
+
+        function simulateClick() {
+            log('🔍 محاولة محاكاة النقر...');
+            
+            // البحث عن الزر بطرق مختلفة
+            const selectors = [
+                '[data-testid="start-adventure"]',
+                'button:contains("ابدأ المغامرة")',
+                'button:contains("Start Adventure")',
+                '.welcome-start-button',
+                '[aria-label*="start"]',
+                '[aria-label*="ابدأ"]'
+            ];
+
+            let button = null;
+            for (const selector of selectors) {
+                try {
+                    button = document.querySelector(selector);
+                    if (button) {
+                        log('✅ تم العثور على الزر باستخدام: ' + selector);
+                        break;
+                    }
+                } catch (e) {
+                    // تجاهل الأخطاء
+                }
+            }
+
+            if (button) {
+                try {
+                    button.click();
+                    log('✅ تم النقر على الزر بنجاح');
+                } catch (e) {
+                    log('❌ فشل في النقر: ' + e.message);
+                }
+            } else {
+                log('❌ لم يتم العثور على الزر');
+                
+                // عرض جميع الأزرار الموجودة
+                const allButtons = document.querySelectorAll('button');
+                log('📋 الأزرار الموجودة: ' + allButtons.length);
+                allButtons.forEach((btn, index) => {
+                    log(`  ${index + 1}. ${btn.textContent?.trim() || btn.innerHTML?.trim() || 'بدون نص'}`);
+                });
+            }
+        }
+
+        function checkStorage() {
+            log('🔍 فحص التخزين المحلي...');
+            
+            try {
+                const keys = Object.keys(localStorage);
+                log('📦 مفاتيح التخزين المحلي: ' + keys.length);
+                
+                keys.forEach(key => {
+                    const value = localStorage.getItem(key);
+                    if (value) {
+                        try {
+                            const parsed = JSON.parse(value);
+                            log(`  ${key}: ${typeof parsed === 'object' ? 'كائن' : parsed}`);
+                        } catch {
+                            log(`  ${key}: ${value.substring(0, 50)}...`);
+                        }
+                    }
+                });
+
+                // فحص بيانات المصادقة
+                const authData = localStorage.getItem('skilloo_auth');
+                if (authData) {
+                    log('✅ بيانات المصادقة موجودة');
+                } else {
+                    log('❌ بيانات المصادقة غير موجودة');
+                }
+
+            } catch (e) {
+                log('❌ خطأ في فحص التخزين: ' + e.message);
+            }
+        }
+
+        function clearStorage() {
+            if (confirm('هل أنت متأكد من مسح جميع البيانات؟ سيتم حذف جميع التقدم المحفوظ.')) {
+                try {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    log('✅ تم مسح جميع البيانات');
+                    log('🔄 يرجى إعادة تحميل الصفحة');
+                    
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } catch (e) {
+                    log('❌ خطأ في مسح البيانات: ' + e.message);
+                }
+            }
+        }
+
+        // تشغيل الفحص التلقائي عند تحميل الصفحة
+        window.addEventListener('load', function() {
+            log('🚀 بدء التشخيص التلقائي...');
+            setTimeout(testMainPage, 1000);
+        });
+    </script>
+</body>
+</html>

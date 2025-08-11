@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار نظام الإيميل المحدث</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            background: #f9f9f9;
+        }
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .status {
+            text-align: center;
+            padding: 20px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 اختبار نظام الإيميل المحدث</h1>
+            <p>نظام محاكاة الإيميل - حل مشكلة CORS</p>
+        </div>
+        
+        <div class="content">
+            <div class="status">
+                <h3>📋 حالة النظام</h3>
+                <p><strong>وضع المحاكاة:</strong> مفعل ✅</p>
+                <p><strong>سبب المحاكاة:</strong> تجنب مشكلة CORS في المتصفح</p>
+                <p><strong>الحل:</strong> رسائل محاكاة تظهر في وحدة التحكم</p>
+            </div>
+            
+            <div class="test-section">
+                <h3>🎮 اختبار رسالة الترحيب</h3>
+                <p>اختبار إرسال رسالة ترحيب للمستخدمين الجدد</p>
+                <button class="btn" onclick="testWelcomeEmail()">📧 إرسال رسالة ترحيب</button>
+                <div id="welcomeResult"></div>
+            </div>
+            
+            <div class="test-section">
+                <h3>⭐ اختبار رسالة التفعيل</h3>
+                <p>اختبار إرسال رسالة تفعيل الاشتراك</p>
+                <button class="btn" onclick="testActivationEmail()">🎉 إرسال رسالة تفعيل</button>
+                <div id="activationResult"></div>
+            </div>
+            
+            <div class="test-section">
+                <h3>⏰ اختبار تذكير انتهاء الاشتراك</h3>
+                <p>اختبار إرسال تذكير انتهاء الاشتراك</p>
+                <button class="btn" onclick="testExpiryEmail()">⚠️ إرسال تذكير انتهاء</button>
+                <div id="expiryResult"></div>
+            </div>
+            
+            <div class="test-section">
+                <h3>📝 اختبار رسالة مخصصة</h3>
+                <p>اختبار إرسال رسالة مخصصة</p>
+                <button class="btn" onclick="testCustomEmail()">✉️ إرسال رسالة مخصصة</button>
+                <div id="customResult"></div>
+            </div>
+            
+            <div class="info">
+                <h4>📌 ملاحظات مهمة:</h4>
+                <ul>
+                    <li>جميع الرسائل محاكاة وتظهر في وحدة التحكم (Console)</li>
+                    <li>افتح أدوات المطور (F12) لرؤية رسائل المحاكاة</li>
+                    <li>في الإنتاج، يجب استخدام خادم خلفي لإرسال الرسائل الحقيقية</li>
+                    <li>هذا الحل يتجنب مشكلة CORS في المتصفح</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // استيراد خدمة الإيميل
+        import { EmailService } from './services/EmailService.js';
+        
+        // جعل الدوال متاحة عالمياً
+        window.testWelcomeEmail = async function() {
+            const resultDiv = document.getElementById('welcomeResult');
+            resultDiv.innerHTML = '<div class="info">🔄 جاري إرسال رسالة الترحيب...</div>';
+            
+            try {
+                console.log('🧪 بدء اختبار رسالة الترحيب...');
+                const success = await EmailService.sendWelcomeEmail('test@example.com', 'أحمد محمد');
+                
+                if (success) {
+                    resultDiv.innerHTML = '<div class="success">✅ تم إرسال رسالة الترحيب بنجاح! تحقق من وحدة التحكم.</div>';
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ فشل في إرسال رسالة الترحيب</div>';
+                }
+            } catch (error) {
+                console.error('خطأ في اختبار رسالة الترحيب:', error);
+                resultDiv.innerHTML = '<div class="error">❌ خطأ: ' + error.message + '</div>';
+            }
+        };
+        
+        window.testActivationEmail = async function() {
+            const resultDiv = document.getElementById('activationResult');
+            resultDiv.innerHTML = '<div class="info">🔄 جاري إرسال رسالة التفعيل...</div>';
+            
+            try {
+                console.log('🧪 بدء اختبار رسالة التفعيل...');
+                const success = await EmailService.sendActivationEmail('test@example.com', 'فاطمة علي');
+                
+                if (success) {
+                    resultDiv.innerHTML = '<div class="success">✅ تم إرسال رسالة التفعيل بنجاح! تحقق من وحدة التحكم.</div>';
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ فشل في إرسال رسالة التفعيل</div>';
+                }
+            } catch (error) {
+                console.error('خطأ في اختبار رسالة التفعيل:', error);
+                resultDiv.innerHTML = '<div class="error">❌ خطأ: ' + error.message + '</div>';
+            }
+        };
+        
+        window.testExpiryEmail = async function() {
+            const resultDiv = document.getElementById('expiryResult');
+            resultDiv.innerHTML = '<div class="info">🔄 جاري إرسال تذكير انتهاء الاشتراك...</div>';
+            
+            try {
+                console.log('🧪 بدء اختبار تذكير انتهاء الاشتراك...');
+                const success = await EmailService.sendExpiryReminderEmail('test@example.com', 'محمد أحمد', 3);
+                
+                if (success) {
+                    resultDiv.innerHTML = '<div class="success">✅ تم إرسال تذكير انتهاء الاشتراك بنجاح! تحقق من وحدة التحكم.</div>';
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ فشل في إرسال تذكير انتهاء الاشتراك</div>';
+                }
+            } catch (error) {
+                console.error('خطأ في اختبار تذكير انتهاء الاشتراك:', error);
+                resultDiv.innerHTML = '<div class="error">❌ خطأ: ' + error.message + '</div>';
+            }
+        };
+        
+        window.testCustomEmail = async function() {
+            const resultDiv = document.getElementById('customResult');
+            resultDiv.innerHTML = '<div class="info">🔄 جاري إرسال الرسالة المخصصة...</div>';
+            
+            try {
+                console.log('🧪 بدء اختبار الرسالة المخصصة...');
+                const success = await EmailService.sendCustomEmail({
+                    to: 'test@example.com',
+                    subject: 'رسالة اختبار مخصصة 📝',
+                    html: '<h1>مرحباً! هذه رسالة اختبار مخصصة</h1>'
+                });
+                
+                if (success) {
+                    resultDiv.innerHTML = '<div class="success">✅ تم إرسال الرسالة المخصصة بنجاح! تحقق من وحدة التحكم.</div>';
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ فشل في إرسال الرسالة المخصصة</div>';
+                }
+            } catch (error) {
+                console.error('خطأ في اختبار الرسالة المخصصة:', error);
+                resultDiv.innerHTML = '<div class="error">❌ خطأ: ' + error.message + '</div>';
+            }
+        };
+        
+        // رسالة ترحيب في وحدة التحكم
+        console.log('🎮 مرحباً بك في اختبار نظام الإيميل المحدث!');
+        console.log('📧 جميع رسائل الإيميل ستظهر هنا كمحاكاة');
+        console.log('🔧 هذا يحل مشكلة CORS في المتصفح');
+    </script>
+</body>
+</html>
