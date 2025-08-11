@@ -44,9 +44,9 @@ export function MenuHeader({
       animate={{ opacity: 1, y: 0 }}
       className="bg-white/95 backdrop-blur-sm shadow-lg rounded-3xl p-6 mb-6 border border-white/50"
     >
-      <div className="flex items-center justify-between flex-wrap gap-4">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         {/* Player Info Section */}
-        <div className="flex items-center space-x-4 rtl:space-x-reverse min-w-0">
+        <div className="flex items-center space-x-4 rtl:space-x-reverse min-w-0 w-full md:w-auto">
           <motion.div
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
@@ -97,14 +97,14 @@ export function MenuHeader({
         </div>
         
         {/* Controls Section */}
-        <div className="flex items-center space-x-3 rtl:space-x-reverse flex-wrap">
+        <div className="flex items-center space-x-3 rtl:space-x-reverse flex-wrap w-full md:w-auto md:ms-auto gap-2">
           {/* View Mode Toggle */}
-          <div className="flex bg-gray-100 rounded-xl p-1 shadow-inner">
+          <div className="flex bg-gray-100 rounded-xl p-0.5 sm:p-1 shadow-inner">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onViewModeChange('grid')}
-              className={`p-3 rounded-lg transition-all duration-300 ${
+              className={`p-2 sm:p-3 rounded-lg transition-all duration-300 ${
                 viewMode === 'grid' 
                   ? 'bg-white shadow-md text-blue-600' 
                   : 'text-gray-500 hover:text-gray-700'
@@ -116,7 +116,7 @@ export function MenuHeader({
               variant="ghost"
               size="sm"
               onClick={() => onViewModeChange('list')}
-              className={`p-3 rounded-lg transition-all duration-300 ${
+              className={`p-2 sm:p-3 rounded-lg transition-all duration-300 ${
                 viewMode === 'list' 
                   ? 'bg-white shadow-md text-blue-600' 
                   : 'text-gray-500 hover:text-gray-700'
@@ -127,7 +127,7 @@ export function MenuHeader({
           </div>
           
           {/* Action Buttons */}
-          <div className="flex items-center space-x-2 rtl:space-x-reverse flex-wrap">
+          <div className="flex items-center space-x-2 rtl:space-x-reverse flex-wrap gap-2">
             {/* Switch Player Button */}
             <motion.div 
               whileHover={{ scale: 1.05 }} 
@@ -137,7 +137,7 @@ export function MenuHeader({
                 variant="ghost"
                 size="sm"
                 onClick={onSwitchPlayer}
-                className="p-3 hover:bg-blue-50 rounded-xl shadow-md border border-blue-100 text-blue-600 hover:text-blue-700 transition-all duration-300"
+                className="p-2 sm:p-3 hover:bg-blue-50 rounded-xl shadow-md border border-blue-100 text-blue-600 hover:text-blue-700 transition-all duration-300"
                 title={isRTL ? "تبديل اللاعب" : "Switch Player"}
               >
                 <Users className="w-5 h-5" />
@@ -153,7 +153,7 @@ export function MenuHeader({
                 variant="ghost"
                 size="sm"
                 onClick={onRewards}
-                className="p-3 hover:bg-yellow-50 rounded-xl shadow-md border border-yellow-100 text-yellow-600 hover:text-yellow-700 transition-all duration-300 relative"
+                className="p-2 sm:p-3 hover:bg-yellow-50 rounded-xl shadow-md border border-yellow-100 text-yellow-600 hover:text-yellow-700 transition-all duration-300 relative"
                 title={isRTL ? "المكافآت" : "Rewards"}
               >
                 <Gift className="w-5 h-5" />
@@ -173,7 +173,7 @@ export function MenuHeader({
                 variant="ghost"
                 size="sm"
                 onClick={onAchievements}
-                className="p-3 hover:bg-purple-50 rounded-xl shadow-md border border-purple-100 text-purple-600 hover:text-purple-700 transition-all duration-300"
+                className="p-2 sm:p-3 hover:bg-purple-50 rounded-xl shadow-md border border-purple-100 text-purple-600 hover:text-purple-700 transition-all duration-300"
                 title={isRTL ? "الإنجازات" : "Achievements"}
               >
                 <Trophy className="w-5 h-5" />
@@ -189,7 +189,7 @@ export function MenuHeader({
                 variant="ghost"
                 size="sm"
                 onClick={onSettings}
-                className="p-3 hover:bg-gray-50 rounded-xl shadow-md border border-gray-200 text-gray-600 hover:text-gray-700 transition-all duration-300"
+                className="p-2 sm:p-3 hover:bg-gray-50 rounded-xl shadow-md border border-gray-200 text-gray-600 hover:text-gray-700 transition-all duration-300"
                 title={isRTL ? "الإعدادات" : "Settings"}
               >
                 <Settings className="w-5 h-5" />

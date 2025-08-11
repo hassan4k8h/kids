@@ -189,9 +189,9 @@ export function MainMenu({
                   style={{
                     background: 'linear-gradient(135deg, #ffffff 0%, #f8faff 100%)',
                     boxShadow: '0 15px 35px rgba(0, 0, 0, 0.2), 0 8px 15px rgba(0, 0, 0, 0.1)',
-                    minHeight: 'clamp(56px, 12vw, 80px)',
-                    minWidth: 'clamp(160px, 40vw, 220px)',
-                    padding: 'clamp(12px, 3vw, 20px) clamp(20px, 4vw, 32px)'
+                    minHeight: 'clamp(52px, 12vw, 80px)',
+                    minWidth: 'clamp(150px, 60vw, 220px)',
+                    padding: 'clamp(10px, 3vw, 18px) clamp(16px, 5vw, 28px)'
                   }}
                 >
                   <div className="flex items-center justify-center space-x-3 rtl:space-x-reverse">
@@ -212,7 +212,7 @@ export function MainMenu({
                     <span 
                       className="font-ultra-bold text-ultra-clear"
                       style={{
-                        fontSize: 'clamp(1rem, 3.5vw, 1.25rem)',
+                        fontSize: 'clamp(0.95rem, 4vw, 1.2rem)',
                         background: 'linear-gradient(135deg, #7c3aed 0%, #ec4899 50%, #3b82f6 100%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',

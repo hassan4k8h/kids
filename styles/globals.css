@@ -663,9 +663,18 @@ button[class*="outline"]:not(.btn-primary):not(.btn-fun):hover {
 /* Professional container */
 .container-professional {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 0 var(--spacing-large);
+  padding: 0 var(--spacing-medium);
+}
+
+/* Super responsive container for very small screens */
+.container-responsive {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding-left: clamp(12px, 4vw, 24px);
+  padding-right: clamp(12px, 4vw, 24px);
 }
 
 /* Enhanced keyframe animations */
