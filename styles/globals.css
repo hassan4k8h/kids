@@ -327,8 +327,6 @@ label:not([class*="text-white"]) {
 [class*="bg-black"] *,
 [class*="bg-gray-900"] *,
 [class*="bg-gray-800"] *,
-[class*="bg-gradient-to"] button,
-[class*="bg-gradient-to"] button *,
 .btn-primary,
 .btn-primary *,
 .btn-fun,
