@@ -37,12 +37,19 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
     const originalFontSize = getComputedStyle(document.documentElement).getPropertyValue('--font-size');
     const adjustBaseFont = () => {
       const w = window.innerWidth;
-      const h = window.innerHeight;
-      const minSide = Math.min(w, h);
-      let scale = 1;
-      if (minSide < 360) scale = 0.85;
-      else if (minSide < 400) scale = 0.9;
-      else if (minSide < 450) scale = 0.95;
+      const vh = (window as any).visualViewport?.height || window.innerHeight;
+      // Scale primarily by height to ensure all bottom elements fit, with width as secondary cap
+      let scaleH = 1;
+      if (vh < 520) scaleH = 0.72;
+      else if (vh < 560) scaleH = 0.78;
+      else if (vh < 600) scaleH = 0.82;
+      else if (vh < 640) scaleH = 0.88;
+      else if (vh < 700) scaleH = 0.92;
+      let scaleW = 1;
+      if (w < 340) scaleW = 0.85;
+      else if (w < 360) scaleW = 0.9;
+      else if (w < 400) scaleW = 0.95;
+      const scale = Math.min(scaleH, scaleW);
       document.documentElement.style.setProperty('--font-size', `${Math.round(18 * scale)}px`);
     };
     adjustBaseFont();
@@ -306,8 +313,8 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
         </div>
 
         {/* Game Area */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-3 sm:p-4 md:p-6 shadow-lg border border-white/20 flex-1 min-h-0">
-          <div className="w-full h-full">
+        <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-3 sm:p-4 md:p-6 shadow-lg border border-white/20 flex-1 min-h-0 grid">
+          <div className="w-full h-full place-self-stretch">
             <GameEngine
               gameId={gameId}
               isRTL={isRTL}
@@ -320,7 +327,7 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
         </div>
 
         {/* Game controls */}
-        <div className="flex justify-center space-x-3 rtl:space-x-reverse mt-3 pb-3">
+        <div className="flex justify-center space-x-3 rtl:space-x-reverse mt-3 pb-3 sticky bottom-2 z-20">
           <Button
             onClick={() => setIsPaused(!isPaused)}
             className="btn-fun bg-white text-purple-600 hover:bg-gray-50 shadow-lg border border-purple-200 min-h-[44px]"
