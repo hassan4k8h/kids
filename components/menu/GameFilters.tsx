@@ -117,8 +117,8 @@ export function GameFilters({
               onClick={() => onCategoryChange("all")}
               className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300 border-2 ${
                 selectedCategory === "all"
-                  ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white border-transparent shadow-lg"
-                  : `${categoryColors.all.bg} ${categoryColors.all.text} ${categoryColors.all.border} hover:shadow-md`
+                  ? "bg-white text-black border-gray-400 shadow-lg"
+                  : `${categoryColors.all.bg} text-black ${categoryColors.all.border} hover:shadow-md bg-white`
               }`}
             >
               <Gamepad2 className="w-4 h-4 mr-2" />
@@ -147,8 +147,8 @@ export function GameFilters({
                     onClick={() => onCategoryChange(category)}
                     className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300 border-2 ${
                       selectedCategory === category
-                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white border-transparent shadow-lg"
-                        : `${colors.bg} ${colors.text} ${colors.border} hover:shadow-md`
+                        ? "bg-white text-black border-gray-400 shadow-lg"
+                        : `bg-white text-black ${colors.border} hover:shadow-md`
                     }`}
                   >
                     <IconComponent className="w-4 h-4 mr-2" />
@@ -177,8 +177,8 @@ export function GameFilters({
               onClick={() => onDifficultyChange("all")}
               className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300 border-2 ${
                 selectedDifficulty === "all"
-                  ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white border-transparent shadow-lg"
-                  : `${difficultyColors.all.bg} ${difficultyColors.all.text} ${difficultyColors.all.border} hover:shadow-md`
+                  ? "bg-white text-black border-gray-400 shadow-lg"
+                  : `bg-white text-black ${difficultyColors.all.border} hover:shadow-md`
               }`}
             >
               <Target className="w-4 h-4 mr-2" />
@@ -204,8 +204,8 @@ export function GameFilters({
                   onClick={() => onDifficultyChange(difficulty)}
                   className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-300 border-2 ${
                     selectedDifficulty === difficulty
-                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white border-transparent shadow-lg"
-                      : `${colors.bg} ${colors.text} ${colors.border} hover:shadow-md`
+                      ? "bg-white text-black border-gray-400 shadow-lg"
+                      : `bg-white text-black ${colors.border} hover:shadow-md`
                   }`}
                 >
                   <div className={`w-2 h-2 rounded-full mr-2 ${

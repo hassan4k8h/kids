@@ -433,16 +433,16 @@ export function GameCard({ game, gameName, onSelect, isRTL, viewMode, animationD
             </div>
 
             {/* Action Button */}
-            {!isLocked && (
-              <motion.div
-                className={`inline-flex items-center space-x-2 rtl:space-x-reverse px-4 py-2 bg-gradient-to-r ${colors.background} text-white rounded-xl font-bold text-sm shadow-lg`}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Play className="w-4 h-4" />
-                <span>{isRTL ? 'ابدأ اللعبة' : 'Start Game'}</span>
-              </motion.div>
-            )}
+              {!isLocked && (
+                <motion.div
+                  className={`inline-flex items-center space-x-2 rtl:space-x-reverse px-4 py-2 bg-white text-black rounded-xl font-bold text-sm shadow-lg border border-gray-300`}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Play className="w-4 h-4" />
+                  <span>{isRTL ? 'ابدأ اللعبة' : 'Start Game'}</span>
+                </motion.div>
+              )}
 
             {isLocked && (
               <div className="text-xs font-bold" style={{ color: colors.lightTextColor }}>

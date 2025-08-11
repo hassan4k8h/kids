@@ -8,12 +8,14 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "btn-pro bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 shadow-medium hover:shadow-large",
+        // Default: clean white button with black text
+        default: "btn-pro bg-white text-black border-2 border-gray-300 hover:bg-gray-50 hover:border-gray-400 shadow-soft hover:shadow-medium",
         destructive: "btn-pro bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 shadow-medium hover:shadow-large",
-        outline: "btn-pro border-2 border-purple-300 bg-white/90 text-purple-700 hover:bg-purple-50 hover:border-purple-500 shadow-soft hover:shadow-medium",
-        secondary: "btn-pro bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 hover:from-gray-200 hover:to-gray-300 shadow-soft hover:shadow-medium",
-        ghost: "hover:bg-purple-100 hover:text-purple-800 rounded-xl font-bold text-clear min-h-[clamp(48px,8vw,64px)] px-4",
-        link: "text-purple-600 underline-offset-4 hover:underline font-bold text-clear",
+        // Outline also white/black for consistency
+        outline: "btn-pro border-2 border-gray-300 bg-white text-black hover:bg-gray-50 hover:border-gray-400 shadow-soft hover:shadow-medium",
+        secondary: "btn-pro bg-white text-black border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 shadow-soft",
+        ghost: "hover:bg-gray-100 text-black rounded-xl font-bold text-clear min-h-[clamp(48px,8vw,64px)] px-4",
+        link: "text-black underline-offset-4 hover:underline font-bold text-clear",
         fun: "btn-fun bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 text-white hover:from-purple-600 hover:via-pink-600 hover:to-blue-600 shadow-large hover:shadow-glow",
         professional: "btn-pro bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 shadow-medium hover:shadow-large border-2 border-white/20",
         success: "btn-pro bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 shadow-medium hover:shadow-large",
