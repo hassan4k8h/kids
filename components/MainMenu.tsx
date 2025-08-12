@@ -12,7 +12,7 @@ import { subscriptionService } from "../services/SubscriptionService";
 interface MainMenuProps {
   playerName: string;
   playerAvatar: string;
-  onGameSelect: (gameId: string) => void;
+  onGameSelect: (gameId: string, level?: number) => void;
   onStoriesSelect: () => void;
   onRewards: () => void;
   onAchievements: () => void;
@@ -24,6 +24,7 @@ interface MainMenuProps {
   streakDays: number;
   currentLevel: number;
   levelProgressPercent: number;
+  gameProgressById: Record<string, { level?: number; completedLevels?: number; score?: number }>;
 }
 
 export function MainMenu({
@@ -40,7 +41,8 @@ export function MainMenu({
   achievementsCount,
   streakDays,
   currentLevel,
-  levelProgressPercent
+  levelProgressPercent,
+  gameProgressById
 }: MainMenuProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
@@ -48,9 +50,15 @@ export function MainMenu({
   const [showOnlyUnlocked, setShowOnlyUnlocked] = useState<boolean>(false);
   const [showFeatured, setShowFeatured] = useState<boolean>(false);
 
-  // الحصول على جميع الألعاب مرتبة
-  const allGames = getSortedGames();
-  const featuredGames = getFeaturedGames();
+  // الحصول على جميع الألعاب مرتبة مع دمج التقدم الحقيقي لكل لعبة
+  const allGames = getSortedGames().map(g => ({
+    ...g,
+    progressLevel: (gameProgressById[g.id]?.level || g.progressLevel || 1)
+  }));
+  const featuredGames = getFeaturedGames().map(g => ({
+    ...g,
+    progressLevel: (gameProgressById[g.id]?.level || g.progressLevel || 1)
+  }));
 
   // تطبيق الفلاتر
   const filteredGames = allGames.filter(game => {
@@ -409,7 +417,7 @@ export function MainMenu({
                   key={game.id}
                   game={game}
                   gameName={gameNames[game.id]}
-                  onSelect={() => onGameSelect(game.id)}
+                  onSelect={() => onGameSelect(game.id, game.progressLevel || 1)}
                   isRTL={isRTL}
                   viewMode={viewMode}
                   animationDelay={index * 0.1}

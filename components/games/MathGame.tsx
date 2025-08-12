@@ -14,12 +14,12 @@ interface MathQuestion {
   difficulty: number;
 }
 
-export function MathGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate }: GameProps) {
+export function MathGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate, initialLevel }: GameProps) {
   const MAX_LEVEL = 100; // 100 سؤال: 25 جمع، 25 طرح، 25 ضرب، 25 قسمة
   const [currentQuestion, setCurrentQuestion] = useState<MathQuestion | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] = useState(initialLevel || 1);
   const [streak, setStreak] = useState(0);
   const [feedback, setFeedback] = useState<{ type: 'correct' | 'wrong' | null; message: string }>({ type: null, message: '' });
   const [isAnswering, setIsAnswering] = useState(false);
@@ -208,12 +208,19 @@ export function MathGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, 
     }, 1500);
   }, [isAnswering, currentQuestion, streak, level, questionsAnswered, lives, score, isRTL, onGameComplete, generateQuestion]);
 
-  // Initialize first question
+  // مزامنة مستوى البدء مع المحفوظ
+  useEffect(() => {
+    if (initialLevel && initialLevel > level) {
+      setLevel(initialLevel);
+    }
+  }, [initialLevel]);
+
+  // Initialize first question من المستوى الحالي
   useEffect(() => {
     if (!currentQuestion) {
-      setCurrentQuestion(generateQuestion(1));
+      setCurrentQuestion(generateQuestion(level));
     }
-  }, [currentQuestion, generateQuestion]);
+  }, [currentQuestion, generateQuestion, level]);
 
   if (!currentQuestion) {
     return (

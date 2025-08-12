@@ -752,7 +752,7 @@ export default function App() {
           <MainMenu
             playerName={currentPlayer.name}
             playerAvatar={currentPlayer.avatar}
-            onGameSelect={(gameId) => handleGameSelect(gameId)}
+            onGameSelect={(gameId, level) => handleGameSelect(gameId, level || 1)}
             onStoriesSelect={handleStoriesSelect}
             onRewards={() => setCurrentScreen("rewards")}
             onAchievements={() => setCurrentScreen("achievements")}
@@ -771,6 +771,7 @@ export default function App() {
                 return Math.max(0, Math.min(100, Math.round((avg / 10) * 100)));
               })()
             }
+            gameProgressById={currentPlayer.gameProgress as any}
           />
         ) : null;
       
