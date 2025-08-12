@@ -80,7 +80,7 @@ export default function App() {
   const lastPushedScreenRef = useRef<Screen | null>(null);
 
   // PWA install prompt
-  const { canInstall, install } = usePWAInstall();
+  const { canInstall, install, autoPrompt, isIOS, isStandalone, dismissed } = usePWAInstall();
 
   // معالج الأخطاء العام
   const handleError = (error: any, context: string) => {
@@ -875,6 +875,18 @@ export default function App() {
           <button onClick={install} className="px-4 py-2 rounded-xl bg-purple-600 text-white shadow-lg">
             قم بتثبيت التطبيق
           </button>
+        </div>
+      )}
+
+      {/* تلميح احترافي على iOS لأن beforeinstallprompt غير مدعوم */}
+      {isIOS && !isStandalone && !dismissed && (
+        <div className="fixed bottom-4 inset-x-4 z-50">
+          <div className="bg-white/95 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl p-3 text-sm text-gray-800 flex items-center justify-between">
+            <div>
+              أضف التطبيق إلى الشاشة الرئيسية: اضغط مشاركة ثم "أضف إلى الشاشة الرئيسية"
+            </div>
+            <button onClick={() => localStorage.setItem('pwa_dismissed_v1','1')} className="ml-3 px-2 py-1 rounded-lg bg-gray-200 hover:bg-gray-300">إخفاء</button>
+          </div>
         </div>
       )}
       <div style={{ color: '#000000' }}>
