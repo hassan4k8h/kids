@@ -80,7 +80,7 @@ export default function App() {
   const lastPushedScreenRef = useRef<Screen | null>(null);
 
   // PWA install prompt
-  const { canInstall, install, autoPrompt, isIOS, isStandalone, dismissed } = usePWAInstall();
+  const { canInstall, install, autoPrompt, isIOS, isStandalone, dismissed, installed } = usePWAInstall();
 
   // معالج الأخطاء العام
   const handleError = (error: any, context: string) => {
@@ -871,7 +871,7 @@ export default function App() {
       style={{ color: '#000000' }}
     >
       {/* بانر تثبيت يظهر فور فتح الرابط بشكل احترافي (يختفي بعد التثبيت أو الإخفاء) */}
-      {!isStandalone && (
+      {!isStandalone && !installed && (
         <div className="fixed bottom-4 inset-x-4 z-50">
           <div className="bg-white/95 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl p-3 text-sm text-gray-800 flex items-center justify-between gap-3">
             <div className="flex-1">

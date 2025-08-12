@@ -6,6 +6,7 @@ const DISMISSED_KEY = 'pwa_dismissed_v1';
 export function usePWAInstall() {
   const [deferred, setDeferred] = useState<any>(null);
   const [canInstall, setCanInstall] = useState(false);
+  const [installed, setInstalled] = useState(false);
   const [hasPrompted, setHasPrompted] = useState<boolean>(() => {
     try { return localStorage.getItem(PROMPTED_KEY) === '1'; } catch { return false; }
   });
@@ -40,6 +41,12 @@ export function usePWAInstall() {
       }
     };
     window.addEventListener('beforeinstallprompt', handler);
+    const onInstalled = () => {
+      try { localStorage.setItem(DISMISSED_KEY, '1'); } catch {}
+      setInstalled(true);
+      setCanInstall(false);
+    };
+    window.addEventListener('appinstalled', onInstalled);
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, [hasPrompted, dismissed]);
 
@@ -75,7 +82,7 @@ export function usePWAInstall() {
     return outcome === 'accepted';
   };
 
-  return { canInstall, install, autoPrompt, isIOS, isStandalone, dismissed };
+  return { canInstall, install, autoPrompt, isIOS, isStandalone, dismissed, installed };
 }
 
 

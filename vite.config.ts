@@ -24,6 +24,7 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: 'auto',
       includeAssets: [
         'icons/pwa-64x64.png',
         'icons/pwa-192x192.png',
@@ -70,6 +71,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        navigateFallback: '/offline.html',
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
