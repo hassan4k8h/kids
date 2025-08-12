@@ -5,6 +5,7 @@ class PlayerService {
   private static readonly STORAGE_KEY = 'kids_game_players';
   private static useSupabase = true; // تبديل بين Supabase والتخزين المحلي
   private static readonly CURRENT_PLAYER_OBJ_PREFIX = 'current_player_obj_';
+  private static readonly PROGRESS_KEY_PREFIX = 'progress_';
 
   // تحويل PlayerProfile إلى Player
   private static profileToPlayer(profile: PlayerProfile & { user_id?: string }): Player {
@@ -231,6 +232,65 @@ class PlayerService {
       }
     } else {
       // التخزين المحلي معطل
+    }
+  }
+
+  // حفظ تقدم المستوى فورياً بدون إنشاء سجل score جديد
+  static async persistGameLevel(playerId: string, gameType: string, level: number, userId?: string): Promise<void> {
+    try {
+      // حفظ محلياً دائماً
+      this.setLocalProgress(userId || 'anon', playerId, gameType, { level });
+
+      if (!this.useSupabase) return;
+
+      // التحقق من ملكية اللاعب إذا تم تمرير userId
+      if (userId) {
+        const player = await this.getPlayer(playerId);
+        if (!player || player.userId !== userId) {
+          console.error('❌ Security violation: Player does not belong to current user');
+          return;
+        }
+      }
+
+      const player = await this.getPlayer(playerId);
+      if (!player) return;
+
+      if (!player.gameProgress[gameType]) {
+        player.gameProgress[gameType] = { level: 1, score: 0, completedLevels: 0 } as any;
+      }
+      player.gameProgress[gameType].level = Math.max(player.gameProgress[gameType].level || 1, level);
+      player.gameProgress[gameType].completedLevels = Math.max(player.gameProgress[gameType].completedLevels || 0, level);
+
+      await this.savePlayer(player);
+      if (player.userId) {
+        this.setCurrentPlayerObject(player.userId, player);
+      }
+    } catch (error) {
+      console.error('Error persisting game level:', error);
+    }
+  }
+
+  // قراءة/كتابة تقدم محلي خفيف
+  static setLocalProgress(userId: string, playerId: string, gameType: string, data: { level?: number; score?: number }): void {
+    try {
+      const key = `${this.PROGRESS_KEY_PREFIX}${userId}_${playerId}_${gameType}`;
+      const existing = localStorage.getItem(key);
+      const current = existing ? JSON.parse(existing) : {};
+      const merged = { ...current, ...data };
+      localStorage.setItem(key, JSON.stringify(merged));
+    } catch (error) {
+      console.error('Error saving local progress:', error);
+    }
+  }
+
+  static getLocalProgress(userId: string, playerId: string, gameType: string): { level?: number; score?: number } | null {
+    try {
+      const key = `${this.PROGRESS_KEY_PREFIX}${userId}_${playerId}_${gameType}`;
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch (error) {
+      console.error('Error reading local progress:', error);
+      return null;
     }
   }
 

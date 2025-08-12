@@ -104,10 +104,20 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
     try {
       // حفظ نتيجة اللعبة والتقدم في Supabase
       await PlayerService.updatePlayerProgress(playerId, gameId, result.score, userId, level);
+      // حفظ محلي أيضاً لسرعة الاستئناف
+      PlayerService.setLocalProgress(userId, playerId, gameId, { level, score: result.score });
     } catch (err) {
       console.error('Failed to persist game progress:', err);
     }
   };
+
+  // حفظ لحظي عند تغيّر المستوى أو النقاط
+  useEffect(() => {
+    if (!userId || !playerId) return;
+    PlayerService.setLocalProgress(userId, playerId, gameId, { level, score });
+    // مزامنة سحابية خفيفة للمستوى فقط
+    PlayerService.persistGameLevel(playerId, gameId, level, userId);
+  }, [level, score]);
 
   const resetGame = () => {
     setScore(0);
