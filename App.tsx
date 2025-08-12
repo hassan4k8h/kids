@@ -870,22 +870,31 @@ export default function App() {
       className="min-h-screen bg-background font-semi-bold antialiased" 
       style={{ color: '#000000' }}
     >
-      {canInstall && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
-          <button onClick={install} className="px-4 py-2 rounded-xl bg-purple-600 text-white shadow-lg">
-            قم بتثبيت التطبيق
-          </button>
-        </div>
-      )}
-
-      {/* تلميح احترافي على iOS لأن beforeinstallprompt غير مدعوم */}
-      {isIOS && !isStandalone && !dismissed && (
+      {/* بانر تثبيت يظهر فور فتح الرابط بشكل احترافي (يختفي بعد التثبيت أو الإخفاء) */}
+      {!isStandalone && !dismissed && (
         <div className="fixed bottom-4 inset-x-4 z-50">
-          <div className="bg-white/95 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl p-3 text-sm text-gray-800 flex items-center justify-between">
-            <div>
-              أضف التطبيق إلى الشاشة الرئيسية: اضغط مشاركة ثم "أضف إلى الشاشة الرئيسية"
+          <div className="bg-white/95 backdrop-blur-md border border-gray-200 shadow-xl rounded-2xl p-3 text-sm text-gray-800 flex items-center justify-between gap-3">
+            <div className="flex-1">
+              {isIOS
+                ? 'أضف التطبيق إلى الشاشة الرئيسية: اضغط مشاركة ثم "أضف إلى الشاشة الرئيسية"'
+                : 'ثبّت التطبيق للاستعمال السريع دون متصفح'}
             </div>
-            <button onClick={() => localStorage.setItem('pwa_dismissed_v1','1')} className="ml-3 px-2 py-1 rounded-lg bg-gray-200 hover:bg-gray-300">إخفاء</button>
+            {!isIOS && (
+              <button
+                onClick={install}
+                disabled={!canInstall}
+                className={`px-3 py-2 rounded-lg text-white ${canInstall ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-400 cursor-not-allowed'} `}
+                title={canInstall ? 'تثبيت التطبيق' : 'جاري التحضير للتثبيت...'}
+              >
+                {canInstall ? 'تثبيت' : 'لحظة...'}
+              </button>
+            )}
+            <button
+              onClick={() => { try { localStorage.setItem('pwa_dismissed_v1','1'); } catch {}; }}
+              className="px-2 py-1 rounded-lg bg-gray-200 hover:bg-gray-300"
+            >
+              إخفاء
+            </button>
           </div>
         </div>
       )}
