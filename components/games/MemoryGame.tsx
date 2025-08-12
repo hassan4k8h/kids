@@ -44,13 +44,13 @@ const memoryDatabase = {
   shapes: ['⚪', '⚫', '🔴', '🟠', '🟡', '🟢', '🔵', '🟣', '🟤', '🔺', '🔻', '🔶', '🔷', '🔸', '🔹', '🔘', '⭕', '❌', '✅', '❎']
 };
 
-export function MemoryGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate }: GameProps) {
+export function MemoryGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate, initialLevel }: GameProps) {
   // تحويل اللعبة بالكامل إلى مطابقة بطاقات فقط وزيادة عدد المستويات
   const MAX_LEVEL = 120;
   const [currentChallenge, setCurrentChallenge] = useState<MemoryChallenge | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] = useState(initialLevel || 1);
   const [questionsAnswered, setQuestionsAnswered] = useState(0);
   const [feedback, setFeedback] = useState<{ type: 'correct' | 'wrong' | null; message: string }>({ type: null, message: '' });
   const [isAnswering, setIsAnswering] = useState(false);
@@ -497,12 +497,19 @@ export function MemoryGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate
     );
   }, [currentChallenge, showingSequence, playerSequence, isRTL, handleLevelComplete]);
 
+  // مزامنة مستوى البدء مع المستوى المحفوظ
+  useEffect(() => {
+    if (initialLevel && initialLevel > level) {
+      setLevel(initialLevel);
+    }
+  }, [initialLevel]);
+
   // تهيئة التحدي الأول
   useEffect(() => {
     if (!currentChallenge) {
-      setCurrentChallenge(generateChallenge(1));
+      setCurrentChallenge(generateChallenge(level));
     }
-  }, [currentChallenge, generateChallenge]);
+  }, [currentChallenge, generateChallenge, level]);
 
   // لم يعد هناك عرض تسلسل لأن اللعبة أصبحت مطابقة بطاقات فقط
 

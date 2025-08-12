@@ -292,6 +292,7 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
               onScoreUpdate={setScore}
               onLivesUpdate={setLives}
               onLevelUpdate={setLevel}
+              initialLevel={level}
             />
           </div>
         </div>

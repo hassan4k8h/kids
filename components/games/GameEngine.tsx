@@ -22,6 +22,8 @@ export interface GameProps {
   onScoreUpdate: (score: number) => void;
   onLivesUpdate: (lives: number) => void;
   onLevelUpdate: (level: number) => void;
+  // مستوى البدء (اختياري) لاستئناف التقدم المحفوظ
+  initialLevel?: number;
 }
 
 interface GameEngineProps extends GameProps {
