@@ -45,8 +45,8 @@ const memoryDatabase = {
 };
 
 export function MemoryGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate }: GameProps) {
-  // تقليل المستويات وتحسين التدرج ومنع التكرار الطويل
-  const MAX_LEVEL = 60;
+  // تحويل اللعبة بالكامل إلى مطابقة بطاقات فقط وزيادة عدد المستويات
+  const MAX_LEVEL = 120;
   const [currentChallenge, setCurrentChallenge] = useState<MemoryChallenge | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -68,43 +68,44 @@ export function MemoryGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate
 
   // إعدادات الصعوبة حسب المستوى
   const getDifficultySettings = useCallback((level: number) => {
-    if (level <= 15) return { 
-      gridSize: 3, // 3x3 = 9 كروت (4 أزواج)
+    // جميع المستويات ستكون مطابقة بطاقات فقط
+    if (level <= 15) return {
+      gridSize: 3, // 3x3 = 9 كروت (4 أزواج + خانة فارغة)
       pairs: 4,
       timeLimit: 60,
-      challengeTypes: ['card-matching', 'sequence-memory'],
+      challengeTypes: ['card-matching'],
       categories: ['animals', 'birds', 'sea', 'farm', 'wild', 'insects', 'pets'],
       cardSize: 'large'
     };
-    if (level <= 30) return { 
-      gridSize: 3, // 3x3 مع أزواج أكثر
+    if (level <= 30) return {
+      gridSize: 3,
       pairs: 5,
       timeLimit: 75,
-      challengeTypes: ['card-matching', 'sequence-memory'],
+      challengeTypes: ['card-matching'],
       categories: ['animals', 'birds', 'sea', 'farm', 'wild', 'insects', 'pets', 'food'],
       cardSize: 'large'
     };
-    if (level <= 60) return { 
-      gridSize: 4, // 4x4 = 16 كروت
+    if (level <= 60) return {
+      gridSize: 4, // 4x4 = 16 كرت (حتى 6-8 أزواج حسب المستوى)
       pairs: 6,
       timeLimit: 90,
-      challengeTypes: ['card-matching', 'sequence-memory'],
+      challengeTypes: ['card-matching'],
       categories: ['animals', 'birds', 'sea', 'farm', 'wild', 'insects', 'pets', 'food', 'objects'],
       cardSize: 'large'
     };
-    if (level <= 90) return { 
-      gridSize: 4, // 4x4 مع المزيد من الأزواج
+    if (level <= 90) return {
+      gridSize: 4,
       pairs: 8,
       timeLimit: 120,
-      challengeTypes: ['card-matching', 'sequence-memory', 'pattern-memory'],
-      categories: ['animals', 'food', 'objects', 'nature'],
+      challengeTypes: ['card-matching'],
+      categories: ['animals', 'food', 'objects', 'nature', 'transport'],
       cardSize: 'medium'
     };
-    return { 
+    return {
       gridSize: 5, // 5x5 للمستويات المتقدمة
       pairs: 10,
       timeLimit: 150,
-      challengeTypes: ['card-matching', 'sequence-memory', 'pattern-memory', 'color-sequence'],
+      challengeTypes: ['card-matching'],
       categories: Object.keys(memoryDatabase),
       cardSize: 'medium'
     };
@@ -173,26 +174,9 @@ export function MemoryGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate
         };
       }
 
-      case 'sequence-memory': {
-        const sequenceLength = Math.min(3 + Math.floor((currentLevel + sessionSeed) / 5), 10);
-        const category = categories[levelIndex(currentLevel + sessionSeed, categories.length)];
-        const categoryEmojis = memoryDatabase[category as keyof typeof memoryDatabase];
-        // تدوير مع بذرة الجلسة لتجنب التكرار وإضفاء تنوع
-        const base = rotateArray(categoryEmojis, (currentLevel * 3 + sessionSeed) % categoryEmojis.length);
-        const targetSequence = cyclePick(base, currentLevel + sessionSeed * 7, sequenceLength);
-
-        return {
-          type: challengeType,
-          cards: [],
-          gridSize: 0,
-          targetSequence,
-          level: currentLevel,
-          stars: getStarRating(currentLevel),
-          timeLimit: timeLimit / 2
-        };
-      }
-
+      // تمت إزالة أوضاع التسلسل لتكون اللعبة أسهل للأطفال
       default:
+        // احتياطياً، ارجع لمطابقة البطاقات
         return generateChallenge(currentLevel);
     }
   }, [getDifficultySettings]);
@@ -520,16 +504,7 @@ export function MemoryGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate
     }
   }, [currentChallenge, generateChallenge]);
 
-  // بدء عرض التسلسل
-  useEffect(() => {
-    if (currentChallenge?.type === 'sequence-memory' && !gameStarted) {
-      setShowingSequence(true);
-      setTimeout(() => {
-        setShowingSequence(false);
-        startGame();
-      }, currentChallenge.targetSequence!.length * 1000 + 2000);
-    }
-  }, [currentChallenge, gameStarted, startGame]);
+  // لم يعد هناك عرض تسلسل لأن اللعبة أصبحت مطابقة بطاقات فقط
 
   // تمت إزالة المعاينة التلقائية لتجنب حلقات إعادة التصيير؛ المعاينة تتم فقط داخل startGame
 
