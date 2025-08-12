@@ -31,6 +31,29 @@ export function GameScreen({ gameId, gameName, gameNameAr, onBack, onHome, isRTL
   const [showCountdown, setShowCountdown] = useState(true);
   const [countdown, setCountdown] = useState(3);
 
+  // عند فتح اللعبة، حمّل مستوى اللاعب المحفوظ (محلي + سحابي) واستأنف منه
+  useEffect(() => {
+    (async () => {
+      try {
+        // محلي أولاً
+        const local = PlayerService.getLocalProgress(userId, playerId, gameId);
+        let bestLevel = local?.level || 1;
+
+        // سحابي
+        const player = await PlayerService.getPlayer(playerId);
+        const cloudLevel = player?.gameProgress?.[gameId]?.level || 0;
+        if (cloudLevel > bestLevel) bestLevel = cloudLevel;
+
+        if (bestLevel && bestLevel !== level) {
+          setLevel(bestLevel);
+        }
+      } catch (e) {
+        console.error('Failed to load saved level, starting from 1', e);
+      }
+    })();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Countdown before game starts
   useEffect(() => {
     // Optimize viewport and font scaling for small devices
