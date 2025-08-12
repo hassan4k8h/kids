@@ -1,4 +1,5 @@
 import { Button } from "../ui/button";
+import PlayerService from "../../services/PlayerService";
 import { Users, LogOut, Crown } from "lucide-react";
 import { Player } from "../../types/Player";
 import { User } from "../../types/Auth";
@@ -40,12 +41,27 @@ export function AccountSettings({
   const playerAvatar = player.avatar || '👤';
   const isImageAvatar = playerAvatar.startsWith('data:') || playerAvatar.startsWith('http');
 
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        player.avatar = String(reader.result);
+        await PlayerService.updatePlayer(player);
+      } catch (err) {
+        console.error('Failed to update avatar', err);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="space-y-6">
       {/* User Info */}
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
         <div className="flex items-center space-x-4 rtl:space-x-reverse mb-4">
-          <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-lg">
+          <div className="w-16 h-16 rounded-full overflow-hidden border-4 border-white shadow-lg relative">
             {isImageAvatar ? (
               <img 
                 src={playerAvatar} 
@@ -67,6 +83,10 @@ export function AccountSettings({
                 {playerAvatar}
               </div>
             )}
+            <label className="absolute -bottom-2 -right-2 bg-white rounded-full border shadow px-2 py-1 text-[10px] cursor-pointer">
+              {isRTL ? 'تغيير' : 'Change'}
+              <input type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+            </label>
           </div>
           <div>
             <h3 className="text-xl font-bold text-gray-800">
