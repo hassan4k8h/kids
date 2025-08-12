@@ -27,6 +27,7 @@ import { SubscriptionState } from "./types/Subscription.ts";
 import PlayerService from "./services/PlayerService.ts";
 import { authService } from "./services/AuthService.ts";
 import { subscriptionService } from "./services/SubscriptionService.ts";
+import { usePWAInstall } from "./hooks/usePWAInstall";
 
 type Screen = 
   | "welcome"
@@ -77,6 +78,9 @@ export default function App() {
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error' | 'info'} | null>(null);
   const [isAppLoading, setIsAppLoading] = useState(true);
   const lastPushedScreenRef = useRef<Screen | null>(null);
+
+  // PWA install prompt
+  const { canInstall, install } = usePWAInstall();
 
   // معالج الأخطاء العام
   const handleError = (error: any, context: string) => {
@@ -866,6 +870,13 @@ export default function App() {
       className="min-h-screen bg-background font-semi-bold antialiased" 
       style={{ color: '#000000' }}
     >
+      {canInstall && (
+        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
+          <button onClick={install} className="px-4 py-2 rounded-xl bg-purple-600 text-white shadow-lg">
+            قم بتثبيت التطبيق
+          </button>
+        </div>
+      )}
       <div style={{ color: '#000000' }}>
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-12 h-12 border-4 border-gray-300 border-t-primary-500 rounded-full animate-spin" /></div>}>
           {renderCurrentScreen()}
