@@ -92,12 +92,12 @@ const animalDatabase = [
   { id: 'frog', name: 'Frog', nameAr: 'ضفدع', emoji: '🐸', category: 'amphibians', difficulty: 'medium' as const }
 ];
 
-export function AnimalSoundGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate }: GameProps) {
+export function AnimalSoundGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate, initialLevel }: GameProps) {
   const MAX_LEVEL = animalDatabase.length;
   const [currentChallenge, setCurrentChallenge] = useState<AnimalChallenge | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] = useState(initialLevel || 1);
   const [questionsAnswered, setQuestionsAnswered] = useState(0);
   const [feedback, setFeedback] = useState<{ type: 'correct' | 'wrong' | null; message: string }>({ type: null, message: '' });
   const [isAnswering, setIsAnswering] = useState(false);
@@ -554,12 +554,19 @@ export function AnimalSoundGame({ isRTL, onGameComplete, onScoreUpdate, onLivesU
     );
   }, [currentChallenge, isRTL, isAnswering, flashingAnimal, isPlayingSound, soundEnabled, handleAnswer, playAnimalSound, getCategoryNameAr]);
 
+  // مزامنة مستوى البدء مع المحفوظ
+  useEffect(() => {
+    if (initialLevel && initialLevel > level) {
+      setLevel(initialLevel);
+    }
+  }, [initialLevel]);
+
   // تهيئة التحدي الأول
   useEffect(() => {
     if (!currentChallenge) {
-      setCurrentChallenge(generateChallenge(1));
+      setCurrentChallenge(generateChallenge(level));
     }
-  }, [currentChallenge, generateChallenge]);
+  }, [currentChallenge, generateChallenge, level]);
 
   if (!currentChallenge) {
     return (

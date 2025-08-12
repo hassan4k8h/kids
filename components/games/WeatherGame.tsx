@@ -102,11 +102,11 @@ const seasons = [
   { name: 'Winter', nameAr: 'الشتاء', icon: '❄️', weather: ['snowy', 'cloudy', 'stormy'] }
 ];
 
-export function WeatherGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate }: GameProps) {
+export function WeatherGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate, initialLevel }: GameProps) {
   const [currentChallenge, setCurrentChallenge] = useState<WeatherChallenge | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] = useState(initialLevel || 1);
   const [questionsAnswered, setQuestionsAnswered] = useState(0);
   const [feedback, setFeedback] = useState<{ type: 'correct' | 'wrong' | null; message: string }>({ type: null, message: '' });
   const [isAnswering, setIsAnswering] = useState(false);
@@ -420,12 +420,19 @@ export function WeatherGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdat
     }
   }, [currentChallenge, isRTL, isAnswering, handleAnswer]);
 
-  // Initialize first challenge
+  // مزامنة مستوى البدء مع المحفوظ
+  useEffect(() => {
+    if (initialLevel && initialLevel > level) {
+      setLevel(initialLevel);
+    }
+  }, [initialLevel]);
+
+  // Initialize first challenge from current level
   useEffect(() => {
     if (!currentChallenge) {
-      setCurrentChallenge(generateChallenge(1));
+      setCurrentChallenge(generateChallenge(level));
     }
-  }, [currentChallenge, generateChallenge]);
+  }, [currentChallenge, generateChallenge, level]);
 
   if (!currentChallenge) {
     return (

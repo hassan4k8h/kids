@@ -41,12 +41,12 @@ const puzzleImages = [
   { emoji: "🎨", color: "bg-orange-400" },
 ];
 
-export function PuzzleGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate }: GameProps) {
+export function PuzzleGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate, initialLevel }: GameProps) {
   const MAX_LEVEL = 20;
   const [currentChallenge, setCurrentChallenge] = useState<PuzzleChallenge | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] = useState(initialLevel || 1);
   const [questionsAnswered, setQuestionsAnswered] = useState(0);
   const [feedback, setFeedback] = useState<{ type: 'correct' | 'wrong' | null; message: string }>({ type: null, message: '' });
   const [isAnswering, setIsAnswering] = useState(false);
@@ -464,12 +464,19 @@ export function PuzzleGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate
     setMoves(0);
   }, [currentChallenge, isAnswering]);
 
-  // Initialize first challenge
+  // مزامنة مستوى البدء مع المحفوظ
+  useEffect(() => {
+    if (initialLevel && initialLevel > level) {
+      setLevel(initialLevel);
+    }
+  }, [initialLevel]);
+
+  // Initialize first challenge from current level
   useEffect(() => {
     if (!currentChallenge) {
-      setCurrentChallenge(createNextChallenge(1));
+      setCurrentChallenge(createNextChallenge(level));
     }
-  }, [currentChallenge, createNextChallenge]);
+  }, [currentChallenge, createNextChallenge, level]);
 
   const skipChallenge = useCallback(() => {
     if (!currentChallenge || isAnswering) return;

@@ -267,11 +267,11 @@ const alphabetDatabase: AlphabetWord[] = [
   { id: 'yaa-yoyou', letter: 'ي', word: 'يويو', wordAr: 'يويو', emoji: '🪀', difficulty: 'easy', category: 'objects' }
 ];
 
-export function AlphabetGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate }: GameProps) {
+export function AlphabetGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpdate, onLevelUpdate, initialLevel }: GameProps) {
   const [currentChallenge, setCurrentChallenge] = useState<AlphabetChallenge | null>(null);
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] = useState(initialLevel || 1);
   const [questionsAnswered, setQuestionsAnswered] = useState(0);
   const [feedback, setFeedback] = useState<{ type: 'correct' | 'wrong' | null; message: string }>({ type: null, message: '' });
   const [isAnswering, setIsAnswering] = useState(false);
@@ -834,12 +834,19 @@ export function AlphabetGame({ isRTL, onGameComplete, onScoreUpdate, onLivesUpda
     }
   }, [currentChallenge, isRTL, isAnswering, flashingAnswer, handleAnswer, playLetterSound]);
 
+  // مزامنة مستوى البدء مع المحفوظ
+  useEffect(() => {
+    if (initialLevel && initialLevel > level) {
+      setLevel(initialLevel);
+    }
+  }, [initialLevel]);
+
   // تهيئة التحدي الأول
   useEffect(() => {
     if (!currentChallenge) {
-      setCurrentChallenge(generateChallenge(1));
+      setCurrentChallenge(generateChallenge(level));
     }
-  }, [currentChallenge, generateChallenge]);
+  }, [currentChallenge, generateChallenge, level]);
 
   if (!currentChallenge) {
     return (
