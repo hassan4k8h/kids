@@ -81,6 +81,7 @@ export default function App() {
 
   // PWA install prompt
   const { canInstall, install, autoPrompt, isIOS, isStandalone, dismissed, installed } = usePWAInstall();
+  const [showInstallHelp, setShowInstallHelp] = useState(false);
 
   // معالج الأخطاء العام
   const handleError = (error: any, context: string) => {
@@ -881,12 +882,11 @@ export default function App() {
             </div>
             {!isIOS && (
               <button
-                onClick={install}
-                disabled={!canInstall}
-                className={`px-3 py-2 rounded-lg text-white ${canInstall ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-400 cursor-not-allowed'} `}
-                title={canInstall ? 'تثبيت التطبيق' : 'جاري التحضير للتثبيت...'}
+                onClick={() => { if (canInstall) { install(); } else { setShowInstallHelp(true); } }}
+                className={`px-3 py-2 rounded-lg text-white ${canInstall ? 'bg-purple-600 hover:bg-purple-700' : 'bg-purple-500 hover:bg-purple-600'} `}
+                title={canInstall ? 'تثبيت التطبيق' : 'التثبيت من قائمة المتصفح'}
               >
-                {canInstall ? 'تثبيت' : 'لحظة...'}
+                تثبيت
               </button>
             )}
             <button
@@ -896,6 +896,18 @@ export default function App() {
               إخفاء
             </button>
           </div>
+          {showInstallHelp && !isIOS && (
+            <div className="mt-2 text-xs text-gray-700 bg-white/90 border border-gray-200 rounded-xl p-2">
+              {(() => {
+                const ua = navigator.userAgent || '';
+                if (/Edg\//.test(ua)) return 'على Edge: من القائمة ⋯ اختر Apps ثم Install this site as an app';
+                if (/SamsungBrowser\//.test(ua)) return 'على Samsung Internet: من القائمة ☰ اختر Add page to ثم Install app';
+                if (/Firefox\//.test(ua) && /Android/i.test(ua)) return 'على Firefox Android: من القائمة ⋮ اختر Install';
+                if (/Chrome\//.test(ua) && /Android/i.test(ua)) return 'على Chrome Android: من القائمة ⋮ اختر Install app';
+                return 'من قائمة المتصفح اختر Install/تثبيت التطبيق (أو Apps > Install).';
+              })()}
+            </div>
+          )}
         </div>
       )}
       <div style={{ color: '#000000' }}>
